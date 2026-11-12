@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Texture2D" path="res://sprites/scenery/pedra_rio.png" id="1_texture"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_slippery"]
+friction = 0.35
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_rock"]
+radius = 32.0
+height = 170.0
+
+[node name="PedraRio" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 6
+physics_material_override = SubResource("PhysicsMaterial_slippery")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -35)
+texture = ExtResource("1_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -35)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_rock")

@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://sprites/scenery/ground_main.png" id="1_texture"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
+size = Vector2(1280, 180)
+
+[node name="ChaoTerra" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 6
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(640, 90)
+texture = ExtResource("1_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(640, 90)
+shape = SubResource("RectangleShape2D_ground")

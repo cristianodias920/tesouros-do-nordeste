@@ -1,0 +1,45 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/InimigoSeriema.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://sprites/enemies/seriema_run_1.png" id="2_texture"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(50, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_stomp"]
+size = Vector2(46, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hit"]
+size = Vector2(56, 85)
+
+[node name="InimigoSeriema" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_script")
+move_speed = 90.0
+patrol_distance = 160.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -60)
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("2_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -50)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="StompArea" type="Area2D" parent="."]
+position = Vector2(0, -106)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StompArea"]
+shape = SubResource("RectangleShape2D_stomp")
+
+[node name="HitArea" type="Area2D" parent="."]
+position = Vector2(0, -48)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea"]
+shape = SubResource("RectangleShape2D_hit")

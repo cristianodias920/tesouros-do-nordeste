@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/Player.gd" id="1_script"]
+[ext_resource type="SpriteFrames" path="res://sprites/player_frames.tres" id="2_frames"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(46, 130)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kick"]
+size = Vector2(75, 75)
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_layer = 2
+collision_mask = 21
+floor_snap_length = 12.0
+script = ExtResource("1_script")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -75)
+scale = Vector2(0.36, 0.36)
+sprite_frames = ExtResource("2_frames")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -65)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="KickArea" type="Area2D" parent="."]
+position = Vector2(-45, -50)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KickArea"]
+shape = SubResource("RectangleShape2D_kick")
+disabled = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, -100)
+process_callback = 0
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+limit_left = 0
+limit_top = 0
+limit_bottom = 1080
+
+[connection signal="body_entered" from="KickArea" to="." method="_on_kick_area_body_entered"]

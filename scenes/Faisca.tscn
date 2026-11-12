@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/Faisca.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://sprites/faisca/faisca_solo.png" id="2_texture"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_box"]
+size = Vector2(100, 100)
+
+[sub_resource type="LabelSettings" id="LabelSettings_tip"]
+font_size = 20
+font_color = Color(0.98, 0.92, 0.75, 1)
+outline_size = 4
+outline_color = Color(0.25, 0.15, 0.05, 1)
+
+[node name="Faisca" type="Area2D"]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -50)
+scale = Vector2(0.38, 0.38)
+texture = ExtResource("2_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -50)
+shape = SubResource("RectangleShape2D_box")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -140.0
+offset_top = -130.0
+offset_right = 140.0
+offset_bottom = -95.0
+text = "Faísca! Pegue para montar!"
+label_settings = SubResource("LabelSettings_tip")
+horizontal_alignment = 1
+vertical_alignment = 1

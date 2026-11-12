@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/Checkpoint.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://sprites/items/bandeira_piaui.png" id="2_texture"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_flag"]
+size = Vector2(80, 140)
+
+[sub_resource type="LabelSettings" id="LabelSettings_ck"]
+font_size = 22
+font_color = Color(1, 0.95, 0.6, 1)
+outline_size = 5
+outline_color = Color(0.1, 0.25, 0.1, 1)
+
+[node name="Checkpoint" type="Area2D"]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -60)
+scale = Vector2(0.38, 0.38)
+texture = ExtResource("2_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -60)
+shape = SubResource("RectangleShape2D_flag")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -150.0
+offset_top = -120.0
+offset_right = 150.0
+offset_bottom = -80.0
+text = "Checkpoint ativado!"
+label_settings = SubResource("LabelSettings_ck")
+horizontal_alignment = 1
+vertical_alignment = 1

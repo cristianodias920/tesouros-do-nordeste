@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Tesouros do Nordeste: O Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #1a1006;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle, #2d1c0a 0%, #120b04 100%);
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      image-rendering: auto;
+    }
+    #rotate-device {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #1a1006;
+      color: #ffd27d;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      z-index: 1000;
+      font-size: 1.3rem;
+    }
+    @media (orientation: portrait) {
+      #rotate-device { display: flex; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+    <div id="rotate-device">
+      <div style="font-size: 3rem; margin-bottom: 20px;">📱 ➔ 🔄</div>
+      <strong>Gire o celular para o modo paisagem</strong>
+      <p style="margin-top: 10px; color: #dfbe8d; font-size: 1rem;">Tesouros do Nordeste é jogado com o celular deitado.</p>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
