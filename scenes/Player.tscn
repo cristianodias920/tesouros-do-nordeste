@@ -10,13 +10,14 @@ size = Vector2(55, 180)
 size = Vector2(100, 100)
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
+z_index = 10
 collision_layer = 2
 collision_mask = 21
 floor_snap_length = 16.0
 script = ExtResource("1_script")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -103)
+position = Vector2(0, -110)
 scale = Vector2(0.45, 0.45)
 sprite_frames = ExtResource("2_frames")
 animation = &"idle"

@@ -4,9 +4,9 @@
 [ext_resource type="Texture2D" path="res://sprites/scenery_v2/placa.png" id="2_texture"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_board"]
-font_size = 28
-font_color = Color(0.2, 0.1, 0.04, 1)
-outline_size = 4
+font_size = 34
+font_color = Color(0.18, 0.09, 0.03, 1)
+outline_size = 6
 outline_color = Color(0.98, 0.94, 0.82, 1)
 
 [node name="PlacaInfo" type="Node2D"]

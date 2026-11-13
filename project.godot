@@ -63,6 +63,10 @@ pause={
 ]
 }
 
+[rendering]
+
+environment/defaults/default_clear_color=Color(0.964706, 0.690196, 0.290196, 1)
+
 [layer_names]
 
 2d_physics/layer_1="World"

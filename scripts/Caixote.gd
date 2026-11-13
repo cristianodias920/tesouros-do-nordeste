@@ -21,9 +21,23 @@ func open_crate(player: Player) -> void:
 	is_opened = true
 	AudioManager.play_sfx("crate")
 	
-	# Muda visual para caixote aberto
-	if ResourceLoader.exists("res://sprites/items/caixote_aberto.png"):
-		sprite.texture = load("res://sprites/items/caixote_aberto.png")
+	# Mostra a tampa aberta por código
+	if sprite and sprite.texture:
+		var lid = Sprite2D.new()
+		lid.texture = sprite.texture
+		lid.region_enabled = true
+		var w = sprite.texture.get_width()
+		var h = sprite.texture.get_height()
+		var lid_h = h * 0.30
+		lid.region_rect = Rect2(0, 0, w, lid_h)
+		lid.scale = sprite.scale
+		var top_y = -h * sprite.scale.y * 0.5 + (lid_h * sprite.scale.y * 0.5)
+		lid.position = Vector2(0, top_y)
+		add_child(lid)
+
+		var lid_tween = create_tween()
+		lid_tween.parallel().tween_property(lid, "position", lid.position + Vector2(12, -40), 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		lid_tween.parallel().tween_property(lid, "rotation_degrees", 25.0, 0.25)
 
 	# Animação de solavanco
 	var tween = create_tween()

@@ -27,6 +27,7 @@ var can_double_jump: bool = false
 var coyote_timer: float = 0.0
 var jump_buffer_timer: float = 0.0
 var invincibility_timer: float = 0.0
+var lock_facing_timer: float = 0.0
 var rapadura_timer: float = 0.0
 var ferradura_timer: float = 0.0
 var facing_direction: float = 1.0
@@ -59,7 +60,7 @@ func apply_character_scale() -> void:
 	else:
 		# A pé: escala 0.45 (~205 px de altura)
 		animated_sprite.scale = Vector2(0.45, 0.45)
-		animated_sprite.position = Vector2(0, -103)
+		animated_sprite.position = Vector2(0, -110)
 		if collision_shape and collision_shape.shape:
 			collision_shape.shape.size = Vector2(55, 180)
 			collision_shape.position = Vector2(0, -90)
@@ -80,6 +81,8 @@ func _physics_process(delta: float) -> void:
 		animated_sprite.visible = fmod(invincibility_timer * 12.0, 1.0) > 0.35
 	else:
 		animated_sprite.visible = true
+	if lock_facing_timer > 0:
+		lock_facing_timer -= delta
 
 	# Power-ups
 	if rapadura_timer > 0:
@@ -122,12 +125,6 @@ func _physics_process(delta: float) -> void:
 
 	# Movimento horizontal
 	var input_x: float = Input.get_axis("move_left", "move_right")
-	
-	if input_x != 0:
-		facing_direction = sign(input_x)
-		animated_sprite.flip_h = (facing_direction < 0)
-		if is_mounted:
-			kick_area.position.x = -70 * facing_direction
 
 	var target_speed: float = MOUNTED_SPEED if is_mounted else WALK_SPEED
 	if rapadura_timer > 0:
@@ -140,6 +137,14 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, input_x * target_speed, current_accel * delta)
 	else:
 		velocity.x = move_toward(velocity.x, 0, current_decel * delta)
+
+	# Atualiza direção para onde o personagem está virado (Seção 5)
+	if lock_facing_timer <= 0:
+		if abs(velocity.x) > 10.0:
+			facing_direction = sign(velocity.x)
+		animated_sprite.flip_h = (facing_direction < 0)
+		if is_mounted:
+			kick_area.position.x = -70 * facing_direction
 
 	# Câmera com olhar à frente (look-ahead ~180 px)
 	target_cam_offset_x = facing_direction * 180.0 if abs(velocity.x) > 20 else 0.0
@@ -166,6 +171,8 @@ func bounce() -> void:
 
 func execute_coice() -> void:
 	is_coice = true
+	lock_facing_timer = 0.25
+	animated_sprite.speed_scale = 1.0
 	animated_sprite.play("coice")
 	AudioManager.play_sfx("kick")
 	kick_collision.disabled = false
@@ -180,23 +187,32 @@ func update_animation() -> void:
 	if is_coice:
 		return
 
+	var target_anim: String = ""
+	var target_speed_scale: float = 1.0
+
 	if is_mounted:
 		if not is_on_floor():
-			animated_sprite.play("mounted_jump")
+			target_anim = "mounted_jump"
 		elif abs(velocity.x) > 20.0:
-			animated_sprite.play("mounted_walk")
+			target_anim = "mounted_walk"
+			target_speed_scale = clamp(abs(velocity.x) / MOUNTED_SPEED, 0.6, 1.4)
 		else:
-			animated_sprite.play("mounted_idle")
+			target_anim = "mounted_idle"
 	else:
 		if not is_on_floor():
 			if velocity.y < 0:
-				animated_sprite.play("jump")
+				target_anim = "jump"
 			else:
-				animated_sprite.play("fall")
+				target_anim = "fall"
 		elif abs(velocity.x) > 20.0:
-			animated_sprite.play("walk")
+			target_anim = "walk"
+			target_speed_scale = clamp(abs(velocity.x) / WALK_SPEED, 0.6, 1.4)
 		else:
-			animated_sprite.play("idle")
+			target_anim = "idle"
+
+	animated_sprite.speed_scale = target_speed_scale
+	if animated_sprite.animation != target_anim:
+		animated_sprite.play(target_anim)
 
 func mount_faisca() -> void:
 	is_mounted = true
@@ -211,6 +227,8 @@ func hit_by_enemy(from_pos: Vector2) -> void:
 	var knock_dir = sign(global_position.x - from_pos.x)
 	if knock_dir == 0:
 		knock_dir = -facing_direction
+
+	lock_facing_timer = 0.25
 
 	if is_mounted:
 		# Faísca foge assustado, Zeca continua a pé sem perder coração
