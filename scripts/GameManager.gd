@@ -31,6 +31,10 @@ func reset_game() -> void:
 	lives_changed.emit(current_lives)
 	gems_changed.emit(collected_gems, TOTAL_GEMS)
 
+func refill_lives() -> void:
+	current_lives = MAX_LIVES
+	lives_changed.emit(current_lives)
+
 func add_gem() -> void:
 	collected_gems += 1
 	AudioManager.play_sfx("gem")
@@ -43,7 +47,6 @@ func heal() -> void:
 	AudioManager.play_sfx("powerup")
 
 func take_damage() -> bool:
-	# Retorna true se ainda estiver vivo, false se der Game Over
 	current_lives -= 1
 	AudioManager.play_sfx("hurt")
 	lives_changed.emit(current_lives)

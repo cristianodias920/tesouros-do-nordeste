@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/HUD.tscn" id="1_hud"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -18,46 +18,48 @@
 [ext_resource type="PackedScene" path="res://scenes/InimigoVespa.tscn" id="16_vespa"]
 [ext_resource type="PackedScene" path="res://scenes/InimigoCaranguejo.tscn" id="17_crab"]
 [ext_resource type="PackedScene" path="res://scenes/InimigoSeriema.tscn" id="18_seri"]
-[ext_resource type="Texture2D" path="res://sprites/scenery/sky_bg.png" id="19_sky"]
-[ext_resource type="Texture2D" path="res://sprites/scenery/hills_bg.png" id="20_hills"]
-[ext_resource type="Texture2D" path="res://sprites/scenery/cerrado_midground.png" id="21_mid"]
-[ext_resource type="Texture2D" path="res://sprites/scenery/rio_agua.png" id="22_water_vis"]
+[ext_resource type="Texture2D" path="res://sprites/scenery_v2/ceu.png" id="19_ceu"]
+[ext_resource type="Texture2D" path="res://sprites/scenery_v2/morros_longe.png" id="20_morros"]
+[ext_resource type="Texture2D" path="res://sprites/scenery_v2/mata_meio.png" id="21_mata"]
+[ext_resource type="Texture2D" path="res://sprites/scenery_v2/agua_tile.png" id="22_agua"]
 
 [node name="Fase1_Corrente" type="Node2D"]
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="."]
 
-[node name="LayerSky" type="ParallaxLayer" parent="ParallaxBackground"]
+[node name="LayerCeu" type="ParallaxLayer" parent="ParallaxBackground"]
 motion_scale = Vector2(0.1, 0)
-motion_mirroring = Vector2(1280, 0)
+motion_mirroring = Vector2(1920, 0)
 
-[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/LayerSky"]
-position = Vector2(640, 200)
-scale = Vector2(1, 1.8)
-texture = ExtResource("19_sky")
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/LayerCeu"]
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("19_ceu")
+centered = false
 
-[node name="LayerHills" type="ParallaxLayer" parent="ParallaxBackground"]
-motion_scale = Vector2(0.28, 0.03)
-motion_mirroring = Vector2(1280, 0)
+[node name="LayerMorros" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.3, 0.02)
+motion_mirroring = Vector2(1620, 0)
 
-[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/LayerHills"]
-position = Vector2(640, 360)
-scale = Vector2(1, 1.4)
-texture = ExtResource("20_hills")
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/LayerMorros"]
+position = Vector2(0, 200)
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("20_morros")
+centered = false
 
-[node name="LayerCerrado" type="ParallaxLayer" parent="ParallaxBackground"]
-motion_scale = Vector2(0.55, 0.06)
-motion_mirroring = Vector2(1280, 0)
+[node name="LayerMata" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.6, 0.04)
+motion_mirroring = Vector2(1353.6, 0)
 
-[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/LayerCerrado"]
-position = Vector2(640, 520)
-scale = Vector2(1, 1.25)
-texture = ExtResource("21_mid")
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/LayerMata"]
+position = Vector2(0, 230)
+scale = Vector2(0.72, 0.72)
+texture = ExtResource("21_mata")
+centered = false
 
 [node name="HUD" parent="." instance=ExtResource("1_hud")]
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
-position = Vector2(120, 720)
+position = Vector2(120, 780)
 
 [node name="Terreno" type="Node2D" parent="."]
 
@@ -65,201 +67,185 @@ position = Vector2(120, 720)
 position = Vector2(0, 780)
 
 [node name="Chao2" parent="Terreno" instance=ExtResource("3_chao")]
-position = Vector2(1950, 780)
+position = Vector2(1080, 780)
 
 [node name="Chao3" parent="Terreno" instance=ExtResource("3_chao")]
-position = Vector2(3050, 780)
+position = Vector2(2800, 780)
 
 [node name="Chao4" parent="Terreno" instance=ExtResource("3_chao")]
-position = Vector2(4400, 780)
+position = Vector2(3880, 780)
 
 [node name="Chao5" parent="Terreno" instance=ExtResource("3_chao")]
-position = Vector2(5350, 780)
+position = Vector2(5900, 780)
 
 [node name="Chao6" parent="Terreno" instance=ExtResource("3_chao")]
-position = Vector2(6200, 780)
+position = Vector2(6980, 780)
+
+[node name="Chao7" parent="Terreno" instance=ExtResource("3_chao")]
+position = Vector2(8060, 780)
+
+[node name="Chao8" parent="Terreno" instance=ExtResource("3_chao")]
+position = Vector2(9140, 780)
 
 [node name="Pedra1" parent="Terreno" instance=ExtResource("5_pedra")]
-position = Vector2(1480, 830)
+position = Vector2(2350, 830)
 
 [node name="Pedra2" parent="Terreno" instance=ExtResource("5_pedra")]
-position = Vector2(1740, 830)
+position = Vector2(2600, 830)
 
 [node name="Plat1" parent="Terreno" instance=ExtResource("4_plat")]
-position = Vector2(2350, 620)
+position = Vector2(3250, 590)
 
 [node name="Plat2" parent="Terreno" instance=ExtResource("4_plat")]
-position = Vector2(2650, 570)
+position = Vector2(3550, 540)
 
 [node name="Plat3" parent="Terreno" instance=ExtResource("4_plat")]
-position = Vector2(3950, 660)
+position = Vector2(5250, 640)
 
 [node name="Plat4" parent="Terreno" instance=ExtResource("4_plat")]
-position = Vector2(4220, 660)
+position = Vector2(5580, 640)
 
 [node name="RioVisual" type="Node2D" parent="."]
 
 [node name="Agua1" type="Sprite2D" parent="RioVisual"]
-position = Vector2(640, 860)
-scale = Vector2(1, 1.8)
-texture = ExtResource("22_water_vis")
+position = Vector2(2000, 808)
+texture = ExtResource("22_agua")
+centered = false
 
 [node name="Agua2" type="Sprite2D" parent="RioVisual"]
-position = Vector2(1920, 860)
-scale = Vector2(1, 1.8)
-texture = ExtResource("22_water_vis")
+position = Vector2(4800, 808)
+texture = ExtResource("22_agua")
+centered = false
 
 [node name="Agua3" type="Sprite2D" parent="RioVisual"]
-position = Vector2(3200, 860)
-scale = Vector2(1, 1.8)
-texture = ExtResource("22_water_vis")
+position = Vector2(5800, 808)
+texture = ExtResource("22_agua")
+centered = false
 
 [node name="Agua4" type="Sprite2D" parent="RioVisual"]
-position = Vector2(4480, 860)
-scale = Vector2(1, 1.8)
-texture = ExtResource("22_water_vis")
-
-[node name="Agua5" type="Sprite2D" parent="RioVisual"]
-position = Vector2(5760, 860)
-scale = Vector2(1, 1.8)
-texture = ExtResource("22_water_vis")
-
-[node name="Agua6" type="Sprite2D" parent="RioVisual"]
-position = Vector2(7040, 860)
-scale = Vector2(1, 1.8)
-texture = ExtResource("22_water_vis")
+position = Vector2(7800, 808)
+texture = ExtResource("22_agua")
+centered = false
 
 [node name="ZonaAgua" parent="." instance=ExtResource("6_agua")]
-position = Vector2(3800, 970)
+position = Vector2(5000, 960)
 
 [node name="Placas" type="Node2D" parent="."]
 
 [node name="Placa1" parent="Placas" instance=ExtResource("12_placa")]
 position = Vector2(200, 780)
-texto = "Bem-vindo ao Piauí!
-Use as setas para andar. Pule com Espaço."
+texto = "Bem-vindo ao Piauí"
 
 [node name="Placa2" parent="Placas" instance=ExtResource("12_placa")]
-position = Vector2(760, 780)
+position = Vector2(1100, 780)
 texto = "Bem-vindo a Corrente"
-
-[node name="Placa3" parent="Placas" instance=ExtResource("12_placa")]
-position = Vector2(1240, 780)
-texto = "Cuidado: pedras molhadas escorregam!"
-
-[node name="Placa4" parent="Placas" instance=ExtResource("12_placa")]
-position = Vector2(5380, 780)
-texto = "Rios Corrente e Paraim"
 
 [node name="Caixotes" type="Node2D" parent="."]
 
 [node name="Caixote1" parent="Caixotes" instance=ExtResource("8_caixote")]
-position = Vector2(620, 610)
+position = Vector2(750, 630)
 content_type = "cajuina"
 
 [node name="Caixote2" parent="Caixotes" instance=ExtResource("8_caixote")]
-position = Vector2(2500, 470)
+position = Vector2(3400, 430)
 content_type = "rapadura"
 
 [node name="Caixote3" parent="Caixotes" instance=ExtResource("8_caixote")]
-position = Vector2(4700, 630)
+position = Vector2(6210, 630)
 content_type = "ferradura"
 
 [node name="Faisca" parent="." instance=ExtResource("9_faisca")]
-position = Vector2(3280, 780)
+position = Vector2(4650, 780)
 
 [node name="Checkpoint" parent="." instance=ExtResource("10_ckp")]
-position = Vector2(2880, 780)
+position = Vector2(4800, 780)
 
 [node name="Espinhos" type="Node2D" parent="."]
 
 [node name="Espinho1" parent="Espinhos" instance=ExtResource("13_esp")]
-position = Vector2(4620, 780)
+position = Vector2(6150, 780)
 
 [node name="Espinho2" parent="Espinhos" instance=ExtResource("13_esp")]
-position = Vector2(4740, 780)
-
-[node name="Espinho3" parent="Espinhos" instance=ExtResource("13_esp")]
-position = Vector2(4860, 780)
+position = Vector2(6280, 780)
 
 [node name="Inimigos" type="Node2D" parent="."]
 
 [node name="InimigoTatu1" parent="Inimigos" instance=ExtResource("14_tatu")]
-position = Vector2(980, 780)
+position = Vector2(1450, 780)
 
 [node name="InimigoCapivara" parent="Inimigos" instance=ExtResource("15_capi")]
-position = Vector2(2120, 780)
+position = Vector2(1950, 780)
 
 [node name="InimigoVespa" parent="Inimigos" instance=ExtResource("16_vespa")]
-position = Vector2(2500, 400)
+position = Vector2(3380, 360)
 
 [node name="InimigoTatu2" parent="Inimigos" instance=ExtResource("14_tatu")]
-position = Vector2(3580, 780)
+position = Vector2(4200, 780)
 
 [node name="InimigoCaranguejo" parent="Inimigos" instance=ExtResource("17_crab")]
-position = Vector2(5600, 780)
+position = Vector2(8350, 780)
 
 [node name="InimigoSeriema" parent="Inimigos" instance=ExtResource("18_seri")]
-position = Vector2(5950, 780)
+position = Vector2(8850, 780)
 
 [node name="Gemas" type="Node2D" parent="."]
 
 [node name="Gema1" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(380, 720)
+position = Vector2(400, 710)
 
 [node name="Gema2" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(480, 720)
+position = Vector2(550, 710)
 
 [node name="Gema3" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(1150, 720)
+position = Vector2(900, 710)
 
 [node name="Gema4" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(1480, 740)
+position = Vector2(1500, 710)
 
 [node name="Gema5" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(1740, 740)
+position = Vector2(1800, 710)
 
 [node name="Gema6" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(2200, 720)
+position = Vector2(2350, 740)
 
 [node name="Gema7" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(2350, 540)
+position = Vector2(2600, 740)
 
 [node name="Gema8" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(2650, 490)
+position = Vector2(3050, 710)
 
 [node name="Gema9" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(2760, 720)
+position = Vector2(3250, 510)
 
 [node name="Gema10" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(2880, 680)
+position = Vector2(3550, 460)
 
 [node name="Gema11" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(3400, 720)
+position = Vector2(3950, 710)
 
 [node name="Gema12" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(3950, 580)
+position = Vector2(4400, 710)
 
 [node name="Gema13" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(4220, 580)
+position = Vector2(4800, 690)
 
 [node name="Gema14" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(4980, 720)
+position = Vector2(5250, 560)
 
 [node name="Gema15" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(5100, 720)
+position = Vector2(5580, 560)
 
 [node name="Gema16" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(5480, 720)
+position = Vector2(6500, 710)
 
 [node name="Gema17" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(5750, 720)
+position = Vector2(7300, 710)
 
 [node name="Gema18" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(6050, 720)
+position = Vector2(8500, 710)
 
 [node name="Gema19" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(6220, 720)
+position = Vector2(9200, 710)
 
 [node name="Chegada" parent="." instance=ExtResource("11_chegada")]
-position = Vector2(6420, 780)
+position = Vector2(9600, 780)

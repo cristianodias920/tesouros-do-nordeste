@@ -1,16 +1,23 @@
 extends CharacterBody2D
 class_name Player
 
-# Constantes de movimentação e física
-const WALK_SPEED: float = 290.0
-const MOUNTED_SPEED: float = 380.0
-const RAPADURA_SPEED_BOOST: float = 110.0
-const ACCELERATION: float = 1500.0
-const FRICTION: float = 1600.0
-const GRAVITY: float = 1150.0
-const JUMP_VELOCITY: float = -510.0
-const BOUNCE_VELOCITY: float = -440.0
-const COYOTE_TIME_MAX: float = 0.12
+# Constantes de movimentação e física ajustadas (Seção 6)
+const WALK_SPEED: float = 450.0
+const MOUNTED_SPEED: float = 560.0
+const RAPADURA_SPEED_BOOST: float = 120.0
+const ACCEL_GROUND: float = 3000.0
+const DECEL_GROUND: float = 3600.0
+const ACCEL_AIR: float = 2400.0
+const DECEL_AIR: float = 2880.0
+
+const JUMP_VELOCITY: float = -1240.0
+const DOUBLE_JUMP_VELOCITY: float = -1054.0 # 85% do primeiro
+const BOUNCE_VELOCITY: float = -950.0
+const GRAVITY_UP: float = 2950.0
+const GRAVITY_DOWN: float = 4700.0 # 1.6x da gravidade de subida
+const MAX_FALL_SPEED: float = 1800.0
+
+const COYOTE_TIME_MAX: float = 0.1
 const JUMP_BUFFER_MAX: float = 0.12
 
 # Estados
@@ -24,11 +31,13 @@ var rapadura_timer: float = 0.0
 var ferradura_timer: float = 0.0
 var facing_direction: float = 1.0
 var spawn_position: Vector2 = Vector2.ZERO
+var target_cam_offset_x: float = 0.0
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var kick_area: Area2D = $KickArea
 @onready var kick_collision: CollisionShape2D = $KickArea/CollisionShape2D
+@onready var camera: Camera2D = $Camera2D
 
 func _ready() -> void:
 	spawn_position = global_position
@@ -39,19 +48,25 @@ func _ready() -> void:
 
 func apply_character_scale() -> void:
 	if is_mounted:
-		# Montado: altura ~ 1.3x do Zeca a pé
-		animated_sprite.scale = Vector2(0.48, 0.48)
-		collision_shape.shape.size = Vector2(64, 150)
-		collision_shape.position = Vector2(0, -75)
-		kick_area.position = Vector2(-45 * facing_direction, -50)
+		# Montado: escala 0.63 (~1.3x da altura do Zeca a pé)
+		animated_sprite.scale = Vector2(0.63, 0.63)
+		animated_sprite.position = Vector2(0, -134)
+		if collision_shape and collision_shape.shape:
+			collision_shape.shape.size = Vector2(75, 210)
+			collision_shape.position = Vector2(0, -105)
+		if kick_area:
+			kick_area.position = Vector2(-70 * facing_direction, -70)
 	else:
-		animated_sprite.scale = Vector2(0.36, 0.36)
-		collision_shape.shape.size = Vector2(46, 130)
-		collision_shape.position = Vector2(0, -65)
+		# A pé: escala 0.45 (~205 px de altura)
+		animated_sprite.scale = Vector2(0.45, 0.45)
+		animated_sprite.position = Vector2(0, -103)
+		if collision_shape and collision_shape.shape:
+			collision_shape.shape.size = Vector2(55, 180)
+			collision_shape.position = Vector2(0, -90)
 
 func _physics_process(delta: float) -> void:
 	if GameManager.is_level_ended:
-		velocity.x = move_toward(velocity.x, 0, FRICTION * delta)
+		velocity.x = move_toward(velocity.x, 0, DECEL_GROUND * delta)
 		move_and_slide()
 		return
 
@@ -62,26 +77,24 @@ func _physics_process(delta: float) -> void:
 		jump_buffer_timer -= delta
 	if invincibility_timer > 0:
 		invincibility_timer -= delta
-		# Piscar sprite durante invencibilidade
-		animated_sprite.visible = fmod(invincibility_timer * 10.0, 1.0) > 0.3
+		animated_sprite.visible = fmod(invincibility_timer * 12.0, 1.0) > 0.35
 	else:
 		animated_sprite.visible = true
 
-	# Power-ups timers
+	# Power-ups
 	if rapadura_timer > 0:
 		rapadura_timer -= delta
-		# Brilho dourado
-		animated_sprite.modulate = Color(1.3, 1.15, 0.6)
+		animated_sprite.modulate = Color(1.35, 1.2, 0.5)
 	elif ferradura_timer > 0:
 		ferradura_timer -= delta
-		# Brilho prateado / ferro
-		animated_sprite.modulate = Color(1.1, 1.2, 1.3)
+		animated_sprite.modulate = Color(1.1, 1.2, 1.35)
 	else:
 		animated_sprite.modulate = Color(1, 1, 1)
 
-	# Gravidade
+	# Gravidade assimétrica (queda 1.6x mais rápida)
 	if not is_on_floor():
-		velocity.y += GRAVITY * delta
+		var current_gravity = GRAVITY_UP if velocity.y < 0 else GRAVITY_DOWN
+		velocity.y = move_toward(velocity.y, MAX_FALL_SPEED, current_gravity * delta)
 	else:
 		coyote_timer = COYOTE_TIME_MAX
 		if is_mounted:
@@ -91,17 +104,17 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("jump"):
 		jump_buffer_timer = JUMP_BUFFER_MAX
 
-	# Execução de pulo (chão ou coyote time)
+	# Execução de pulo no chão ou coyote time
 	if jump_buffer_timer > 0 and (is_on_floor() or coyote_timer > 0):
-		execute_jump()
+		execute_jump(JUMP_VELOCITY)
 	# Pulo duplo quando montado
 	elif jump_buffer_timer > 0 and is_mounted and can_double_jump and not is_on_floor():
 		can_double_jump = false
-		execute_jump()
+		execute_jump(DOUBLE_JUMP_VELOCITY)
 
-	# Pulo de altura variável: soltar o botão corta subida
-	if Input.is_action_just_released("jump") and velocity.y < -150.0:
-		velocity.y = -150.0
+	# Pulo variável: soltar o botão corta subida (velocity.y * 0.45)
+	if Input.is_action_just_released("jump") and velocity.y < 0:
+		velocity.y *= 0.45
 
 	# Ação de coice (montado)
 	if Input.is_action_just_pressed("action") and is_mounted and not is_coice:
@@ -113,30 +126,36 @@ func _physics_process(delta: float) -> void:
 	if input_x != 0:
 		facing_direction = sign(input_x)
 		animated_sprite.flip_h = (facing_direction < 0)
-		kick_area.position.x = -45 * facing_direction
+		if is_mounted:
+			kick_area.position.x = -70 * facing_direction
 
 	var target_speed: float = MOUNTED_SPEED if is_mounted else WALK_SPEED
 	if rapadura_timer > 0:
 		target_speed += RAPADURA_SPEED_BOOST
 
-	if input_x != 0:
-		velocity.x = move_toward(velocity.x, input_x * target_speed, ACCELERATION * delta)
-	else:
-		velocity.x = move_toward(velocity.x, 0, FRICTION * delta)
+	var current_accel: float = ACCEL_GROUND if is_on_floor() else ACCEL_AIR
+	var current_decel: float = DECEL_GROUND if is_on_floor() else DECEL_AIR
 
-	# Atualiza animação
+	if input_x != 0:
+		velocity.x = move_toward(velocity.x, input_x * target_speed, current_accel * delta)
+	else:
+		velocity.x = move_toward(velocity.x, 0, current_decel * delta)
+
+	# Câmera com olhar à frente (look-ahead ~180 px)
+	target_cam_offset_x = facing_direction * 180.0 if abs(velocity.x) > 20 else 0.0
+	camera.offset.x = lerp(camera.offset.x, target_cam_offset_x, 4.0 * delta)
+
 	update_animation()
 
-	# Executa movimento com Floor Snap para física estável
-	floor_snap_length = 12.0
+	floor_snap_length = 16.0
 	move_and_slide()
 
 	# Queda no rio ou abismo
-	if global_position.y > 980:
+	if global_position.y > 960:
 		respawn_fall()
 
-func execute_jump() -> void:
-	velocity.y = JUMP_VELOCITY
+func execute_jump(vel: float) -> void:
+	velocity.y = vel
 	coyote_timer = 0.0
 	jump_buffer_timer = 0.0
 	AudioManager.play_sfx("jump")
@@ -150,8 +169,7 @@ func execute_coice() -> void:
 	animated_sprite.play("coice")
 	AudioManager.play_sfx("kick")
 	kick_collision.disabled = false
-	# Desativa hitbox após 0.25s
-	get_tree().create_timer(0.25).timeout.connect(func(): kick_collision.disabled = true)
+	get_tree().create_timer(0.28).timeout.connect(func(): kick_collision.disabled = true)
 
 func _on_animation_finished() -> void:
 	if is_coice:
@@ -165,7 +183,7 @@ func update_animation() -> void:
 	if is_mounted:
 		if not is_on_floor():
 			animated_sprite.play("mounted_jump")
-		elif abs(velocity.x) > 15.0:
+		elif abs(velocity.x) > 20.0:
 			animated_sprite.play("mounted_walk")
 		else:
 			animated_sprite.play("mounted_idle")
@@ -175,7 +193,7 @@ func update_animation() -> void:
 				animated_sprite.play("jump")
 			else:
 				animated_sprite.play("fall")
-		elif abs(velocity.x) > 15.0:
+		elif abs(velocity.x) > 20.0:
 			animated_sprite.play("walk")
 		else:
 			animated_sprite.play("idle")
@@ -187,51 +205,53 @@ func mount_faisca() -> void:
 	AudioManager.play_sfx("mount")
 
 func hit_by_enemy(from_pos: Vector2) -> void:
-	if rapadura_timer > 0:
-		return
-	if invincibility_timer > 0:
+	if rapadura_timer > 0 or invincibility_timer > 0:
 		return
 
+	var knock_dir = sign(global_position.x - from_pos.x)
+	if knock_dir == 0:
+		knock_dir = -facing_direction
+
 	if is_mounted:
-		# Faísca foge assustado, Zeca continua a pé sem perder coração nesse golpe
+		# Faísca foge assustado, Zeca continua a pé sem perder coração
 		is_mounted = false
 		GameManager.is_mounted = false
 		apply_character_scale()
 		invincibility_timer = 1.2
-		AudioManager.play_sfx("mount") # som de desmonte / susto
-		velocity = Vector2((global_position.x - from_pos.x) * 2.0, -250)
+		AudioManager.play_sfx("mount")
+		velocity = Vector2(knock_dir * 420.0, -600.0)
 	else:
 		var alive = GameManager.take_damage()
-		if alive:
-			invincibility_timer = 1.2
-			var knock_dir = sign(global_position.x - from_pos.x)
-			if knock_dir == 0:
-				knock_dir = -facing_direction
-			velocity = Vector2(knock_dir * 250.0, -280.0)
+		invincibility_timer = 1.2
+		velocity = Vector2(knock_dir * 420.0, -600.0)
+		if not alive:
+			respawn_full()
 
 func hit_by_spikes() -> void:
 	if ferradura_timer > 0 and is_mounted:
-		return # Ferradura de ferro protege contra espinhos!
-	if rapadura_timer > 0:
-		return
-	if invincibility_timer > 0:
+		return # Ferradura de ferro protege nos espinhos
+	if rapadura_timer > 0 or invincibility_timer > 0:
 		return
 
 	var alive = GameManager.take_damage()
-	if alive:
-		invincibility_timer = 1.2
-		velocity.y = -350.0
+	invincibility_timer = 1.2
+	velocity.y = -600.0
+	if not alive:
+		respawn_full()
 
 func respawn_fall() -> void:
 	AudioManager.play_sfx("splash")
-	var alive = GameManager.take_damage()
-	if alive:
-		if GameManager.has_checkpoint:
-			global_position = GameManager.checkpoint_pos
-		else:
-			global_position = spawn_position
-		velocity = Vector2.ZERO
-		invincibility_timer = 1.0
+	respawn_full()
+
+func respawn_full() -> void:
+	# Volta para o último checkpoint com corações cheios
+	GameManager.refill_lives()
+	if GameManager.has_checkpoint:
+		global_position = GameManager.checkpoint_pos
+	else:
+		global_position = spawn_position
+	velocity = Vector2.ZERO
+	invincibility_timer = 1.2
 
 func _on_checkpoint_activated(pos: Vector2) -> void:
 	spawn_position = pos

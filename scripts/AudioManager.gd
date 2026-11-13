@@ -23,13 +23,21 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	music_player = AudioStreamPlayer.new()
 	music_player.bus = "Master"
-	music_player.volume_db = -6.0
+	music_player.volume_db = -10.0
 	add_child(music_player)
 	
-	if ResourceLoader.exists("res://audio/bgm_forro.wav"):
-		var stream = load("res://audio/bgm_forro.wav")
-		if stream:
-			music_player.stream = stream
+	var music_stream: AudioStream = null
+	if ResourceLoader.exists("res://audio/bgm_forro.ogg"):
+		music_stream = load("res://audio/bgm_forro.ogg")
+	elif ResourceLoader.exists("res://audio/bgm_forro.wav"):
+		music_stream = load("res://audio/bgm_forro.wav")
+
+	if music_stream:
+		if music_stream is AudioStreamOggVorbis:
+			(music_stream as AudioStreamOggVorbis).loop = true
+		elif music_stream is AudioStreamWAV:
+			(music_stream as AudioStreamWAV).loop_mode = AudioStreamWAV.LOOP_FORWARD
+		music_player.stream = music_stream
 
 	for sfx_name in sound_paths:
 		var p = AudioStreamPlayer.new()
@@ -40,9 +48,10 @@ func _ready() -> void:
 			p.stream = load(sound_paths[sfx_name])
 		sfx_players[sfx_name] = p
 
-func _input(_event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if not music_started:
-		start_music()
+		if (event is InputEventKey and event.pressed) or (event is InputEventMouseButton and event.pressed) or (event is InputEventScreenTouch and event.pressed):
+			start_music()
 
 func start_music() -> void:
 	if music_started:

@@ -1,33 +1,39 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/MainMenu.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://artes/01-cenario-corrente.jpg" id="2_bg"]
-[ext_resource type="Texture2D" path="res://sprites/player/zeca_idle.png" id="3_zeca"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/faisca_solo.png" id="4_faisca"]
+[ext_resource type="Texture2D" path="res://sprites/scenery_v2/titulo_fundo.jpg" id="2_bg"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_title"]
-font_size = 64
-font_color = Color(1, 0.94, 0.75, 1)
-outline_size = 10
-outline_color = Color(0.2, 0.1, 0.03, 1)
+font_size = 100
+font_color = Color(1, 0.95, 0.78, 1)
+outline_size = 14
+outline_color = Color(0.18, 0.08, 0.02, 1)
+shadow_size = 10
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_offset = Vector2(4, 5)
 
 [sub_resource type="LabelSettings" id="LabelSettings_subtitle"]
-font_size = 32
-font_color = Color(0.95, 0.88, 0.55, 1)
-outline_size = 6
-outline_color = Color(0.18, 0.1, 0.02, 1)
+font_size = 40
+font_color = Color(0.98, 0.88, 0.5, 1)
+outline_size = 8
+outline_color = Color(0.18, 0.08, 0.02, 1)
+shadow_size = 6
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_offset = Vector2(3, 3)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
-bg_color = Color(0.28, 0.18, 0.08, 0.9)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.92, 0.78, 0.42, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+bg_color = Color(0.24, 0.14, 0.06, 0.92)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.94, 0.82, 0.46, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 6
+shadow_offset = Vector2(0, 4)
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -49,48 +55,29 @@ texture = ExtResource("2_bg")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Tint" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.18)
-
 [node name="TitleBox" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -600.0
-offset_top = 90.0
-offset_right = 600.0
-offset_bottom = 240.0
+offset_left = -700.0
+offset_top = 80.0
+offset_right = 700.0
+offset_bottom = 280.0
 grow_horizontal = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="TitleBox"]
 layout_mode = 2
-text = "Tesouros do Nordeste: O Game"
+text = "Tesouros do Nordeste"
 label_settings = SubResource("LabelSettings_title")
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="TitleBox"]
 layout_mode = 2
-text = "Uma aventura pelo Nordeste"
+text = "Fase 1: Corrente, Piauí"
 label_settings = SubResource("LabelSettings_subtitle")
 horizontal_alignment = 1
-
-[node name="ZecaSprite" type="Sprite2D" parent="."]
-position = Vector2(560, 660)
-scale = Vector2(0.68, 0.68)
-texture = ExtResource("3_zeca")
-
-[node name="FaiscaSprite" type="Sprite2D" parent="."]
-position = Vector2(820, 690)
-scale = Vector2(0.72, 0.72)
-texture = ExtResource("4_faisca")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -99,24 +86,24 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 220.0
-offset_top = 60.0
-offset_right = 560.0
-offset_bottom = 260.0
+offset_left = -210.0
+offset_top = 180.0
+offset_right = 210.0
+offset_bottom = 390.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 24
 
 [node name="BtnStart" type="Button" parent="VBoxContainer"]
-custom_minimum_size = Vector2(0, 75)
+custom_minimum_size = Vector2(420, 90)
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 34
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
 text = "COMEÇAR"
 
 [node name="BtnSound" type="Button" parent="VBoxContainer"]
-custom_minimum_size = Vector2(0, 65)
+custom_minimum_size = Vector2(420, 85)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
 text = "SOM: LIGADO"

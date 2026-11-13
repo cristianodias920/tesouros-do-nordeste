@@ -1,15 +1,18 @@
 extends CanvasLayer
 
-@onready var heart_1: TextureRect = $TopBar/HeartsContainer/Heart1
-@onready var heart_2: TextureRect = $TopBar/HeartsContainer/Heart2
-@onready var heart_3: TextureRect = $TopBar/HeartsContainer/Heart3
-@onready var gems_label: Label = $TopBar/GemsContainer/GemsLabel
-@onready var sound_button: Button = $TopBar/ButtonsContainer/SoundButton
-@onready var pause_button: Button = $TopBar/ButtonsContainer/PauseButton
+@onready var heart_1: TextureRect = $TopLeft/HeartsContainer/Heart1
+@onready var heart_2: TextureRect = $TopLeft/HeartsContainer/Heart2
+@onready var heart_3: TextureRect = $TopLeft/HeartsContainer/Heart3
+@onready var gems_label: Label = $TopLeft/GemsContainer/GemsLabel
+@onready var sound_button: Button = $TopRight/ButtonsContainer/SoundButton
+@onready var pause_button: Button = $TopRight/ButtonsContainer/PauseButton
 
 # Controles de toque
 @onready var touch_controls: Control = $TouchControls
-@onready var btn_touch_action: TouchScreenButton = $TouchControls/BtnAction
+@onready var btn_left: TouchScreenButton = $TouchControls/BtnLeft
+@onready var btn_right: TouchScreenButton = $TouchControls/BtnRight
+@onready var btn_jump: TouchScreenButton = $TouchControls/BtnJump
+@onready var btn_action: TouchScreenButton = $TouchControls/BtnAction
 
 # Telas de sobreposição
 @onready var pause_menu: Control = $PauseMenu
@@ -39,24 +42,45 @@ func _ready() -> void:
 	victory_screen.visible = false
 	game_over_screen.visible = false
 
+	# Posiciona os botões de toque dinamicamente nas bordas da tela
+	get_viewport().size_changed.connect(_update_touch_positions)
+	_update_touch_positions()
+
 	# Mobile / Touch inicial
-	# No desktop teclado esconde os botões ao digitar
 	touch_controls.visible = DisplayServer.is_touchscreen_available()
+
+func _update_touch_positions() -> void:
+	var vp_size = get_viewport().get_visible_rect().size
+	var btn_size = 150.0
+	var margin_bottom = 40.0
+	var margin_side = 40.0
+
+	var y_pos = vp_size.y - btn_size - margin_bottom
+
+	if btn_left:
+		btn_left.position = Vector2(margin_side, y_pos)
+	if btn_right:
+		btn_right.position = Vector2(margin_side + btn_size + 30.0, y_pos)
+	if btn_jump:
+		btn_jump.position = Vector2(vp_size.x - btn_size - margin_side, y_pos)
+	if btn_action:
+		btn_action.position = Vector2(vp_size.x - (btn_size * 2.0) - margin_side - 30.0, y_pos)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
+		# Teclado esconde os botões de toque
 		touch_controls.visible = false
 	elif event is InputEventScreenTouch or (event is InputEventMouseButton and event.pressed):
-		# Se tocou na tela, exibe controles de toque
+		# Toque na tela reexibe os botões de toque
 		touch_controls.visible = true
 
 	if event.is_action_pressed("pause"):
 		toggle_pause()
 
 func _process(_delta: float) -> void:
-	# O botão de coice no toque só aparece quando estiver montado no Faísca
-	if btn_touch_action:
-		btn_touch_action.visible = GameManager.is_mounted
+	# O botão de coice no toque só aparece montado no Faísca
+	if btn_action:
+		btn_action.visible = GameManager.is_mounted
 
 func _on_lives_changed(lives: int) -> void:
 	update_lives_display(lives)
