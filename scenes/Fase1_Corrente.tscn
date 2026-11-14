@@ -187,16 +187,17 @@ shape = SubResource("RectangleShape2D_parede")
 [node name="Caixotes" type="Node2D" parent="."]
 
 [node name="Caixote1" parent="Caixotes" instance=ExtResource("8_caixote")]
-position = Vector2(750, 505)
+position = Vector2(750, 520)
 content_type = "cajuina"
 
 [node name="Caixote2" parent="Caixotes" instance=ExtResource("8_caixote")]
-position = Vector2(3400, 315)
+position = Vector2(3400, 330)
 content_type = "rapadura"
 
 [node name="Caixote3" parent="Caixotes" instance=ExtResource("8_caixote")]
-position = Vector2(6040, 505)
+position = Vector2(6040, 520)
 content_type = "ferradura"
+item_slide_dir = -1.0
 
 [node name="Faisca" parent="." instance=ExtResource("9_faisca")]
 z_index = 5

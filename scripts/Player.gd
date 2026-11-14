@@ -344,8 +344,6 @@ func apply_rapadura() -> void:
 	AudioManager.play_sfx("powerup")
 
 func apply_ferradura() -> void:
-	if is_mounted:
-		ferradura_timer = 10.0
-		AudioManager.play_sfx("powerup")
-	else:
-		GameManager.add_gem()
+	# A Ferradura só protege montado (ver hit_by_spikes); sem gema extra
+	ferradura_timer = 10.0
+	AudioManager.play_sfx("powerup")

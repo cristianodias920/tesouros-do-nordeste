@@ -5,6 +5,8 @@ extends StaticBody2D
 var is_opened: bool = false
 var gave_foot_gem: bool = false # caixote da Ferradura: a pé solta uma gema (uma vez só)
 var bump_cooldown: float = 0.0
+# Para onde o item escorrega ao sair: 0 = para longe do Zeca, -1 esquerda, 1 direita
+@export var item_slide_dir: float = 0.0
 @onready var sprite: Sprite2D = $Sprite2D
 
 func _process(delta: float) -> void:
@@ -59,38 +61,10 @@ func open_crate(player: Player) -> void:
 	spawn_item(content_type, player)
 
 func spawn_item(type: String, player: Player) -> void:
-	var item_sprite = Sprite2D.new()
-	var tex_path = ""
-	match type:
-		"cajuina":
-			tex_path = "res://sprites/items/cajuina.png"
-		"rapadura":
-			tex_path = "res://sprites/items/rapadura.png"
-		"ferradura":
-			tex_path = "res://sprites/items/ferradura.png"
-		_:
-			tex_path = "res://sprites/items/gema.png"
-			
-	if ResourceLoader.exists(tex_path):
-		item_sprite.texture = load(tex_path)
-	item_sprite.scale = Vector2(0.35, 0.35)
-	item_sprite.position = Vector2(0, -30)
-	add_child(item_sprite)
-
-	var tween = create_tween()
-	tween.tween_property(item_sprite, "position:y", -90.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.parallel().tween_property(item_sprite, "scale", Vector2(0.5, 0.5), 0.3)
-	tween.tween_interval(0.1)
-	tween.tween_property(item_sprite, "modulate:a", 0.0, 0.2)
-	tween.tween_callback(func():
-		item_sprite.queue_free()
-		match type:
-			"cajuina":
-				player.apply_cajuina()
-			"rapadura":
-				player.apply_rapadura()
-			"ferradura":
-				player.apply_ferradura()
-			_:
-				GameManager.add_gem()
-	)
+	# O item sai pelo topo do caixote, dá um pulinho e cai até o chão (ItemCaixote.gd)
+	var dir: float = item_slide_dir
+	if dir == 0.0:
+		dir = 1.0 if global_position.x >= player.global_position.x else -1.0
+	var top := global_position + Vector2(0, -50)
+	var item := ItemCaixote.create(type, top, dir, [get_rid()])
+	get_parent().add_child(item)
