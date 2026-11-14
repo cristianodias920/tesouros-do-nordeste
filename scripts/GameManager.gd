@@ -6,6 +6,7 @@ signal gems_changed(current_gems: int, total_gems: int)
 signal checkpoint_activated(pos: Vector2)
 signal level_completed
 signal game_over
+signal player_respawned
 
 const TOTAL_GEMS: int = 19
 const MAX_LIVES: int = 3
@@ -16,6 +17,7 @@ var checkpoint_pos: Vector2 = Vector2.ZERO
 var has_checkpoint: bool = false
 var is_mounted: bool = false
 var is_level_ended: bool = false
+var is_game_over: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -28,6 +30,7 @@ func reset_game() -> void:
 	has_checkpoint = false
 	is_mounted = false
 	is_level_ended = false
+	is_game_over = false
 	lives_changed.emit(current_lives)
 	gems_changed.emit(collected_gems, TOTAL_GEMS)
 
@@ -47,11 +50,14 @@ func heal() -> void:
 	AudioManager.play_sfx("powerup")
 
 func take_damage() -> bool:
-	current_lives -= 1
+	if is_level_ended:
+		return current_lives > 0
+	current_lives = max(current_lives - 1, 0)
 	AudioManager.play_sfx("hurt")
 	lives_changed.emit(current_lives)
 	if current_lives <= 0:
 		is_level_ended = true
+		is_game_over = true
 		game_over.emit()
 		return false
 	return true

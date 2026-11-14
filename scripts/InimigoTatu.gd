@@ -24,6 +24,7 @@ func enter_ball_mode() -> void:
 	ball_timer = 2.5
 	move_speed = 170.0
 	can_be_stomped = false # Em bola, carapaça dura!
+	anim_paused = true
 	if ResourceLoader.exists("res://sprites/enemies/tatu_ball.png"):
 		sprite.texture = load("res://sprites/enemies/tatu_ball.png")
 
@@ -32,5 +33,6 @@ func exit_ball_mode() -> void:
 	walk_timer = 4.0
 	move_speed = 80.0
 	can_be_stomped = true
+	anim_paused = false
 	if ResourceLoader.exists("res://sprites/enemies/tatu_walk_1.png"):
-		sprite.texture = load("res://sprites/enemies/tatu_walk_1.png")
+		sprite.texture = walk_frames[0] if walk_frames.size() > 0 else load("res://sprites/enemies/tatu_walk_1.png")

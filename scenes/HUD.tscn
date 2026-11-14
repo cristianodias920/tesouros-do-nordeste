@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://sprites/items/coracao_cheio.png" id="2_heart"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" path="res://sprites/ui/btn_right.png" id="5_right"]
 [ext_resource type="Texture2D" path="res://sprites/ui/btn_jump.png" id="6_jump"]
 [ext_resource type="Texture2D" path="res://sprites/ui/btn_action.png" id="7_action"]
+[ext_resource type="Theme" path="res://ui/tema_madeira.tres" id="8_tema"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_gems"]
 font_size = 36
@@ -196,6 +197,7 @@ visibility_mode = 1
 
 [node name="PauseMenu" type="Control" parent="."]
 visible = false
+theme = ExtResource("8_tema")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -246,25 +248,23 @@ label_settings = SubResource("LabelSettings_title")
 horizontal_alignment = 1
 
 [node name="BtnContinue" type="Button" parent="PauseMenu/Panel/VBox"]
-custom_minimum_size = Vector2(0, 65)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Continuar"
 
 [node name="BtnSound" type="Button" parent="PauseMenu/Panel/VBox"]
-custom_minimum_size = Vector2(0, 65)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Alternar Som"
 
 [node name="BtnMenu" type="Button" parent="PauseMenu/Panel/VBox"]
-custom_minimum_size = Vector2(0, 65)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Menu Principal"
 
 [node name="GameOverScreen" type="Control" parent="."]
 visible = false
+theme = ExtResource("8_tema")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -316,19 +316,18 @@ horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="BtnRetry" type="Button" parent="GameOverScreen/Panel/VBox"]
-custom_minimum_size = Vector2(0, 65)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_font_sizes/font_size = 26
 text = "Jogar novamente"
 
 [node name="BtnMenu" type="Button" parent="GameOverScreen/Panel/VBox"]
-custom_minimum_size = Vector2(0, 65)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_font_sizes/font_size = 26
 text = "Menu Principal"
 
 [node name="VictoryScreen" type="Control" parent="."]
 visible = false
+theme = ExtResource("8_tema")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -392,15 +391,13 @@ horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="BtnReplay" type="Button" parent="VictoryScreen/Panel/VBox"]
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Jogar novamente"
 
 [node name="BtnMenu" type="Button" parent="VictoryScreen/Panel/VBox"]
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Menu Principal"
 
 [connection signal="pressed" from="TopRight/ButtonsContainer/SoundButton" to="." method="_on_sound_button_pressed"]

@@ -24,5 +24,4 @@ func start_sprint(player: Node2D) -> void:
 		direction = -1.0
 	patrol_distance = 600.0
 	start_x = global_position.x
-	if ResourceLoader.exists("res://sprites/enemies/seriema_run_2.png"):
-		sprite.texture = load("res://sprites/enemies/seriema_run_2.png")
+	anim_frame_time = 0.09 # corrida: passos mais rápidos

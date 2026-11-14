@@ -71,8 +71,8 @@ func _input(event: InputEvent) -> void:
 		# Teclado esconde os botões de toque
 		touch_controls.visible = false
 	elif event is InputEventScreenTouch or (event is InputEventMouseButton and event.pressed):
-		# Toque na tela reexibe os botões de toque
-		touch_controls.visible = true
+		# Toque na tela reexibe os botões de toque (menos nas telas de fim)
+		touch_controls.visible = not GameManager.is_level_ended
 
 	if event.is_action_pressed("pause"):
 		toggle_pause()
@@ -112,6 +112,8 @@ func _on_pause_button_pressed() -> void:
 	toggle_pause()
 
 func toggle_pause() -> void:
+	if GameManager.is_level_ended:
+		return # não pausa por cima da vitória ou do FIM DA AVENTURA
 	var tree = get_tree()
 	tree.paused = not tree.paused
 	pause_menu.visible = tree.paused
@@ -132,8 +134,10 @@ func _on_restart_button_pressed() -> void:
 
 func _on_level_completed() -> void:
 	victory_screen.visible = true
+	touch_controls.visible = false
 	if victory_gems_label:
 		victory_gems_label.text = "Tesouros coletados: " + str(GameManager.collected_gems) + "/" + str(GameManager.TOTAL_GEMS)
 
 func _on_game_over() -> void:
 	game_over_screen.visible = true
+	touch_controls.visible = false

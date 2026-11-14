@@ -4,18 +4,28 @@
 [ext_resource type="Texture2D" path="res://sprites/items/varal_chegada.png" id="2_texture"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_goal"]
-size = Vector2(100, 180)
+size = Vector2(140, 900)
 
 [node name="Chegada" type="Area2D"]
 collision_layer = 8
 collision_mask = 2
 script = ExtResource("1_script")
 
+[node name="PosteEsq" type="Line2D" parent="."]
+points = PackedVector2Array(-190, 0, -190, -300)
+width = 14.0
+default_color = Color(0.42, 0.26, 0.12, 1)
+
+[node name="PosteDir" type="Line2D" parent="."]
+points = PackedVector2Array(190, 0, 190, -300)
+width = 14.0
+default_color = Color(0.42, 0.26, 0.12, 1)
+
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(0, -90)
-scale = Vector2(0.55, 0.55)
+position = Vector2(0, -250)
+scale = Vector2(1.4, 1.4)
 texture = ExtResource("2_texture")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -90)
+position = Vector2(0, -400)
 shape = SubResource("RectangleShape2D_goal")
