@@ -9,6 +9,9 @@ var bump_cooldown: float = 0.0
 @export var item_slide_dir: float = 0.0
 @onready var sprite: Sprite2D = $Sprite2D
 
+func _ready() -> void:
+	add_to_group("caixotes")
+
 func _process(delta: float) -> void:
 	if bump_cooldown > 0.0:
 		bump_cooldown -= delta
@@ -59,6 +62,10 @@ func open_crate(player: Player) -> void:
 	_bump()
 	sprite.modulate = Color(0.8, 0.72, 0.62) # caixote vazio fica mais escuro
 	spawn_item(content_type, player)
+	if content_type == "ferradura" and not gave_foot_gem:
+		# Montado de primeira: também solta a gema, para o total de tesouros fechar
+		gave_foot_gem = true
+		get_tree().create_timer(0.25).timeout.connect(func(): spawn_item("gema", player))
 
 func spawn_item(type: String, player: Player) -> void:
 	# O item sai pelo topo do caixote, dá um pulinho e cai até o chão (ItemCaixote.gd)

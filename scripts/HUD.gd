@@ -37,6 +37,8 @@ func _ready() -> void:
 	update_lives_display(GameManager.current_lives)
 	update_gems_display(GameManager.collected_gems, GameManager.TOTAL_GEMS)
 	update_sound_button_label()
+	# Conta o total de tesouros depois que a fase inteira entrou na árvore
+	GameManager.call_deferred("recount_total", get_tree())
 
 	pause_menu.visible = false
 	victory_screen.visible = false

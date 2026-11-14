@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/Portal.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://sprites/corrente/portal.png" id="2_tex"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_portal"]
+size = Vector2(70, 200)
+
+[sub_resource type="LabelSettings" id="LabelSettings_portal"]
+font_size = 26
+font_color = Color(1, 0.96, 0.75, 1)
+outline_size = 7
+outline_color = Color(0.25, 0.14, 0.04, 1)
+
+[node name="Portal" type="Area2D"]
+z_index = 4
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -150)
+scale = Vector2(0.66, 0.66)
+texture = ExtResource("2_tex")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -100)
+shape = SubResource("RectangleShape2D_portal")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -200.0
+offset_top = -330.0
+offset_right = 200.0
+offset_bottom = -295.0
+text = "Portal"
+label_settings = SubResource("LabelSettings_portal")
+horizontal_alignment = 1

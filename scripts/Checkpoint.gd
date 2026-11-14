@@ -1,5 +1,6 @@
 extends Area2D
 
+@export var fundo: bool = false # está no caminho do fundo (Serra Dois Irmãos)
 var activated: bool = false
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var label: Label = $Label
@@ -13,7 +14,7 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	if body is Player:
 		activated = true
-		GameManager.set_checkpoint(global_position + Vector2(0, -20))
+		GameManager.set_checkpoint(global_position + Vector2(0, -20 * global_scale.y), fundo)
 		
 		# Animação da bandeira e texto "Checkpoint ativado!"
 		var tween = create_tween()
