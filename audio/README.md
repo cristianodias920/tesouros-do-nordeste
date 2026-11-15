@@ -25,7 +25,9 @@ Este diretório contém as faixas e efeitos sonoros do jogo em formato WAV (PCM 
 - Crédito (opcional, mas gentil): "Zurro: Joseph SARDIN — BigSoundBank.com (CC0)".
 
 ## Vozes do Zeca (`voz/<id>.ogg`)
-- 12 falas do Zeca em OGG Vorbis (`voz/<id>.ogg`), gravadas com a voz "Algieba" (Google AI Studio), fornecidas pelo Cristiano. Lista de ids e textos em `voz_lista.txt`.
-- Edição: silêncio do início/fim cortado, volume normalizado (fala acima da música), convertidas de WAV para OGG.
+- Voz: "Puck" (Google AI Studio), com instrução para soar como um menino adolescente nordestino, animado. Escolhida pelo Cristiano; substitui a voz provisória "Algieba".
+- Já gravadas (10): inicio, faisca_encontro, faisca_monta, checkpoint_primeiro, rio_corrente, igreja_matriz, nuvens, portal, serra, agua_cai.
+- Pendentes (2): expo e vitoria (cota diária do AI Studio esgotada). Os arquivos antigos da voz Algieba foram removidos para não misturar duas vozes; até chegarem os novos, essas duas falas aparecem só com a legenda.
+- Edição: silêncio do início/fim cortado, volume normalizado (fala acima da música), convertidas de WAV para OGG. Lista de ids e textos em `voz_lista.txt`.
 - O `VoiceLines.gd` toca cada fala uma vez por partida (a `agua_cai` no máximo a cada 30 s), mostra a legenda em balão sobre o Zeca e abaixa a música enquanto ele fala. Se faltar o arquivo, mostra só a legenda.
-- Versão provisória: a voz definitiva (mais jovem, de adolescente) vai substituir estes arquivos com os mesmos ids. Para trocar: `python3 tools/preparar_vozes.py <pasta com os .wav novos>` e exportar de novo — nada no código precisa mudar.
+- Para adicionar/trocar falas: `python3 tools/preparar_vozes.py <pasta com os .wav>` (mesmos ids), reimportar e exportar a versão Web de novo — nada no código precisa mudar.
