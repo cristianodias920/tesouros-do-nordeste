@@ -61,6 +61,9 @@ func _physics_process(delta: float) -> void:
 func _resolve_contact(p: Player, delta: float) -> void:
 	if is_dead:
 		return
+	if p.rapadura_timer > 0.0:
+		die_by_rapadura(p)
+		return
 	var feet_prev: float = p.global_position.y - p.velocity.y * delta
 	if p.velocity.y > 0.0 and feet_prev <= stomp_area.global_position.y + 8.0:
 		p.bounce()
@@ -109,4 +112,20 @@ func die_by_coice() -> void:
 	tween.tween_property(self, "position:y", position.y - 100.0, 0.3)
 	tween.parallel().tween_property(self, "rotation", 6.0, 0.4)
 	tween.parallel().tween_property(sprite, "modulate:a", 0.0, 0.4)
+	tween.tween_callback(queue_free)
+
+func die_by_rapadura(p: Player) -> void:
+	if is_dead:
+		return
+	is_dead = true
+	AudioManager.play_sfx("derrota")
+	collision_layer = 0
+	collision_mask = 0
+	hit_area.set_deferred("monitoring", false)
+	stomp_area.set_deferred("monitoring", false)
+	p.efeito_derrota(sprite.global_position)
+	var tween = create_tween()
+	tween.tween_property(self, "rotation", 5.0, 0.3)
+	tween.parallel().tween_property(self, "scale", scale * 0.2, 0.3)
+	tween.parallel().tween_property(self, "modulate:a", 0.0, 0.3)
 	tween.tween_callback(queue_free)

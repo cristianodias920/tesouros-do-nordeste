@@ -71,6 +71,10 @@ func _check_player_contact(delta: float) -> void:
 func _resolve_contact(p: Player, delta: float) -> void:
 	if is_dead:
 		return
+	# Com a rapadura o Zeca (a pé ou no Faísca) derrota qualquer inimigo que encostar
+	if p.rapadura_timer > 0.0:
+		die_by_rapadura(p)
+		return
 	# Pisão: o Zeca está caindo e os pés (no quadro anterior) estavam acima da linha da cabeça
 	var stomp_y: float = stomp_area.global_position.y + 10.0 if stomp_area else global_position.y - 40.0
 	var feet_prev: float = p.global_position.y - p.velocity.y * delta
@@ -138,4 +142,26 @@ func die_by_coice() -> void:
 	tween.tween_property(self, "position:y", position.y - 120.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.parallel().tween_property(self, "rotation", 4.0, 0.5)
 	tween.parallel().tween_property(self, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(queue_free)
+
+func die_by_rapadura(p: Player) -> void:
+	if is_dead:
+		return
+	is_dead = true
+	AudioManager.play_sfx("derrota")
+	collision_layer = 0
+	collision_mask = 0
+	if stomp_area:
+		stomp_area.set_deferred("monitoring", false)
+	if hit_area:
+		hit_area.set_deferred("monitoring", false)
+	p.efeito_derrota(sprite.global_position if sprite else global_position)
+	# Pulinho, gira e some num "puf"
+	var dir: float = sign(global_position.x - p.global_position.x)
+	if dir == 0: dir = 1.0
+	var tween = create_tween()
+	tween.tween_property(self, "position", position + Vector2(dir * 60.0, -70.0), 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(self, "rotation", dir * 3.0, 0.3)
+	tween.parallel().tween_property(self, "scale", scale * 0.2, 0.3).set_delay(0.08)
+	tween.parallel().tween_property(self, "modulate:a", 0.0, 0.3).set_delay(0.08)
 	tween.tween_callback(queue_free)

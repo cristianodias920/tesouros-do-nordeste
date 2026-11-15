@@ -24,6 +24,10 @@ Este diretório contém as faixas e efeitos sonoros do jogo em formato WAV (PCM 
 - **Edição:** trecho de 1,45 s a 4,5 s do original, mono, 22.050 Hz, 16 bits, normalizado, com fade-out. Toca quando o Zeca monta no Faísca.
 - Crédito (opcional, mas gentil): "Zurro: Joseph SARDIN — BigSoundBank.com (CC0)".
 
+## Derrota de inimigo com a rapadura (`derrota.wav`)
+- Sintetizado no próprio projeto (ruído filtrado de "puf" + arpejo curto de estrelinhas), 0,55 s, mono, 22.050 Hz. Criação original, sem licença de terceiros (livre para o jogo).
+- Toca quando o Zeca, com a rapadura, encosta num inimigo e ele some numa nuvem com estrelas.
+
 ## Vozes do Zeca (`voz/<id>.ogg`)
 - Voz: "Puck" (Google AI Studio), com instrução para soar como um menino adolescente nordestino, animado. Escolhida pelo Cristiano; substitui a voz provisória "Algieba".
 - 15 falas, todas gravadas com a Puck: inicio ("Meu nome é Zeca! Corrente, aqui vou eu!", regravada), faisca_encontro, faisca_monta, checkpoint_primeiro, rio_corrente, igreja_matriz, nuvens, portal, serra, agua_cai, expo, vitoria, rapadura, rio_paraim, faltam_dez. Nada pendente.

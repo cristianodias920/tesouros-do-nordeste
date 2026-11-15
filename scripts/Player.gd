@@ -530,6 +530,41 @@ func apply_rapadura() -> void:
 	pp.emitting = true
 	get_tree().create_timer(1.5).timeout.connect(pp.queue_free)
 
+# Inimigo derrotado pela rapadura: nuvem de "puf" + estrelas douradas
+var derrotados_rapadura: int = 0
+func efeito_derrota(pos: Vector2) -> void:
+	derrotados_rapadura += 1
+	var nuvem := CPUParticles2D.new()
+	nuvem.one_shot = true
+	nuvem.amount = 30
+	nuvem.lifetime = 0.55
+	nuvem.explosiveness = 1.0
+	nuvem.spread = 180.0
+	nuvem.initial_velocity_min = 160.0
+	nuvem.initial_velocity_max = 340.0
+	nuvem.damping_min = 200.0; nuvem.damping_max = 300.0
+	nuvem.scale_amount_min = 30.0; nuvem.scale_amount_max = 58.0
+	var gn := Gradient.new()
+	gn.set_color(0, Color(1, 1, 1, 0.95))
+	gn.set_color(1, Color(0.95, 0.9, 0.8, 0.0))
+	nuvem.color_ramp = gn
+	nuvem.z_index = 14
+	var est: CPUParticles2D = faiscas.duplicate()
+	est.one_shot = true
+	est.explosiveness = 1.0
+	est.amount = 34
+	est.emission_rect_extents = Vector2(20, 20)
+	est.initial_velocity_min = 180.0
+	est.initial_velocity_max = 380.0
+	est.gravity = Vector2(0, 500)
+	est.scale_amount_min = 10.0; est.scale_amount_max = 20.0
+	est.z_index = 15
+	for pp in [nuvem, est]:
+		get_parent().add_child(pp)
+		pp.global_position = pos + Vector2(0, -40)
+		pp.emitting = true
+		get_tree().create_timer(1.4).timeout.connect(pp.queue_free)
+
 # ---- Rapadura: aura dourada pulsante + estrelinhas; pisca rápido no fim ----
 func _criar_efeito_rapadura() -> void:
 	var gt := GradientTexture2D.new()
