@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3]
+[gd_scene load_steps=42 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/HUD.tscn" id="1_hud"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -39,6 +39,7 @@
 [ext_resource type="Texture2D" path="res://sprites/comidas/bolo_frito.png" id="38_frito"]
 [ext_resource type="Texture2D" path="res://sprites/comidas/maria_isabel.png" id="39_maria"]
 [ext_resource type="PackedScene" path="res://scenes/VozGatilho.tscn" id="40_voz"]
+[ext_resource type="PackedScene" path="res://scenes/FolhaBuriti.tscn" id="41_folha"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_parede"]
 size = Vector2(40, 4000)
@@ -295,7 +296,7 @@ position = Vector2(2350, 740)
 position = Vector2(2600, 740)
 
 [node name="Gema9" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(3250, 510)
+position = Vector2(3320, 510)
 
 [node name="Gema10" parent="Gemas" instance=ExtResource("7_gema")]
 position = Vector2(3550, 460)
@@ -310,10 +311,10 @@ position = Vector2(4400, 710)
 position = Vector2(4800, 690)
 
 [node name="Gema14" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(5250, 560)
+position = Vector2(5320, 560)
 
 [node name="Gema15" parent="Gemas" instance=ExtResource("7_gema")]
-position = Vector2(5580, 560)
+position = Vector2(5650, 560)
 
 [node name="Gema16" parent="Gemas" instance=ExtResource("7_gema")]
 position = Vector2(6500, 710)
@@ -677,6 +678,8 @@ position = Vector2(12280, -540)
 
 [node name="Nuvem5" parent="TerrenoNovo" instance=ExtResource("23_nuvem")]
 position = Vector2(12740, -620)
+amplitude = Vector2(80, 0)
+periodo = 4.2
 
 [node name="Nuvem6" parent="TerrenoNovo" instance=ExtResource("23_nuvem")]
 position = Vector2(13200, -560)
@@ -696,6 +699,8 @@ periodo = 4.5
 
 [node name="Nuvem10" parent="TerrenoNovo" instance=ExtResource("23_nuvem")]
 position = Vector2(15040, -560)
+amplitude = Vector2(0, 60)
+periodo = 3.8
 
 [node name="Nuvem11" parent="TerrenoNovo" instance=ExtResource("23_nuvem")]
 position = Vector2(15500, -480)
@@ -861,13 +866,21 @@ position = Vector2(9500, 780)
 
 [node name="CheckpointN2" parent="CheckpointsNovos" instance=ExtResource("10_ckp")]
 z_index = 5
-position = Vector2(17500, 780)
+position = Vector2(10446, -420)
 
 [node name="CheckpointN3" parent="CheckpointsNovos" instance=ExtResource("10_ckp")]
 z_index = 5
-position = Vector2(19050, 780)
+position = Vector2(13660, -640)
 
 [node name="CheckpointN4" parent="CheckpointsNovos" instance=ExtResource("10_ckp")]
+z_index = 5
+position = Vector2(16950, 780)
+
+[node name="CheckpointN5" parent="CheckpointsNovos" instance=ExtResource("10_ckp")]
+z_index = 5
+position = Vector2(19050, 780)
+
+[node name="CheckpointN6" parent="CheckpointsNovos" instance=ExtResource("10_ckp")]
 z_index = 5
 position = Vector2(22890, 780)
 
@@ -892,6 +905,21 @@ position = Vector2(12520, -800)
 [node name="Inim6" parent="InimigosNovos" instance=ExtResource("25_teju")]
 position = Vector2(24090, 780)
 
+[node name="Inim7" parent="InimigosNovos" instance=ExtResource("25_teju")]
+position = Vector2(10950, 780)
+
+[node name="Inim8" parent="InimigosNovos" instance=ExtResource("15_capi")]
+position = Vector2(19500, 780)
+
+[node name="Inim9" parent="InimigosNovos" instance=ExtResource("14_tatu")]
+position = Vector2(22640, 780)
+
+[node name="Inim10" parent="InimigosNovos" instance=ExtResource("16_vespa")]
+position = Vector2(14350, -790)
+
+[node name="FolhaBuritiTorre" parent="." instance=ExtResource("41_folha")]
+position = Vector2(10536, -510)
+
 [node name="PlacasNovas" type="Node2D" parent="."]
 
 [node name="PlacaN1" parent="PlacasNovas" instance=ExtResource("12_placa")]
@@ -915,18 +943,26 @@ position = Vector2(12700, 780)
 texto = "Vereda de buritis"
 
 [node name="PlacaN6" parent="PlacasNovas" instance=ExtResource("12_placa")]
+position = Vector2(11250, 780)
+texto = "Os tesouros estão nas nuvens!"
+
+[node name="PlacaN7" parent="PlacasNovas" instance=ExtResource("12_placa")]
+position = Vector2(14250, 780)
+texto = "Tesouros nas nuvens! Suba pela torre"
+
+[node name="PlacaN8" parent="PlacasNovas" instance=ExtResource("12_placa")]
 position = Vector2(17680, 780)
 texto = "Rio Paraim"
 
-[node name="PlacaN7" parent="PlacasNovas" instance=ExtResource("12_placa")]
+[node name="PlacaN9" parent="PlacasNovas" instance=ExtResource("12_placa")]
 position = Vector2(20600, 780)
 texto = "Rio Corrente"
 
-[node name="PlacaN8" parent="PlacasNovas" instance=ExtResource("12_placa")]
+[node name="PlacaN10" parent="PlacasNovas" instance=ExtResource("12_placa")]
 position = Vector2(24340, 780)
 texto = "ExpoCorrente"
 
-[node name="PlacaN9" parent="PlacasNovas" instance=ExtResource("12_placa")]
+[node name="PlacaN11" parent="PlacasNovas" instance=ExtResource("12_placa")]
 position = Vector2(24740, 780)
 texto = "Cavalgada da ExpoCorrente"
 
@@ -1161,19 +1197,19 @@ saida_dx = -330.0
 no_fundo = true
 rotulo = "Saída"
 
-[node name="PlacaN10" parent="CaminhoDistante" instance=ExtResource("12_placa")]
+[node name="PlacaN12" parent="CaminhoDistante" instance=ExtResource("12_placa")]
 position = Vector2(900, 470.5)
 texto = "Serra Dois Irmãos"
 
-[node name="PlacaN11" parent="CaminhoDistante" instance=ExtResource("12_placa")]
+[node name="PlacaN13" parent="CaminhoDistante" instance=ExtResource("12_placa")]
 position = Vector2(2700, 443.2)
 texto = "Também chamada Serra Dourada"
 
-[node name="PlacaN12" parent="CaminhoDistante" instance=ExtResource("12_placa")]
+[node name="PlacaN14" parent="CaminhoDistante" instance=ExtResource("12_placa")]
 position = Vector2(4900, 401.2)
 texto = "Gravuras rupestres da Pedra Furada"
 
-[node name="CheckpointN5" parent="CaminhoDistante" instance=ExtResource("10_ckp")]
+[node name="CheckpointN7" parent="CaminhoDistante" instance=ExtResource("10_ckp")]
 z_index = 5
 position = Vector2(6000, 415.9)
 fundo = true
@@ -1301,6 +1337,21 @@ position = Vector2(10900, 378.1)
 
 [node name="GemaN55" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(12100, 379)
+
+[node name="InimF1" parent="CaminhoDistante" instance=ExtResource("14_tatu")]
+position = Vector2(3300, 489.6)
+move_speed = 40.0
+patrol_distance = 160.0
+
+[node name="InimF2" parent="CaminhoDistante" instance=ExtResource("25_teju")]
+position = Vector2(7750, 452.3)
+move_speed = 40.0
+patrol_distance = 160.0
+
+[node name="InimF3" parent="CaminhoDistante" instance=ExtResource("15_capi")]
+position = Vector2(10050, 422.7)
+move_speed = 40.0
+patrol_distance = 160.0
 
 [node name="CaixoteN4" parent="CaminhoDistante" instance=ExtResource("8_caixote")]
 position = Vector2(9500, 122)

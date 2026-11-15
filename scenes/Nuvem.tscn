@@ -12,7 +12,7 @@ collision_mask = 0
 script = ExtResource("1_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(-180, -26)
+position = Vector2(-180, -16)
 scale = Vector2(0.45, 0.45)
 texture = ExtResource("2_tex")
 centered = false
