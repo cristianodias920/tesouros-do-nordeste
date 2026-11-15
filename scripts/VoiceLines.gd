@@ -4,7 +4,7 @@ extends Node
 # legenda em balão sobre o Zeca, sem bloquear o jogo. Cada fala toca uma vez
 # por partida (agua_cai pode repetir, no máximo a cada 30 s).
 const LINES: Dictionary = {
-	"inicio": "Meu nome é Zeca! Corrente, aqui vou eu!",
+	"inicio": "Corrente, aqui vou eu!",
 	"faisca_encontro": "Opa! Oi, Faísca!",
 	"faisca_monta": "Vamos lá, Faísca!",
 	"checkpoint_primeiro": "Ufa, checkpoint!",

@@ -4,7 +4,7 @@ Enquanto o arquivo não existir, o jogo mostra só a legenda (balão sobre o Zec
 
 id                  | texto exato                                  | quando toca
 --------------------+----------------------------------------------+-------------------------------------------------------------
-inicio              | Meu nome é Zeca! Corrente, aqui vou eu!      | ao fechar o cartão de abertura da fase
+inicio              | Corrente, aqui vou eu!                       | ao fechar o cartão de abertura da fase
 faisca_encontro     | Opa! Oi, Faísca!                             | ao chegar perto do Faísca (a pé, antes de montar)
 faisca_monta        | Vamos lá, Faísca!                            | ao montar no Faísca (junto com o zurro)
 checkpoint_primeiro | Ufa, checkpoint!                             | no primeiro checkpoint ativado na partida
