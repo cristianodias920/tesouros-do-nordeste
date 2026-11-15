@@ -21,8 +21,25 @@ const LINES: Dictionary = {
 	"rapadura": "Rapadura! Agora ninguém me segura!",
 	"rio_paraim": "O Rio Paraim, cheio de buritis!",
 	"faltam_dez": "Só faltam dez tesouros!",
+	# ---- Fase 2: Cristalândia (áudio: res://audio/voz/<id>.ogg; enquanto não existir, só o balão) ----
+	"cris_inicio": "Cristalândia, aqui vou eu!",
+	"cris_chapeu_pega": "Chapéu de couro encantado! Agora ele volta pra mim!",
+	"cris_igreja": "A Igreja de Sant'Ana, padroeira da cidade!",
+	"cris_festejo": "Chegou o festejo de Sant'Ana!",
+	"cris_rio": "Olha o Rio Palmeira!",
+	"cris_cristal_dica": "Esse cristal eu quebro com o chapéu!",
+	"cris_nascente": "A nascente do rio! O Olho d'Água Caraíbas!",
+	"cris_buriti_doce": "Doce de buriti! Que sabor é esse!",
+	"cris_esperanca": "Comunidade Esperança! Que alegria essa sanfona e esse tambor!",
+	"cris_cristais": "Olha esses cristais! Que riqueza é essa, hein?",
+	"cris_extremo_sul": "O extremo sul do Piauí! Que vista, Faísca!",
+	"cris_todos_tesouros": "Todos os tesouros de Cristalândia! Ô terra rica!",
 }
-const REPEAT_COOLDOWN: Dictionary = {"agua_cai": 30.0, "rapadura": 25.0, "volta_faisca": 15.0}
+# Falas genéricas que mudam de texto conforme a fase (o resto é igual em todas)
+const ALIAS_FASE: Dictionary = {
+	"fase2_cristalandia": {"inicio": "cris_inicio", "todos_tesouros": "cris_todos_tesouros"},
+}
+const REPEAT_COOLDOWN: Dictionary = {"agua_cai": 30.0, "rapadura": 25.0, "volta_faisca": 15.0, "cris_buriti_doce": 40.0}
 
 var played: Dictionary = {}      # id -> tempo (s) da última vez
 var history: Array = []          # ids na ordem em que tocaram (usado nos testes)
@@ -85,6 +102,12 @@ func _ready() -> void:
 			say("todos_tesouros", true))
 	GameManager.level_completed.connect(func():
 		no_rodape = true
+		if current_id.ends_with("todos_tesouros") and show_time > 0.0:
+			# pegou o último tesouro na linha de chegada: a fala da vitória espera esta terminar
+			if can_say("vitoria") and not queue.has("vitoria"):
+				queue.push_front("vitoria")
+				queued_at["vitoria"] = clock + show_time
+			return
 		say("vitoria", true))
 
 func reset() -> void:
@@ -107,7 +130,12 @@ func can_say(id: String) -> bool:
 	return true
 
 # urgente: corta a fala atual (ex.: vitória)
+func resolver(id: String) -> String:
+	var tab: Dictionary = ALIAS_FASE.get(GameManager.FASE_ID, {})
+	return String(tab.get(id, id))
+
 func say(id: String, urgente: bool = false) -> void:
+	id = resolver(id)
 	if not can_say(id):
 		return
 	if urgente or current_id == "":

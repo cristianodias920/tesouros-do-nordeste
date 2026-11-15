@@ -12,7 +12,7 @@ const LISTA: Array = [
 	 "imagem": "res://historia/cristalandia/card2.jpg"},
 	{"id": "fase3_riacho_frio", "num": 3, "nome": "Riacho Frio",
 	 "cena": "", "historia": "",
-	 "frase": "A próxima parada da aventura pelo extremo sul do Piauí",
+	 "frase": "Mais uma aventura pelo extremo sul do Piauí",
 	 "imagem": "res://historia/cristalandia/card4.jpg"},
 ]
 

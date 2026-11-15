@@ -11,7 +11,7 @@ func _ready() -> void:
 	update_sound_button()
 	btn_start.grab_focus()
 	_mostrar_progresso()
-	_botao_teste_chapeu()
+	# (o botão TESTAR CHAPÉU saiu: o chapéu agora está na Fase 2, Cristalândia)
 	# música já na tela de título (no navegador o toque da tela "Toque para começar" liberou o som)
 	AudioManager.start_music()
 

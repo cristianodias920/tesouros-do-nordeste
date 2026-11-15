@@ -1,0 +1,982 @@
+[gd_scene load_steps=53 format=3]
+
+[ext_resource type="Script" path="res://scripts/Fase2.gd" id="1_r"]
+[ext_resource type="Texture2D" path="res://sprites/scenery_v2/ceu.png" id="2_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/chapada_longe.png" id="3_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/cerrado_meio.png" id="4_r"]
+[ext_resource type="PackedScene" path="res://scenes/HUD.tscn" id="5_r"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="6_r"]
+[ext_resource type="Texture2D" path="res://sprites/corrente/buriti.png" id="7_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/afloramento_pequeno.png" id="8_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/igreja_santana.png" id="9_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/trio_forro.png" id="10_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/barraca_doces.png" id="11_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/capelinha.png" id="12_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/barraca_artesanato.png" id="13_r"]
+[ext_resource type="Script" path="res://scripts/Bandeirolas.gd" id="14_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/nascente.png" id="15_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/casas_esperanca.png" id="16_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/gente_acenando.png" id="17_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/roca.png" id="18_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/musicos_esperanca.png" id="19_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/afloramento_grande.png" id="20_r"]
+[ext_resource type="Texture2D" path="res://sprites/scenery_v2/agua_tile.png" id="21_r"]
+[ext_resource type="PackedScene" path="res://scenes/ChaoTerra.tscn" id="22_r"]
+[ext_resource type="PackedScene" path="res://scenes/PedraRio.tscn" id="23_r"]
+[ext_resource type="PackedScene" path="res://scenes/PlataformaFlutuante.tscn" id="24_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/rocha.png" id="25_r"]
+[ext_resource type="PackedScene" path="res://scenes/Gema.tscn" id="26_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/doce_buriti.png" id="27_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/sanfona.png" id="28_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/tambor.png" id="29_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/mandioca.png" id="30_r"]
+[ext_resource type="Texture2D" path="res://sprites/cristalandia/saia_samba.png" id="31_r"]
+[ext_resource type="PackedScene" path="res://scenes/Caixote.tscn" id="32_r"]
+[ext_resource type="PackedScene" path="res://scenes/Cristal.tscn" id="33_r"]
+[ext_resource type="Script" path="res://scripts/PowerUpItem.gd" id="34_r"]
+[ext_resource type="PackedScene" path="res://scenes/Faisca.tscn" id="35_r"]
+[ext_resource type="PackedScene" path="res://scenes/Checkpoint.tscn" id="36_r"]
+[ext_resource type="PackedScene" path="res://scenes/InimigoTatu.tscn" id="37_r"]
+[ext_resource type="PackedScene" path="res://scenes/InimigoVespa.tscn" id="38_r"]
+[ext_resource type="PackedScene" path="res://scenes/InimigoCapivara.tscn" id="39_r"]
+[ext_resource type="PackedScene" path="res://scenes/InimigoTeju.tscn" id="40_r"]
+[ext_resource type="PackedScene" path="res://scenes/InimigoSeriema.tscn" id="41_r"]
+[ext_resource type="PackedScene" path="res://scenes/PlacaInfo.tscn" id="42_r"]
+[ext_resource type="PackedScene" path="res://scenes/PlacaGrande.tscn" id="43_r"]
+[ext_resource type="PackedScene" path="res://scenes/VozGatilho.tscn" id="44_r"]
+[ext_resource type="PackedScene" path="res://scenes/Chegada.tscn" id="45_r"]
+[ext_resource type="Script" path="res://scripts/ZonaAgua.gd" id="46_r"]
+
+[sub_resource type="RectangleShape2D" id="Rect_1"]
+size = Vector2(280, 20)
+
+[sub_resource type="RectangleShape2D" id="Rect_2"]
+size = Vector2(278, 20)
+
+[sub_resource type="RectangleShape2D" id="Rect_3"]
+size = Vector2(130, 1216)
+
+[sub_resource type="RectangleShape2D" id="Rect_4"]
+size = Vector2(130, 1080)
+
+[sub_resource type="RectangleShape2D" id="Rect_5"]
+size = Vector2(40, 4000)
+
+[sub_resource type="RectangleShape2D" id="Rect_6"]
+size = Vector2(18000, 160)
+
+[node name="Fase2_Cristalandia" type="Node2D"]
+script = ExtResource("1_r")
+
+[node name="ParallaxCeu" type="Parallax2D" parent="."]
+z_index = -30
+scroll_scale = Vector2(0.1, 0)
+repeat_size = Vector2(2560, 0)
+repeat_times = 4
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxCeu"]
+texture = ExtResource("2_r")
+centered = false
+position = Vector2(0, -200)
+
+[node name="ParallaxChapada" type="Parallax2D" parent="."]
+z_index = -20
+scroll_scale = Vector2(0.3, 1)
+repeat_size = Vector2(3840, 0)
+repeat_times = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxChapada"]
+texture = ExtResource("3_r")
+centered = false
+position = Vector2(0, 170)
+
+[node name="ParallaxCerrado" type="Parallax2D" parent="."]
+z_index = -10
+scroll_scale = Vector2(0.6, 1)
+repeat_size = Vector2(3840, 0)
+repeat_times = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxCerrado"]
+texture = ExtResource("4_r")
+centered = false
+position = Vector2(0, 200)
+
+[node name="HUD" parent="." instance=ExtResource("5_r")]
+
+[node name="Player" parent="." instance=ExtResource("6_r")]
+position = Vector2(120, 780)
+cam_limit_left = 0
+cam_limit_right = 15800
+cam_limit_bottom = 1000
+
+[node name="Decoracao" type="Node2D" parent="."]
+z_index = -3
+
+[node name="BuritiA1" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("7_r")
+centered = false
+position = Vector2(1240, 162)
+scale = Vector2(0.8, 0.8)
+
+[node name="AflorA" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("8_r")
+centered = false
+position = Vector2(2059, 555)
+scale = Vector2(0.8, 0.8)
+
+[node name="IgrejaSantana" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("9_r")
+centered = false
+position = Vector2(2992, 77)
+scale = Vector2(0.62, 0.62)
+
+[node name="TrioForro" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("10_r")
+centered = false
+position = Vector2(3604, 486)
+scale = Vector2(0.95, 0.95)
+
+[node name="BarracaDoces" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("11_r")
+centered = false
+position = Vector2(4008, 461)
+scale = Vector2(1, 1)
+
+[node name="Capelinha" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("12_r")
+centered = false
+position = Vector2(4377, 475)
+scale = Vector2(0.62, 0.62)
+
+[node name="BarracaArtesanato" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("13_r")
+centered = false
+position = Vector2(4820, 465)
+scale = Vector2(1, 1)
+
+[node name="Bandeirolas1" type="Node2D" parent="Decoracao"]
+position = Vector2(2750, 380)
+script = ExtResource("14_r")
+largura = 1000
+barriga = 70
+cores = PackedColorArray(0.9, 0.25, 0.2, 1, 0.98, 0.8, 0.2, 1, 0.2, 0.55, 0.3, 1, 0.2, 0.45, 0.85, 1, 0.95, 0.5, 0.75, 1)
+
+[node name="Bandeirolas2" type="Node2D" parent="Decoracao"]
+position = Vector2(3760, 400)
+script = ExtResource("14_r")
+largura = 900
+barriga = 60
+cores = PackedColorArray(0.9, 0.25, 0.2, 1, 0.98, 0.8, 0.2, 1, 0.2, 0.55, 0.3, 1, 0.2, 0.45, 0.85, 1, 0.95, 0.5, 0.75, 1)
+
+[node name="BuritiC1" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("7_r")
+centered = false
+position = Vector2(5444, 124)
+scale = Vector2(0.85, 0.85)
+
+[node name="BuritiC2" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("7_r")
+centered = false
+position = Vector2(6464, 238)
+scale = Vector2(0.7, 0.7)
+flip_h = true
+
+[node name="Nascente" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("15_r")
+centered = false
+position = Vector2(8005, 260)
+scale = Vector2(1.25, 1.25)
+
+[node name="BuritiC3" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("7_r")
+centered = false
+position = Vector2(7860, 48)
+scale = Vector2(0.95, 0.95)
+
+[node name="BuritiC4" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("7_r")
+centered = false
+position = Vector2(8450, 162)
+scale = Vector2(0.8, 0.8)
+flip_h = true
+
+[node name="CasasEsperanca" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("16_r")
+centered = false
+position = Vector2(9189, 510)
+scale = Vector2(1.4, 1.4)
+
+[node name="GenteAcenando" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("17_r")
+centered = false
+position = Vector2(9678, 553)
+scale = Vector2(0.8, 0.8)
+
+[node name="Roca" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("18_r")
+centered = false
+position = Vector2(9854, 415)
+scale = Vector2(1.05, 1.05)
+
+[node name="MusicosEsperanca" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("19_r")
+centered = false
+position = Vector2(10150, 553)
+scale = Vector2(0.8, 0.8)
+
+[node name="Aflor1" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("20_r")
+centered = false
+position = Vector2(10339, 202)
+scale = Vector2(1.5, 1.5)
+
+[node name="Aflor2" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("8_r")
+centered = false
+position = Vector2(11384, 448)
+scale = Vector2(1.2, 1.2)
+flip_h = true
+
+[node name="Aflor3" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("20_r")
+centered = false
+position = Vector2(11843, 317)
+scale = Vector2(1.2, 1.2)
+
+[node name="Aflor4" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("8_r")
+centered = false
+position = Vector2(12461, 393)
+scale = Vector2(1.4, 1.4)
+flip_h = true
+
+[node name="Aflor5" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("20_r")
+centered = false
+position = Vector2(12869, 125)
+scale = Vector2(1.7, 1.7)
+
+[node name="Aflor6" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("8_r")
+centered = false
+position = Vector2(13346, 503)
+scale = Vector2(1, 1)
+flip_h = true
+
+[node name="AflorE1" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("8_r")
+centered = false
+position = Vector2(14418, 228)
+scale = Vector2(0.9, 0.9)
+flip_h = true
+
+[node name="BuritiE1" type="Sprite2D" parent="Decoracao"]
+texture = ExtResource("7_r")
+centered = false
+position = Vector2(14947, -98)
+scale = Vector2(0.75, 0.75)
+
+[node name="RioVisual" type="Node2D" parent="."]
+z_index = -1
+
+[node name="Agua1" type="Sprite2D" parent="RioVisual"]
+position = Vector2(5700, 808)
+texture = ExtResource("21_r")
+centered = false
+
+[node name="Agua2" type="Sprite2D" parent="RioVisual"]
+position = Vector2(7500, 808)
+texture = ExtResource("21_r")
+centered = false
+
+[node name="Terreno" type="Node2D" parent="."]
+
+[node name="Chao1" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(-1080, 780)
+
+[node name="Chao2" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(0, 780)
+
+[node name="Chao3" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(1080, 780)
+
+[node name="Chao4" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(2160, 780)
+
+[node name="Chao5" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(3240, 780)
+
+[node name="Chao6" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(4320, 780)
+
+[node name="Chao7" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(4720, 780)
+
+[node name="Chao8" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(6440, 780)
+
+[node name="Chao9" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(6520, 780)
+
+[node name="Chao10" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(7900, 780)
+
+[node name="Chao11" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(8980, 780)
+
+[node name="Chao12" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(10060, 780)
+
+[node name="Chao13" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(11140, 780)
+
+[node name="Chao14" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(12220, 780)
+
+[node name="Chao15" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(13300, 780)
+
+[node name="Chao16" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(14380, 780)
+
+[node name="Chao17" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(15320, 780)
+
+[node name="Degrau" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(13700, 640)
+
+[node name="Chapada1" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(14200, 480)
+
+[node name="Chapada2" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(15280, 480)
+
+[node name="Chapada3" parent="Terreno" instance=ExtResource("22_r")]
+position = Vector2(15320, 480)
+
+[node name="Pedra1" parent="Terreno" instance=ExtResource("23_r")]
+position = Vector2(5990, 830)
+
+[node name="Pedra2" parent="Terreno" instance=ExtResource("23_r")]
+position = Vector2(6250, 830)
+
+[node name="Pedra3" parent="Terreno" instance=ExtResource("23_r")]
+position = Vector2(7750, 830)
+
+[node name="Plat1" parent="Terreno" instance=ExtResource("24_r")]
+position = Vector2(1450, 560)
+
+[node name="Plat2" parent="Terreno" instance=ExtResource("24_r")]
+position = Vector2(6980, 560)
+
+[node name="Plat3" parent="Terreno" instance=ExtResource("24_r")]
+position = Vector2(12500, 560)
+
+[node name="Plat4" parent="Terreno" instance=ExtResource("24_r")]
+position = Vector2(12820, 450)
+
+[node name="Toldo1" type="StaticBody2D" parent="Terreno"]
+position = Vector2(3760, 488)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terreno/Toldo1"]
+shape = SubResource("Rect_1")
+position = Vector2(0, 10)
+one_way_collision = true
+
+[node name="Toldo2" type="StaticBody2D" parent="Terreno"]
+position = Vector2(4151, 470)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terreno/Toldo2"]
+shape = SubResource("Rect_2")
+position = Vector2(0, 10)
+one_way_collision = true
+
+[node name="PilarCristais" type="StaticBody2D" parent="Terreno"]
+position = Vector2(10900, 0)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terreno/PilarCristais"]
+shape = SubResource("Rect_3")
+position = Vector2(0, -92)
+
+[node name="Rocha0" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, 456.076)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha1" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, 361.145)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Rocha2" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, 266.215)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha3" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, 171.284)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Rocha4" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, 76.3531)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha5" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, -18.5776)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Rocha6" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, -113.508)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha7" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, -208.439)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Rocha8" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, -303.37)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha9" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, -398.3)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Rocha10" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, -493.231)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha11" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, -588.162)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Rocha12" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, -683.092)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha13" type="Sprite2D" parent="Terreno/PilarCristais"]
+texture = ExtResource("25_r")
+position = Vector2(0, -778.023)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="PilarPendurado" type="StaticBody2D" parent="Terreno"]
+position = Vector2(12350, 0)
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terreno/PilarPendurado"]
+shape = SubResource("Rect_4")
+position = Vector2(0, -160)
+
+[node name="Rocha0" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, 320.076)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha1" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, 225.145)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Rocha2" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, 130.215)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha3" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, 35.2838)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Rocha4" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, -59.6469)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha5" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, -154.578)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Rocha6" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, -249.508)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha7" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, -344.439)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Rocha8" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, -439.37)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha9" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, -534.3)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Rocha10" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, -629.231)
+scale = Vector2(0.561056, 0.561056)
+flip_h = false
+
+[node name="Rocha11" type="Sprite2D" parent="Terreno/PilarPendurado"]
+texture = ExtResource("25_r")
+position = Vector2(0, -724.162)
+scale = Vector2(0.561056, 0.561056)
+flip_h = true
+
+[node name="Limites" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="ParedeEsq" type="CollisionShape2D" parent="Limites"]
+position = Vector2(-20, -200)
+shape = SubResource("Rect_5")
+
+[node name="ParedeDir" type="CollisionShape2D" parent="Limites"]
+position = Vector2(15820, -200)
+shape = SubResource("Rect_5")
+
+[node name="Tesouros" type="Node2D" parent="."]
+
+[node name="Gema1" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(1050, 650)
+
+[node name="Gema2" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(1150, 610)
+
+[node name="Gema3" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(1250, 650)
+
+[node name="Gema4" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(1610, 480)
+
+[node name="Gema5" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(2250, 700)
+
+[node name="Gema6" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(2950, 690)
+
+[node name="Gema7" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(3560, 690)
+
+[node name="Gema8" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(3760, 410)
+
+[node name="Gema9" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(4080, 395)
+
+[node name="Gema10" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(4220, 395)
+
+[node name="Gema11" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(5150, 690)
+
+[node name="Gema12" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(5400, 640)
+
+[node name="Gema13" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(5990, 610)
+
+[node name="Gema14" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(6250, 610)
+
+[node name="Gema15" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(7130, 480)
+
+[node name="Gema16" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(7300, 480)
+
+[node name="Gema17" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(7750, 620)
+
+[node name="DoceBuriti1" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(8250, 690)
+textura = ExtResource("27_r")
+nome = "Doce de buriti"
+
+[node name="DoceBuriti2" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(8360, 620)
+textura = ExtResource("27_r")
+nome = "Doce de buriti"
+
+[node name="DoceBuriti3" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(8470, 690)
+textura = ExtResource("27_r")
+nome = "Doce de buriti"
+
+[node name="Gema18" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(8930, 690)
+
+[node name="Sanfona1" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(9300, 680)
+textura = ExtResource("28_r")
+nome = "Sanfona"
+
+[node name="Tambor1" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(9620, 680)
+textura = ExtResource("29_r")
+nome = "Tambor"
+
+[node name="Mandioca1" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(9960, 680)
+textura = ExtResource("30_r")
+nome = "Mandioca da roça"
+
+[node name="SambaDeRoda1" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(10240, 620)
+textura = ExtResource("31_r")
+nome = "Samba de roda"
+
+[node name="Gema19" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(10480, 640)
+
+[node name="Gema20" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(11050, 690)
+
+[node name="Gema21" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(11150, 690)
+
+[node name="Gema22" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(11250, 690)
+
+[node name="Gema23" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(11850, 600)
+
+[node name="Gema24" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(12450, 690)
+
+[node name="Gema25" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(12660, 480)
+
+[node name="Gema26" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(12980, 370)
+
+[node name="Gema27" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(13280, 690)
+
+[node name="Gema28" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(13850, 520)
+
+[node name="Gema29" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(14050, 520)
+
+[node name="Gema30" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(14420, 410)
+
+[node name="Gema31" parent="Tesouros" instance=ExtResource("26_r")]
+position = Vector2(15120, 410)
+
+[node name="Caixotes" type="Node2D" parent="."]
+
+[node name="Caixote1" parent="Caixotes" instance=ExtResource("32_r")]
+position = Vector2(1950, 540)
+content_type = "gema"
+
+[node name="Caixote2" parent="Caixotes" instance=ExtResource("32_r")]
+position = Vector2(4700, 560)
+content_type = "gema"
+
+[node name="Caixote3" parent="Caixotes" instance=ExtResource("32_r")]
+position = Vector2(2500, 520)
+content_type = "cajuina"
+
+[node name="Caixote4" parent="Caixotes" instance=ExtResource("32_r")]
+position = Vector2(8560, 540)
+content_type = "gema"
+
+[node name="Caixote5" parent="Caixotes" instance=ExtResource("32_r")]
+position = Vector2(11980, 520)
+content_type = "rapadura"
+
+[node name="Caixote6" parent="Caixotes" instance=ExtResource("32_r")]
+position = Vector2(14760, 240)
+content_type = "gema"
+
+[node name="Cristais" type="Node2D" parent="."]
+
+[node name="PrimeiroCristal" parent="Cristais" instance=ExtResource("33_r")]
+position = Vector2(6760, 780)
+
+[node name="Gema0" parent="Cristais/PrimeiroCristal" instance=ExtResource("26_r")]
+position = Vector2(0, -60)
+
+[node name="Parede" parent="Cristais" instance=ExtResource("33_r")]
+position = Vector2(10900, 780)
+escala = 2.2
+
+[node name="Geodo" parent="Cristais" instance=ExtResource("33_r")]
+position = Vector2(11700, 780)
+tipo = "geodo"
+
+[node name="Gema0" parent="Cristais/Geodo" instance=ExtResource("26_r")]
+position = Vector2(-40, -100)
+
+[node name="Gema1" parent="Cristais/Geodo" instance=ExtResource("26_r")]
+position = Vector2(0, -80)
+
+[node name="Gema2" parent="Cristais/Geodo" instance=ExtResource("26_r")]
+position = Vector2(40, -100)
+
+[node name="Pendurado" parent="Cristais" instance=ExtResource("33_r")]
+position = Vector2(12350, 380)
+tipo = "pendurado"
+escala = 0.85
+
+[node name="Gema0" parent="Cristais/Pendurado" instance=ExtResource("26_r")]
+position = Vector2(0, 170)
+
+[node name="Cerca" parent="Cristais" instance=ExtResource("33_r")]
+position = Vector2(13140, 780)
+escala = 1.3
+
+[node name="CristalD1" parent="Cristais" instance=ExtResource("33_r")]
+position = Vector2(11480, 780)
+
+[node name="Gema0" parent="Cristais/CristalD1" instance=ExtResource("26_r")]
+position = Vector2(0, -60)
+
+[node name="CristalD2" parent="Cristais" instance=ExtResource("33_r")]
+position = Vector2(12160, 780)
+escala = 0.9
+
+[node name="Gema0" parent="Cristais/CristalD2" instance=ExtResource("26_r")]
+position = Vector2(0, -55)
+
+[node name="CristalE1" parent="Cristais" instance=ExtResource("33_r")]
+position = Vector2(14900, 480)
+
+[node name="Gema0" parent="Cristais/CristalE1" instance=ExtResource("26_r")]
+position = Vector2(0, -60)
+
+[node name="ChapeuCouro" type="Area2D" parent="."]
+position = Vector2(4990, 690)
+script = ExtResource("34_r")
+poder = "chapeu"
+
+[node name="Faisca" parent="." instance=ExtResource("35_r")]
+position = Vector2(760, 780)
+
+[node name="Checkpoints" type="Node2D" parent="."]
+
+[node name="Checkpoint1" parent="Checkpoints" instance=ExtResource("36_r")]
+position = Vector2(2450, 780)
+
+[node name="Checkpoint2" parent="Checkpoints" instance=ExtResource("36_r")]
+position = Vector2(5250, 780)
+
+[node name="Checkpoint3" parent="Checkpoints" instance=ExtResource("36_r")]
+position = Vector2(8600, 780)
+
+[node name="Checkpoint4" parent="Checkpoints" instance=ExtResource("36_r")]
+position = Vector2(11950, 780)
+
+[node name="Checkpoint5" parent="Checkpoints" instance=ExtResource("36_r")]
+position = Vector2(13560, 780)
+
+[node name="Inimigos" type="Node2D" parent="."]
+
+[node name="Tatu1" parent="Inimigos" instance=ExtResource("37_r")]
+position = Vector2(1800, 780)
+
+[node name="Tatu2" parent="Inimigos" instance=ExtResource("37_r")]
+position = Vector2(2720, 780)
+patrol_distance = 120
+
+[node name="Vespa1" parent="Inimigos" instance=ExtResource("38_r")]
+position = Vector2(5480, 560)
+patrol_range = 160
+
+[node name="Capivara1" parent="Inimigos" instance=ExtResource("39_r")]
+position = Vector2(7150, 780)
+patrol_distance = 160
+
+[node name="Teju1" parent="Inimigos" instance=ExtResource("40_r")]
+position = Vector2(11380, 780)
+patrol_distance = 140
+
+[node name="Vespa2" parent="Inimigos" instance=ExtResource("38_r")]
+position = Vector2(12760, 400)
+patrol_range = 150
+
+[node name="Seriema1" parent="Inimigos" instance=ExtResource("41_r")]
+position = Vector2(13330, 780)
+patrol_distance = 110
+
+[node name="Tatu3" parent="Inimigos" instance=ExtResource("37_r")]
+position = Vector2(14620, 480)
+patrol_distance = 150
+
+[node name="Placas" type="Node2D" parent="."]
+z_index = -1
+
+[node name="Placa1" parent="Placas" instance=ExtResource("42_r")]
+position = Vector2(270, 780)
+texto = "Bem-vindo a Cristalândia do Piauí"
+
+[node name="Placa2" parent="Placas" instance=ExtResource("42_r")]
+position = Vector2(2860, 780)
+texto = "Festejos de Sant'Ana"
+
+[node name="Placa3" parent="Placas" instance=ExtResource("42_r")]
+position = Vector2(3560, 780)
+texto = "Igreja Matriz de Sant'Ana"
+
+[node name="Placa4" parent="Placas" instance=ExtResource("42_r")]
+position = Vector2(4620, 780)
+texto = "Capelinha de N. Sra. Sant'Ana"
+
+[node name="Placa5" parent="Placas" instance=ExtResource("42_r")]
+position = Vector2(4790, 780)
+texto = "Artesanato de couro e cristal"
+
+[node name="Placa6" parent="Placas" instance=ExtResource("42_r")]
+position = Vector2(5660, 780)
+texto = "Rio Palmeira"
+
+[node name="PlacaPrimeiroCristal" parent="Placas" instance=ExtResource("42_r")]
+position = Vector2(6580, 780)
+texto = "Cristal: use o chapéu!"
+
+[node name="Placa7" parent="Placas" instance=ExtResource("42_r")]
+position = Vector2(7480, 780)
+texto = "Riacho das Mocinhas"
+
+[node name="PlacaNascente" parent="Placas" instance=ExtResource("43_r")]
+position = Vector2(8060, 780)
+titulo = "Olho d'Água Caraíbas"
+texto = "Também chamado Fonte Lorena: a nascente do Rio Palmeira, cheia de buritis."
+largura = 600
+altura = 250
+
+[node name="PlacaEsperanca" parent="Placas" instance=ExtResource("43_r")]
+position = Vector2(8930, 780)
+titulo = "Comunidade Esperança"
+texto = "Comunidade quilombola! A certificação foi celebrada em 14 de julho de 2024, junto com Mandacaru, Mocambinho e Cocos."
+largura = 620
+altura = 320
+
+[node name="Placa8" parent="Placas" instance=ExtResource("42_r")]
+position = Vector2(10150, 780)
+texto = "Samba de roda, tambor e sanfona"
+
+[node name="Placa9" parent="Placas" instance=ExtResource("42_r")]
+position = Vector2(10680, 780)
+texto = "Veios de cristal"
+
+[node name="PlacaParede" parent="Placas" instance=ExtResource("42_r")]
+position = Vector2(10760, 780)
+texto = "Cristais fecham a passagem!"
+
+[node name="PlacaExtremoSul" parent="Placas" instance=ExtResource("43_r")]
+position = Vector2(15330, 480)
+titulo = "Chapada da Limpeza"
+texto = "O ponto mais ao sul do Piauí, na nascente do Riacho Serrito."
+largura = 560
+altura = 240
+
+[node name="DicaTutorial" type="Label" parent="Placas"]
+offset_left = 380.0
+offset_top = 330.0
+offset_right = 1180.0
+offset_bottom = 420.0
+theme_override_colors/font_color = Color(0.25, 0.13, 0.04, 1)
+theme_override_colors/font_outline_color = Color(1, 0.96, 0.84, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="FalasZeca" type="Node2D" parent="."]
+
+[node name="Voz_cris_festejo" parent="FalasZeca" instance=ExtResource("44_r")]
+position = Vector2(2820, 780)
+fala = "cris_festejo"
+
+[node name="Voz_cris_igreja" parent="FalasZeca" instance=ExtResource("44_r")]
+position = Vector2(3250, 780)
+fala = "cris_igreja"
+
+[node name="Voz_cris_rio" parent="FalasZeca" instance=ExtResource("44_r")]
+position = Vector2(5600, 780)
+fala = "cris_rio"
+
+[node name="Voz_cris_cristal_dica" parent="FalasZeca" instance=ExtResource("44_r")]
+position = Vector2(6560, 780)
+fala = "cris_cristal_dica"
+
+[node name="Voz_cris_nascente" parent="FalasZeca" instance=ExtResource("44_r")]
+position = Vector2(8120, 780)
+fala = "cris_nascente"
+
+[node name="Voz_cris_esperanca" parent="FalasZeca" instance=ExtResource("44_r")]
+position = Vector2(9200, 780)
+fala = "cris_esperanca"
+
+[node name="Voz_cris_cristais" parent="FalasZeca" instance=ExtResource("44_r")]
+position = Vector2(10450, 780)
+fala = "cris_cristais"
+
+[node name="Voz_cris_extremo_sul" parent="FalasZeca" instance=ExtResource("44_r")]
+position = Vector2(15200, 480)
+fala = "cris_extremo_sul"
+
+[node name="BandeirolasChegada" type="Node2D" parent="Decoracao"]
+position = Vector2(15380, 180)
+script = ExtResource("14_r")
+largura = 360
+barriga = 40
+cores = PackedColorArray(0.9, 0.25, 0.2, 1, 0.98, 0.8, 0.2, 1, 0.2, 0.55, 0.3, 1, 0.2, 0.45, 0.85, 1)
+
+[node name="Chegada" parent="." instance=ExtResource("45_r")]
+position = Vector2(15580, 480)
+
+[node name="ZonaAgua" type="Area2D" parent="."]
+position = Vector2(7900, 960)
+collision_layer = 16
+collision_mask = 2
+script = ExtResource("46_r")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZonaAgua"]
+shape = SubResource("Rect_6")

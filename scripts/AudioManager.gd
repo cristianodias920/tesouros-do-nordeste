@@ -19,7 +19,15 @@ var volumes: Dictionary = {"musica": 0.8, "vozes": 1.0, "efeitos": 0.9}
 const MUSICAS: Dictionary = {
 	"forro": "res://audio/bgm_forro.ogg",
 	"nuvens": "res://audio/bgm_nuvens.ogg",
+	"cris_festa": "res://audio/bgm_cris_festa.ogg",       # Cristalândia: baião festivo (festejo de Sant'Ana)
+	"cris_cristais": "res://audio/bgm_cris_cristais.ogg", # Cristalândia: veios de cristal (mesma levada, mais brilhante)
 }
+# Cada fase tem o seu conjunto de faixas; só as do conjunto atual tocam (juntas, desde o começo).
+const CONJUNTOS: Dictionary = {
+	"corrente": ["forro", "nuvens"],
+	"cristalandia": ["cris_festa", "cris_cristais"],
+}
+var conjunto: String = "corrente"
 const AMBIENTES: Dictionary = {
 	"passaros": "res://audio/amb_passaros.ogg",
 	"rio": "res://audio/amb_rio.ogg",
@@ -156,17 +164,39 @@ func get_music_extra_db() -> float:
 	return 0.0
 
 func _tocar_todas_do_inicio() -> void:
+	var lista: Array = CONJUNTOS.get(conjunto, [])
 	for k in faixas:
 		var mp: AudioStreamPlayer = faixas[k]
-		if mp.stream:
-			mp.stop()
+		mp.stop()
+		if mp.stream and k in lista:
 			mp.play()      # sempre do começo (0 s)
 			plays += 1
 	_aplicar_volumes_musica()
 
+# Troca o conjunto de músicas da fase (ex.: Cristalândia). As faixas do conjunto novo
+# começam do início, juntas; as do conjunto antigo param. Mesmo conjunto: só garante a faixa.
+func usar_conjunto(nome: String, faixa: String) -> void:
+	if not CONJUNTOS.has(nome) or not faixas.has(faixa):
+		return
+	if nome == conjunto:
+		tocar_musica(faixa, true)
+		return
+	conjunto = nome
+	for k in faixas:
+		ganho[k] = 1.0 if k == faixa else 0.0
+	trocas += 1
+	faixa_atual = faixa
+	music_player = faixas[faixa]
+	cruzando = false
+	if music_started:
+		_tocar_todas_do_inicio()
+	else:
+		_aplicar_volumes_musica()
+
 # Volta a música ao estado inicial (forró do começo). Usado ao ir para o menu
 # ou recomeçar a fase, para nunca levar um estado estranho de uma cena para outra.
 func reiniciar_musica() -> void:
+	conjunto = "corrente"
 	for k in faixas:
 		ganho[k] = 1.0 if k == "forro" else 0.0
 	if faixa_atual != "forro":
@@ -181,6 +211,11 @@ func reiniciar_musica() -> void:
 func tocar_musica(id: String, imediato: bool = false) -> void:
 	if not faixas.has(id):
 		return
+	if not (id in CONJUNTOS.get(conjunto, [])):
+		for nome in CONJUNTOS:
+			if id in CONJUNTOS[nome]:
+				usar_conjunto(nome, id)
+				return
 	if imediato:
 		for k in faixas:
 			ganho[k] = 1.0 if k == id else 0.0
@@ -212,7 +247,7 @@ func _processar_musica(delta: float) -> void:
 	_vigia -= delta
 	if music_started and _vigia <= 0.0:
 		_vigia = 2.0
-		for k in faixas:
+		for k in CONJUNTOS.get(conjunto, []):
 			var mp: AudioStreamPlayer = faixas[k]
 			if mp.stream and not mp.playing:
 				mp.play()

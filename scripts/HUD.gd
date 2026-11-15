@@ -404,7 +404,7 @@ func _atualizar_proxima_fase() -> void:
 	var pronta: bool = Fases.pronta(String(prox.id))
 	if aviso:
 		aviso.text = ("Próxima parada: %s! %s." % [prox.nome, prox.frase]) if pronta else ("Próxima parada: %s. %s!" % [prox.nome, prox.frase])
-	vit_btn_proxima.text = "Próxima fase: %s  ▶" % prox.nome
+	vit_btn_proxima.text = ("Próxima fase: %s  ▶" % prox.nome) if pronta else ("Próxima fase: %s (em breve)" % prox.nome)
 	vit_btn_proxima.visible = true
 	vit_btn_proxima.grab_focus()
 

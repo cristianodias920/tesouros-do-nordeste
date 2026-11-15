@@ -55,3 +55,14 @@ O menu de pausa tem controles separados de **Música**, **Vozes** e **Efeitos** 
   `cristal_trinca.wav` (1º golpe no geodo), `cristal_quebra.wav` (cristal se partindo) e `poder_troca.wav` (troca com a reserva).
 - Sintetizados no próprio projeto por `tools/sintetizar_chapeu.py` (ruído filtrado + senoides), 22.050 Hz, mono, 16 bits.
   Criação original, sem material de terceiros.
+
+## Músicas da Fase 2 — Cristalândia (`bgm_cris_festa.ogg`, `bgm_cris_cristais.ogg`)
+Geradas por `tools/sintetizar_cristalandia.py` (síntese própria, sem amostras de terceiros).
+- `bgm_cris_festa.ogg`: base de baião com sanfona festiva (zabumba, triângulo, baixo), 124 BPM, ré mixolídio, ~62 s em loop.
+- `bgm_cris_cristais.ogg`: mesma progressão e andamento, mais brilhante e cristalina (sinos/celesta), para os veios de cristal.
+- As duas tocam juntas desde o início e a troca é só por volume (sem pular de posição); ao mudar de cena tudo recomeça do zero.
+  O conjunto ativo fica em `AudioManager.conjunto` ("corrente" ou "cristalandia").
+
+## Vozes e historinha da Cristalândia (ganchos)
+- Falas do Zeca: `voz/cris_*.ogg` (ids em `scripts/VoiceLines.gd`). Sem o arquivo, aparece só o balão.
+- Historinha: `historia/cris_h1.ogg` … `historia/cris_h4.ogg`. Sem o arquivo, só o texto.
