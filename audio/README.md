@@ -1,9 +1,9 @@
 # Áudio - Tesouros do Nordeste: Aventura no Piauí
 
-Este diretório contém as faixas e efeitos sonoros do jogo em formato WAV (PCM 16-bit).
+Este diretório contém as faixas e efeitos sonoros do jogo (efeitos em WAV PCM 16-bit; músicas, vozes e ambientes em OGG Vorbis).
 
 ## Arquivos Gerados:
-- `bgm_forro.wav`: Música de fundo instrumental com ritmo baião (triângulo sincopado, zabumba e linha melódica estilo sanfona).
+- `bgm_forro.ogg`: Música de fundo instrumental com ritmo baião (triângulo sincopado, zabumba e linha melódica estilo sanfona). A cópia antiga em WAV foi removida do projeto (só o OGG vai para o jogo).
 - `jump.wav`: Efeito sonoro de pulo do Zeca e salto do Faísca.
 - `gem.wav`: Toque cristalino ao coletar gemas âmbar.
 - `crate_hit.wav`: Impacto oco de madeira ao acertar o caixote de buriti.
@@ -39,3 +39,13 @@ Este diretório contém as faixas e efeitos sonoros do jogo em formato WAV (PCM 
 - Corrente: h1, h2, h3, h4, h6, h8 — voz "Puck" (mesma instrução de adolescente), conferidas por transcrição automática. Processadas com `python3 tools/preparar_vozes.py <pasta> audio/historia`.
 - Os cartões 5 e 7 (Faísca) não têm voz: usam o zurro (`zurro.wav`) e um balão de onomatopeia.
 - Textos, imagens e posições dos balões ficam em `historia/historias.gd` (uma entrada por fase).
+
+## Música das nuvens e sons de ambiente (novos)
+Todos **sintetizados no próprio projeto** com o script `tools/sintetizar_audio.py` (Python + numpy/scipy, sem amostras de terceiros) — criação original, sem licença externa, livre para o jogo.
+- `bgm_nuvens.ogg` (42 s, em loop sem emenda): faixa calma e "flutuante" para a área das nuvens — pad suave, arpejo de harpa/marimba, baixo em levada de baião leve, triângulo baixinho e melodia de flauta na escala pentatônica de Sol (Sol–Mi m–Dó–Ré). Toca quando o Zeca está lá em cima nas nuvens; no chão e na vitória volta o forró (troca com cruzamento suave de ~1 s).
+- `amb_passaros.ogg` (24 s, loop): passarinhos (assobios, subidas e trinados sintetizados) com um ventinho. Toca baixinho no chão, um pouco mais alto na Serra.
+- `amb_rio.ogg` (14 s, loop): correnteza (ruído filtrado com ondulação) e borbulhas. O volume sobe quando o Zeca chega perto da água dos rios.
+- `planar.wav` (0,55 s): "fuuu" de vento + notinha, quando o Zeca abre a folha de buriti para planar.
+
+## Volumes
+O menu de pausa tem controles separados de **Música**, **Vozes** e **Efeitos** (efeitos + ambiente). Cada um usa um bus de áudio próprio (`Musica`, `Vozes`, `Efeitos`) criado pelo `AudioManager.gd`, e a escolha fica salva no aparelho (`user://progresso.cfg`, que no navegador fica no IndexedDB), junto com o botão SOM.
