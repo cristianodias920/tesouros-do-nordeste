@@ -488,18 +488,32 @@ func hit_by_enemy(from_pos: Vector2) -> void:
 	invincibility_timer = 1.2
 	velocity = Vector2(knock_dir * 420.0, -600.0) * k
 	if is_mounted:
-		# Faísca foge assustado, Zeca continua a pé sem perder coração
-		dismount_scared()
+		# Faísca foge assustado (estilo Yoshi), para longe do perigo: o Zeca cai da sela
+		# sem perder coração e pode montar de novo se alcançar o Faísca em ~5 s
+		dismount_scared(knock_dir, true)
 	else:
 		GameManager.take_damage() # com 0 corações o GameManager mostra o FIM DA AVENTURA
 
-func dismount_scared() -> void:
+# fugir=true (golpe de inimigo/espinhos): o Faísca sai correndo assustado e dá para montar de novo
+func dismount_scared(dir_fuga: float = 0.0, fugir: bool = false) -> void:
 	is_mounted = false
 	GameManager.is_mounted = false
 	is_coice = false
 	kick_collision.set_deferred("disabled", true)
 	apply_character_scale()
 	AudioManager.play_sfx("mount")
+	if not fugir:
+		return
+	if dir_fuga == 0.0:
+		dir_fuga = float(facing_direction)
+	_soltar_faisca(dir_fuga)
+
+func _soltar_faisca(dir_fuga: float) -> void:
+	for f in get_tree().get_nodes_in_group("faisca_fugindo"):
+		f.queue_free()
+	var f := FaiscaFugindo.new()
+	f.iniciar(self, dir_fuga)
+	get_parent().add_child.call_deferred(f)   # pode vir de um sinal de física (golpe do inimigo)
 
 func hit_by_spikes() -> void:
 	if GameManager.is_level_ended:
@@ -513,7 +527,7 @@ func hit_by_spikes() -> void:
 	invincibility_timer = 1.2
 	if is_mounted:
 		# Igual ao dano de inimigo: o Faísca foge assustado e o Zeca não perde coração
-		dismount_scared()
+		dismount_scared(float(facing_direction), true)
 		return
 	GameManager.take_damage()
 
