@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Prepara as falas do Zeca: corta silêncio do início/fim, normaliza o volume
 e converte para OGG em audio/voz/<id>.ogg (mesmos ids de voz_lista.txt).
-Uso: python3 tools/preparar_vozes.py /pasta/com/wavs   (precisa de numpy e soundfile)
+Uso: python3 tools/preparar_vozes.py /pasta/com/wavs [pasta_de_saida]   (precisa de numpy e soundfile)
+   (sem pasta de saída: audio/voz; para a história use audio/historia)
 Depois, reimporte no Godot e exporte a versão Web de novo."""
 import sys, os, glob
 import numpy as np, soundfile as sf
 src = sys.argv[1] if len(sys.argv) > 1 else "voz_brutas"
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "audio", "voz")
+out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "audio", "voz")
 os.makedirs(out, exist_ok=True)
 for f in sorted(glob.glob(os.path.join(src, "*.wav"))):
     x, sr = sf.read(f)

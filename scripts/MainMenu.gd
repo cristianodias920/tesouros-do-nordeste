@@ -12,7 +12,8 @@ func _ready() -> void:
 func _on_start_pressed() -> void:
 	AudioManager.start_music()
 	GameManager.reset_game()
-	get_tree().change_scene_to_file("res://scenes/Fase1_Corrente.tscn")
+	# historinha da fase antes do jogo (pode ser pulada)
+	Historia.iniciar(get_tree(), "corrente", "res://scenes/Fase1_Corrente.tscn")
 
 func _on_sound_pressed() -> void:
 	AudioManager.toggle_sound()

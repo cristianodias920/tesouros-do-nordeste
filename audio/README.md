@@ -34,3 +34,8 @@ Este diretório contém as faixas e efeitos sonoros do jogo em formato WAV (PCM 
 - Edição: silêncio do início/fim cortado, volume normalizado (fala acima da música), convertidas de WAV para OGG. Lista de ids e textos em `voz_lista.txt`.
 - O `VoiceLines.gd` toca cada fala uma vez por partida (a `agua_cai` no máximo a cada 30 s e a `rapadura` a cada 25 s), mostra a legenda em balão sobre o Zeca e abaixa a música enquanto ele fala. Se faltar o arquivo, mostra só a legenda.
 - Para trocar falas: `python3 tools/preparar_vozes.py <pasta com os .wav>` (mesmos ids), reimportar e exportar a versão Web de novo — nada no código precisa mudar.
+
+## Historinha da fase (`historia/<id>.ogg`)
+- Corrente: h1, h2, h3, h4, h6, h8 — voz "Puck" (mesma instrução de adolescente), conferidas por transcrição automática. Processadas com `python3 tools/preparar_vozes.py <pasta> audio/historia`.
+- Os cartões 5 e 7 (Faísca) não têm voz: usam o zurro (`zurro.wav`) e um balão de onomatopeia.
+- Textos, imagens e posições dos balões ficam em `historia/historias.gd` (uma entrada por fase).
