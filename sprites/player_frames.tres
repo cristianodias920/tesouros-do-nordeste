@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=17 format=3]
+[gd_resource type="SpriteFrames" load_steps=21 format=3]
 
 [ext_resource type="Texture2D" path="res://sprites/player/zeca_idle.png" id="1_idle"]
 [ext_resource type="Texture2D" path="res://sprites/player/zeca_walk_1.png" id="2_w1"]
@@ -12,6 +12,10 @@
 [ext_resource type="Texture2D" path="res://sprites/faisca/mounted_walk_2.png" id="10_mtrot2"]
 [ext_resource type="Texture2D" path="res://sprites/faisca/mounted_walk_3.png" id="15_mw3"]
 [ext_resource type="Texture2D" path="res://sprites/faisca/mounted_walk_4.png" id="16_mw4"]
+[ext_resource type="Texture2D" path="res://sprites/faisca/mounted_walk_5.png" id="17_mw5"]
+[ext_resource type="Texture2D" path="res://sprites/faisca/mounted_walk_6.png" id="18_mw6"]
+[ext_resource type="Texture2D" path="res://sprites/player/zeca_walk_5.png" id="19_w5"]
+[ext_resource type="Texture2D" path="res://sprites/player/zeca_walk_6.png" id="20_w6"]
 [ext_resource type="Texture2D" path="res://sprites/faisca/mounted_jump.png" id="11_mjump"]
 [ext_resource type="Texture2D" path="res://sprites/faisca/coice_1.png" id="12_c1"]
 [ext_resource type="Texture2D" path="res://sprites/faisca/coice_2.png" id="13_c2"]
@@ -39,10 +43,16 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("5_w4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_w5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_w6")
 }],
 "loop": true,
 "name": &"walk",
-"speed": 12.0
+"speed": 13.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -73,17 +83,23 @@ animations = [{
 "texture": ExtResource("9_mtrot1")
 }, {
 "duration": 1.0,
+"texture": ExtResource("17_mw5")
+}, {
+"duration": 1.0,
 "texture": ExtResource("10_mtrot2")
 }, {
 "duration": 1.0,
 "texture": ExtResource("15_mw3")
 }, {
 "duration": 1.0,
+"texture": ExtResource("18_mw6")
+}, {
+"duration": 1.0,
 "texture": ExtResource("16_mw4")
 }],
 "loop": true,
 "name": &"mounted_walk",
-"speed": 10.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,

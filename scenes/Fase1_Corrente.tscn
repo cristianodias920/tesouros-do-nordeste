@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3]
+[gd_scene load_steps=41 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/HUD.tscn" id="1_hud"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
@@ -38,6 +38,7 @@
 [ext_resource type="Texture2D" path="res://sprites/comidas/bolo_goma.png" id="37_goma"]
 [ext_resource type="Texture2D" path="res://sprites/comidas/bolo_frito.png" id="38_frito"]
 [ext_resource type="Texture2D" path="res://sprites/comidas/maria_isabel.png" id="39_maria"]
+[ext_resource type="PackedScene" path="res://scenes/VozGatilho.tscn" id="40_voz"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_parede"]
 size = Vector2(40, 4000)
@@ -1226,3 +1227,29 @@ position = Vector2(12100, 379)
 [node name="CaixoteN4" parent="CaminhoDistante" instance=ExtResource("8_caixote")]
 position = Vector2(9500, 122)
 content_type = "gema"
+
+[node name="FalasZeca" type="Node2D" parent="."]
+
+[node name="Voz_rio_corrente" parent="FalasZeca" instance=ExtResource("40_voz")]
+position = Vector2(4900, 780)
+fala = "rio_corrente"
+
+[node name="Voz_igreja_matriz" parent="FalasZeca" instance=ExtResource("40_voz")]
+position = Vector2(6850, 780)
+fala = "igreja_matriz"
+
+[node name="Voz_nuvens" parent="FalasZeca" instance=ExtResource("40_voz")]
+position = Vector2(10900, -460)
+fala = "nuvens"
+
+[node name="Voz_portal" parent="FalasZeca" instance=ExtResource("40_voz")]
+position = Vector2(17950, 780)
+fala = "portal"
+
+[node name="Voz_expo" parent="FalasZeca" instance=ExtResource("40_voz")]
+position = Vector2(22300, 780)
+fala = "expo"
+
+[node name="Voz_serra" parent="CaminhoDistante" instance=ExtResource("40_voz")]
+position = Vector2(3900, 390.1)
+fala = "serra"

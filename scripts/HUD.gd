@@ -20,6 +20,10 @@ extends CanvasLayer
 @onready var game_over_screen: Control = $GameOverScreen
 @onready var victory_gems_label: Label = $VictoryScreen/Panel/VBox/GemsCountLabel
 
+var intro: Control
+var intro_time: float = 0.0
+const INTRO_DUR: float = 3.0
+var gems_panel: Panel
 var tex_heart_full: Texture2D
 var tex_heart_empty: Texture2D
 
@@ -39,6 +43,8 @@ func _ready() -> void:
 	update_sound_button_label()
 	# Conta o total de tesouros depois que a fase inteira entrou na árvore
 	GameManager.call_deferred("recount_total", get_tree())
+	VoiceLines.reset()
+	_build_treasure_counter()
 
 	pause_menu.visible = false
 	victory_screen.visible = false
@@ -50,6 +56,8 @@ func _ready() -> void:
 
 	# Mobile / Touch inicial
 	touch_controls.visible = DisplayServer.is_touchscreen_available()
+	_build_intro()
+	get_viewport().size_changed.connect(_center_intro)
 
 func _update_touch_positions() -> void:
 	var vp_size = get_viewport().get_visible_rect().size
@@ -76,10 +84,19 @@ func _input(event: InputEvent) -> void:
 		# Toque na tela reexibe os botões de toque (menos nas telas de fim)
 		touch_controls.visible = not GameManager.is_level_ended
 
+	if intro and intro.visible:
+		if (event is InputEventKey and event.pressed and not event.echo) or (event is InputEventScreenTouch and event.pressed) or (event is InputEventMouseButton and event.pressed):
+			_close_intro()
+			get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("pause"):
 		toggle_pause()
 
 func _process(_delta: float) -> void:
+	if intro and intro.visible:
+		intro_time += _delta
+		if intro_time >= INTRO_DUR:
+			_close_intro()
 	# O botão de coice no toque só aparece montado no Faísca
 	if btn_action:
 		btn_action.visible = GameManager.is_mounted
@@ -100,7 +117,118 @@ func _on_gems_changed(gems: int, total: int) -> void:
 
 func update_gems_display(gems: int, total: int) -> void:
 	if gems_label:
-		gems_label.text = str(gems) + "/" + str(total)
+		var old: String = gems_label.text
+		gems_label.text = "Tesouros " + str(gems) + "/" + str(total)
+		if old != gems_label.text and gems > 0 and gems_panel:
+			gems_panel.pivot_offset = gems_panel.size * 0.5
+			var t := create_tween()
+			t.tween_property(gems_panel, "scale", Vector2(1.12, 1.12), 0.07)
+			t.tween_property(gems_panel, "scale", Vector2.ONE, 0.12)
+
+func _build_treasure_counter() -> void:
+	# Contador de tesouros em destaque: placa de madeira com ícone e "Tesouros X/Y"
+	var gc: Control = $TopLeft/GemsContainer
+	gems_panel = Panel.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.36, 0.2, 0.08, 0.88)
+	sb.border_color = Color(0.96, 0.78, 0.36)
+	sb.set_border_width_all(4)
+	sb.set_corner_radius_all(18)
+	gems_panel.add_theme_stylebox_override("panel", sb)
+	gems_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$TopLeft.add_child(gems_panel)
+	$TopLeft.move_child(gems_panel, gc.get_index())
+	gems_panel.position = Vector2(-8, 74)
+	gems_panel.size = Vector2(380, 74)
+	gc.position = Vector2(8, 80)
+	gc.size = Vector2(360, 62)
+	var icon: TextureRect = $TopLeft/GemsContainer/GemIcon
+	icon.custom_minimum_size = Vector2(60, 60)
+	if gems_label.label_settings:
+		var ls: LabelSettings = gems_label.label_settings.duplicate()
+		ls.font_size = 42
+		ls.font_color = Color(1.0, 0.93, 0.62)
+		ls.outline_size = 8
+		ls.outline_color = Color(0.2, 0.1, 0.03)
+		gems_label.label_settings = ls
+	update_gems_display(GameManager.collected_gems, GameManager.TOTAL_GEMS)
+
+func _build_intro() -> void:
+	# Cartão de abertura da fase com o objetivo (some sozinho em 3 s ou com um toque)
+	intro = Control.new()
+	intro.set_anchors_preset(Control.PRESET_FULL_RECT)
+	intro.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(intro)
+	var bg := ColorRect.new()
+	bg.color = Color(0.12, 0.07, 0.02, 0.55)
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	intro.add_child(bg)
+	var panel := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.4, 0.23, 0.09, 0.97)
+	sb.border_color = Color(0.96, 0.78, 0.36)
+	sb.set_border_width_all(6)
+	sb.set_corner_radius_all(26)
+	sb.content_margin_left = 60; sb.content_margin_right = 60
+	sb.content_margin_top = 34; sb.content_margin_bottom = 34
+	panel.add_theme_stylebox_override("panel", sb)
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	intro.add_child(panel)
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 14)
+	panel.add_child(vb)
+	var t1 := Label.new()
+	t1.text = "FASE 1 • CORRENTE, PIAUÍ"
+	t1.add_theme_font_size_override("font_size", 64)
+	t1.add_theme_color_override("font_color", Color(1.0, 0.92, 0.6))
+	t1.add_theme_color_override("font_outline_color", Color(0.18, 0.09, 0.02))
+	t1.add_theme_constant_override("outline_size", 10)
+	t1.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vb.add_child(t1)
+	var hb := HBoxContainer.new()
+	hb.alignment = BoxContainer.ALIGNMENT_CENTER
+	hb.add_theme_constant_override("separation", 14)
+	vb.add_child(hb)
+	var ic := TextureRect.new()
+	ic.texture = $TopLeft/GemsContainer/GemIcon.texture
+	ic.custom_minimum_size = Vector2(64, 64)
+	ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	hb.add_child(ic)
+	var t2 := Label.new()
+	t2.text = "Objetivo: colete todos os tesouros!"
+	t2.add_theme_font_size_override("font_size", 46)
+	t2.add_theme_color_override("font_color", Color(1, 0.98, 0.9))
+	t2.add_theme_color_override("font_outline_color", Color(0.18, 0.09, 0.02))
+	t2.add_theme_constant_override("outline_size", 8)
+	hb.add_child(t2)
+	var t3 := Label.new()
+	t3.text = "Toque para começar"
+	t3.add_theme_font_size_override("font_size", 28)
+	t3.add_theme_color_override("font_color", Color(0.95, 0.85, 0.65))
+	t3.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vb.add_child(t3)
+	_center_intro()
+	touch_controls.visible = false
+	get_tree().paused = true
+	intro_time = 0.0
+
+func _center_intro() -> void:
+	if intro == null:
+		return
+	var panel: Control = intro.get_child(1)
+	panel.reset_size()
+	var vp := get_viewport().get_visible_rect().size
+	panel.position = (vp - panel.size) * 0.5
+
+func _close_intro() -> void:
+	if intro == null or not intro.visible:
+		return
+	intro.visible = false
+	get_tree().paused = false
+	touch_controls.visible = DisplayServer.is_touchscreen_available()
+	VoiceLines.say("inicio")
 
 func _on_sound_button_pressed() -> void:
 	AudioManager.toggle_sound()
@@ -138,7 +266,10 @@ func _on_level_completed() -> void:
 	victory_screen.visible = true
 	touch_controls.visible = false
 	if victory_gems_label:
-		victory_gems_label.text = "Tesouros coletados: " + str(GameManager.collected_gems) + "/" + str(GameManager.TOTAL_GEMS)
+		var faltam: int = GameManager.TOTAL_GEMS - GameManager.collected_gems
+		var res: String = "Todos os tesouros! ★" if faltam <= 0 else ("Faltou 1 tesouro" if faltam == 1 else "Faltaram %d tesouros" % faltam)
+		victory_gems_label.text = "Tesouros coletados: " + str(GameManager.collected_gems) + "/" + str(GameManager.TOTAL_GEMS) + "\n" + res
+		victory_gems_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 func _on_game_over() -> void:
 	game_over_screen.visible = true

@@ -1,4 +1,4 @@
-# Tesouros do Nordeste: O Game
+# Tesouros do Nordeste: Aventura no Piauí
 # Prompt inicial para o Antigravity + Godot 4.7.2
 
 Leia este arquivo por completo e execute. O diretório atual é o projeto:
@@ -12,7 +12,7 @@ Objetivo desta primeira entrega: uma Fase 1 jogável, polida e detalhada, pronta
 
 Plataforma 2D de aventura pelo Nordeste brasileiro, com ênfase no Piauí. O herói é Zeca, um jovem explorador, e o companheiro é o jumentinho Faísca (montaria).
 
-Título: Tesouros do Nordeste: O Game
+Título: Tesouros do Nordeste: Aventura no Piauí
 Subtítulo da tela inicial: Uma aventura pelo Nordeste
 Fase 1: Corrente, Piauí (tutorial)
 Idioma da interface: português do Brasil

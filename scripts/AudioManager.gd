@@ -16,7 +16,8 @@ var sound_paths = {
 	"hurt": "res://audio/hurt.wav",
 	"checkpoint": "res://audio/checkpoint.wav",
 	"splash": "res://audio/splash.wav",
-	"victory": "res://audio/victory.wav"
+	"victory": "res://audio/victory.wav",
+	"zurro": "res://audio/zurro.wav"
 }
 
 func _ready() -> void:

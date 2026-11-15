@@ -1,0 +1,18 @@
+Falas do Zeca — Tesouros do Nordeste: Aventura no Piauí — Fase 1 (Corrente, Piauí)
+Arquivo de cada fala: res://audio/voz/<id>.ogg (ou .wav). Já incluídas: as 12 falas com a voz Algieba.
+Enquanto o arquivo não existir, o jogo mostra só a legenda (balão sobre o Zeca).
+
+id                  | texto exato                                  | quando toca
+--------------------+----------------------------------------------+-------------------------------------------------------------
+inicio              | Bora, Zeca! Corrente, aqui vou eu!           | ao fechar o cartão de abertura da fase
+faisca_encontro     | Opa! Oi, Faísca!                             | ao chegar perto do Faísca (a pé, antes de montar)
+faisca_monta        | Vamos lá, Faísca!                            | ao montar no Faísca (junto com o zurro)
+checkpoint_primeiro | Ufa, checkpoint!                             | no primeiro checkpoint ativado na partida
+rio_corrente        | Olha o Rio Corrente!                         | ao passar pela placa "Rio Corrente"
+igreja_matriz       | A Igreja Matriz de Corrente, que beleza!     | ao chegar em frente à Igreja Matriz
+nuvens              | Tô andando nas nuvens!                       | ao chegar na primeira nuvem
+portal              | Um portal? Vamos ver aonde dá!               | ao se aproximar do portal da Serra
+serra               | A Serra Dois Irmãos! Olha as gravuras!       | no caminho do fundo, perto da pedra das gravuras
+agua_cai            | Eita, molhei!                                | ao cair na água (no máximo 1 vez a cada 30 s)
+expo                | Chegou a ExpoCorrente!                       | ao chegar na entrada da ExpoCorrente
+vitoria             | Conseguimos, Faísca!                         | ao concluir a fase

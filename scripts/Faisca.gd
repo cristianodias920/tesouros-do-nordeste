@@ -16,6 +16,10 @@ func _process(delta: float) -> void:
 	time_passed += delta
 	# Efeito flutuante suave no texto
 	label.position.y = -130 + sin(time_passed * 3.0) * 5.0
+	if available:
+		var p = get_tree().get_first_node_in_group("player")
+		if p and not p.is_mounted and abs(p.global_position.x - global_position.x) < 420 and abs(p.global_position.y - global_position.y) < 300:
+			VoiceLines.say("faisca_encontro")
 
 func _on_body_entered(body: Node2D) -> void:
 	if not available:

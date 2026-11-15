@@ -32,7 +32,7 @@ const JUMP_BUFFER_MAX: float = 0.12
 @export var fundo_cam_bottom: int = 640
 @export var fundo_queda_y: float = 700.0
 const FUNDO_ESCALA: float = 0.6
-const MAIN_QUEDA_Y: float = 960.0
+const MAIN_QUEDA_Y: float = 850.0  # linha da água dos rios (superfície ~808)
 
 # Estados
 var is_mounted: bool = false
@@ -55,6 +55,7 @@ var viajando: bool = false  # atravessando portal
 var portal_cooldown: float = 0.0
 var trot_phase: float = 0.0
 var fade_rect: ColorRect
+var afogando: bool = false   # animação de queda na água
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -121,7 +122,7 @@ func apply_character_scale() -> void:
 			collision_shape.position = Vector2(0, -90) * k
 
 func _physics_process(delta: float) -> void:
-	if viajando:
+	if viajando or afogando:
 		velocity = Vector2.ZERO
 		return
 	if portal_cooldown > 0:
@@ -306,15 +307,18 @@ func update_animation() -> void:
 	animated_sprite.speed_scale = target_speed_scale
 	if animated_sprite.animation != target_anim:
 		animated_sprite.play(target_anim)
-	_trot_bob(target_anim == "mounted_walk", target_speed_scale)
+	_trot_bob(target_anim == "mounted_walk" or target_anim == "walk", target_speed_scale)
 
 func _trot_bob(ativo: bool, vel: float) -> void:
 	# Trote do Faísca: sobe e desce a cada passada e balança de leve (em px da textura)
 	if ativo:
-		trot_phase += get_physics_process_delta_time() * 5.0 * vel * PI
+		var montado: bool = animated_sprite.animation == "mounted_walk"
+		# 2 passadas por ciclo de animação (6 quadros)
+		var fps: float = 12.0 if montado else 13.0
+		trot_phase += get_physics_process_delta_time() * (fps / 6.0) * vel * TAU
 		var b: float = abs(sin(trot_phase))
-		animated_sprite.offset = Vector2(0, -b * 14.0)
-		animated_sprite.rotation = sin(trot_phase) * 0.025 * (-1.0 if animated_sprite.flip_h else 1.0)
+		animated_sprite.offset = Vector2(0, -b * (12.0 if montado else 7.0))
+		animated_sprite.rotation = sin(trot_phase) * (0.022 if montado else 0.012) * (-1.0 if animated_sprite.flip_h else 1.0)
 	else:
 		animated_sprite.offset = animated_sprite.offset.lerp(Vector2.ZERO, 0.3)
 		animated_sprite.rotation = lerp(animated_sprite.rotation, 0.0, 0.3)
@@ -324,6 +328,66 @@ func mount_faisca() -> void:
 	GameManager.is_mounted = true
 	apply_character_scale()
 	AudioManager.play_sfx("mount")
+	AudioManager.play_sfx("zurro")
+	VoiceLines.say("faisca_monta", true)
+	# pulinho para a sela + poeira
+	_poeira(global_position, 1.0)
+	var s0: Vector2 = animated_sprite.scale
+	var t := create_tween()
+	animated_sprite.offset = Vector2(0, -90)
+	animated_sprite.scale = s0 * Vector2(0.92, 1.08)
+	t.tween_property(animated_sprite, "offset", Vector2.ZERO, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	t.tween_property(animated_sprite, "scale", s0 * Vector2(1.08, 0.92), 0.06)
+	t.tween_property(animated_sprite, "scale", s0, 0.1)
+
+func _poeira(pos: Vector2, forca: float) -> void:
+	var pp := CPUParticles2D.new()
+	pp.one_shot = true
+	pp.amount = int(18 * forca)
+	pp.lifetime = 0.6
+	pp.explosiveness = 0.95
+	pp.direction = Vector2(0, -1)
+	pp.spread = 80.0
+	pp.initial_velocity_min = 80.0 * k
+	pp.initial_velocity_max = 220.0 * k
+	pp.gravity = Vector2(0, 260.0 * k)
+	pp.scale_amount_min = 6.0 * k
+	pp.scale_amount_max = 14.0 * k
+	pp.color = Color(0.78, 0.64, 0.45, 0.8)
+	var g := Gradient.new()
+	g.set_color(0, Color(0.85, 0.72, 0.52, 0.85))
+	g.set_color(1, Color(0.85, 0.72, 0.52, 0.0))
+	pp.color_ramp = g
+	pp.z_index = 12
+	get_parent().add_child(pp)
+	pp.global_position = pos
+	pp.emitting = true
+	get_tree().create_timer(1.2).timeout.connect(pp.queue_free)
+
+func _respingo(pos: Vector2, forca: float) -> void:
+	# gotas de água subindo e caindo + anel de espuma
+	for layer_i in 2:
+		var pp := CPUParticles2D.new()
+		pp.one_shot = true
+		pp.amount = int((34 if layer_i == 0 else 16) * forca)
+		pp.lifetime = 0.9 if layer_i == 0 else 0.5
+		pp.explosiveness = 0.92
+		pp.direction = Vector2(0, -1)
+		pp.spread = 35.0 if layer_i == 0 else 85.0
+		pp.initial_velocity_min = (420.0 if layer_i == 0 else 120.0) * k * forca
+		pp.initial_velocity_max = (760.0 if layer_i == 0 else 260.0) * k * forca
+		pp.gravity = Vector2(0, 1500.0 * k)
+		pp.scale_amount_min = (5.0 if layer_i == 0 else 10.0) * k
+		pp.scale_amount_max = (11.0 if layer_i == 0 else 20.0) * k
+		var g := Gradient.new()
+		g.set_color(0, Color(0.85, 0.96, 1.0, 0.95))
+		g.set_color(1, Color(0.55, 0.85, 0.95, 0.0))
+		pp.color_ramp = g
+		pp.z_index = 12
+		get_parent().add_child(pp)
+		pp.global_position = pos
+		pp.emitting = true
+		get_tree().create_timer(1.5).timeout.connect(pp.queue_free)
 
 func hit_by_enemy(from_pos: Vector2) -> void:
 	if GameManager.is_level_ended:
@@ -370,19 +434,51 @@ func hit_by_spikes() -> void:
 	GameManager.take_damage()
 
 func respawn_fall() -> void:
-	# Cair no rio: perde 1 coração e volta ao último checkpoint (ou ao início)
+	# Cair no rio: respingo, o Zeca (e o Faísca) afundam se debatendo,
+	# depois perde 1 coração e volta ao último checkpoint (ou ao início)
 	if GameManager.is_level_ended or falling_handled:
 		return
 	falling_handled = true
+	afogando = true
+	velocity = Vector2.ZERO
+	invincibility_timer = 3.0
 	AudioManager.play_sfx("splash")
+	if is_mounted:
+		AudioManager.play_sfx("zurro")
+	VoiceLines.say("agua_cai", true)
+	var agua_y: float = (812.0 if not no_fundo else global_position.y)
+	global_position.y = agua_y + 10.0 * k
+	_respingo(Vector2(global_position.x, agua_y), 1.5 if is_mounted else 1.0)
+	animated_sprite.visible = true
+	animated_sprite.speed_scale = 1.0
+	animated_sprite.play("mounted_jump" if is_mounted else "fall")
+	var t := create_tween()
+	# debate-se balançando e afunda sumindo
+	t.tween_method(_afundar, 0.0, 1.0, 1.0)
+	t.tween_property(fade_rect, "color:a", 1.0, 0.3)
+	t.tween_callback(_fim_da_queda)
+
+func _afundar(v: float) -> void:
+	animated_sprite.rotation = sin(v * 26.0) * 0.18 * (1.0 - v)
+	animated_sprite.offset = Vector2(0, v * 150.0)
+	animated_sprite.modulate.a = 1.0 - v * 0.95
+
+func _fim_da_queda() -> void:
 	var alive: bool = GameManager.take_damage()
+	animated_sprite.rotation = 0.0
+	animated_sprite.offset = Vector2.ZERO
+	animated_sprite.modulate.a = 1.0
+	afogando = false
+	falling_handled = false
 	if alive:
 		respawn_at_checkpoint()
+		var t := create_tween()
+		t.tween_property(fade_rect, "color:a", 0.0, 0.35)
 	else:
 		# Sem corações: some na água e o FIM DA AVENTURA aparece
 		visible = false
 		velocity = Vector2.ZERO
-	falling_handled = false
+		fade_rect.color.a = 0.0
 
 func respawn_at_checkpoint() -> void:
 	if GameManager.has_checkpoint:
