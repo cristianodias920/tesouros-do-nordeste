@@ -64,5 +64,9 @@ Geradas por `tools/sintetizar_cristalandia.py` (síntese própria, sem amostras 
   O conjunto ativo fica em `AudioManager.conjunto` ("corrente" ou "cristalandia").
 
 ## Vozes e historinha da Cristalândia (ganchos)
-- Falas do Zeca: `voz/cris_*.ogg` (ids em `scripts/VoiceLines.gd`). Sem o arquivo, aparece só o balão.
+- Falas do Zeca: `voz/cris_*.ogg` (12 falas, ids em `scripts/VoiceLines.gd`): cris_inicio, cris_chapeu_pega, cris_festejo,
+  cris_igreja, cris_rio, cris_cristal_dica, cris_nascente, cris_buriti_doce, cris_esperanca, cris_cristais, cris_extremo_sul,
+  cris_todos_tesouros. Sem o arquivo, aparece só o balão.
 - Historinha: `historia/cris_h1.ogg` … `historia/cris_h4.ogg`. Sem o arquivo, só o texto.
+- Gravadas com a voz do Zeca (nov/2026), brutas em `voz_novas/cris/<id>.wav` (fora do projeto), conferidas por transcrição
+  (todas batem com o id) e processadas com `tools/preparar_vozes.py` (corta silêncio, normaliza, OGG).

@@ -41,13 +41,12 @@ func _textos_da_fase() -> void:
 	var dica: Label = get_node_or_null("Placas/DicaTutorial")
 	if dica:
 		dica.text = TXT_TUTORIAL_TOQUE if GameManager.celular else TXT_TUTORIAL_TECLADO
-	var tecla: String = "o botão do chapéu" if GameManager.celular else "C"
 	var p1 = get_node_or_null("Placas/PlacaPrimeiroCristal")
 	if p1:
-		p1.get_node("Label").text = ("Cristal! Toque no botão do chapéu" if GameManager.celular else "Cristal! Aperte C: o chapéu quebra")
+		p1.get_node("Label").text = ("Cristal! Use o botão do chapéu" if GameManager.celular else "Cristal! Aperte C")
 	var p2 = get_node_or_null("Placas/PlacaParede")
 	if p2:
-		p2.get_node("Label").text = "Cristais na frente! Arremesse o chapéu (%s)" % tecla
+		p2.get_node("Label").text = "Cristais! Use o botão do chapéu" if GameManager.celular else "Cristais! Arremesse o chapéu (C)"
 
 func _textos_maiores() -> void:
 	# Celular: placas, dicas e balões maiores (igual à Fase 1)

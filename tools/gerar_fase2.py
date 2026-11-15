@@ -90,10 +90,10 @@ deco('Nascente', CR + 'nascente.png', 8230, 790, 1.25)
 deco('BuritiC3', 'res://sprites/corrente/buriti.png', 7990, 770, 0.95)
 deco('BuritiC4', 'res://sprites/corrente/buriti.png', 8560, 770, 0.8, True)
 # Comunidade Esperança
-deco('CasasEsperanca', CR + 'casas_esperanca.png', 9440, 772, 1.4)
-deco('GenteAcenando', CR + 'gente_acenando.png', 9780, 772, 0.8)
-deco('Roca', CR + 'roca.png', 10020, 776, 1.05)
-deco('MusicosEsperanca', CR + 'musicos_esperanca.png', 10280, 772, 0.8)
+deco('CasasEsperanca', CR + 'casas_esperanca.png', 9560, 772, 1.4)
+deco('GenteAcenando', CR + 'gente_acenando.png', 9870, 772, 0.8)
+deco('Roca', CR + 'roca.png', 10090, 776, 1.05)
+deco('MusicosEsperanca', CR + 'musicos_esperanca.png', 10310, 772, 0.8)
 # D — veios de cristal
 for i, (x, nm, e) in enumerate([(10560, 'afloramento_grande', 1.5), (11520, 'afloramento_pequeno', 1.2), (12020, 'afloramento_grande', 1.2),
                                  (12620, 'afloramento_pequeno', 1.4), (13120, 'afloramento_grande', 1.7), (13460, 'afloramento_pequeno', 1.0)]):
@@ -173,12 +173,12 @@ for x, y in [(2950, 690), (3560, 690), (3760, 410), (4080, 395), (4220, 395), (5
 # C (10 com o caixote e o cristal)
 for x, y in [(5990, 610), (6250, 610), (7130, 480), (7300, 480), (7750, 620)]:
     gema(x, y)
-for x, y in [(8250, 690), (8360, 620), (8470, 690)]:
+for x, y in [(8210, 690), (8320, 620), (8430, 690)]:
     comida(x, y, 'doce_buriti', 'Doce de buriti', 'DoceBuriti')
 # Comunidade Esperança (5): a cultura da comunidade
 gema(8930, 690)
-comida(9300, 680, 'sanfona', 'Sanfona', 'Sanfona')
-comida(9620, 680, 'tambor', 'Tambor', 'Tambor')
+comida(9330, 680, 'sanfona', 'Sanfona', 'Sanfona')
+comida(9660, 680, 'tambor', 'Tambor', 'Tambor')
 comida(9960, 680, 'mandioca', 'Mandioca da roça', 'Mandioca')
 comida(10240, 620, 'saia_samba', 'Samba de roda', 'SambaDeRoda')
 # D (soltas; o resto está dentro de cristais)
@@ -222,7 +222,7 @@ node('Faisca', '.', inst=S('res://scenes/Faisca.tscn'), props={'position': v(760
 # ---------------- checkpoints ----------------
 node('Checkpoints', '.', 'Node2D')
 CK = S('res://scenes/Checkpoint.tscn')
-for x, y in [(2450, CHAO_Y), (5250, CHAO_Y), (8600, CHAO_Y), (11950, CHAO_Y), (13560, CHAO_Y)]:
+for x, y in [(2400, CHAO_Y), (5330, CHAO_Y), (8500, CHAO_Y), (11950, CHAO_Y), (13560, CHAO_Y)]:
     node(nome('Checkpoint'), 'Checkpoints', inst=CK, props={'position': v(x, y)})
 
 # ---------------- inimigos (fauna do Cerrado, nenhum na Comunidade Esperança) ----------------
@@ -244,19 +244,17 @@ PG = S('res://scenes/PlacaGrande.tscn')
 def placa_grande(x, titulo, txt, y=CHAO_Y, nm=None, larg=620, alt=250):
     node(nm or nome('PlacaGrande'), 'Placas', inst=PG, props={'position': v(x, y), 'titulo': q(titulo), 'texto': q(txt), 'largura': larg, 'altura': alt})
 placa(270, 'Bem-vindo a Cristalândia do Piauí')
-placa(2860, 'Festejos de Sant\'Ana')
-placa(3560, 'Igreja Matriz de Sant\'Ana')
+placa(2635, 'Festejos de Sant\'Ana — 17 a 26 de julho')
+placa(2990, 'Igreja Matriz de Sant\'Ana')
 placa(4620, 'Capelinha de N. Sra. Sant\'Ana')
-placa(4790, 'Artesanato de couro e cristal')
+placa(5070, 'Artesanato de couro e cristal')
 placa(5660, 'Rio Palmeira')
 placa(6580, 'Cristal: use o chapéu!', nm='PlacaPrimeiroCristal')
 placa(7480, 'Riacho das Mocinhas')
 placa_grande(8060, 'Olho d\'Água Caraíbas', 'Também chamado Fonte Lorena: a nascente do Rio Palmeira, cheia de buritis.', nm='PlacaNascente', larg=600, alt=250)
-placa_grande(8930, 'Comunidade Esperança', 'Comunidade quilombola! A certificação foi celebrada em 14 de julho de 2024, junto com Mandacaru, Mocambinho e Cocos.', nm='PlacaEsperanca', larg=620, alt=320)
-placa(10150, 'Samba de roda, tambor e sanfona')
-placa(10680, 'Veios de cristal')
-placa(10760, 'Cristais fecham a passagem!', nm='PlacaParede')
-placa_grande(15330, 'Chapada da Limpeza', 'O ponto mais ao sul do Piauí, na nascente do Riacho Serrito.', y=ALTO_Y, nm='PlacaExtremoSul', larg=560, alt=240)
+placa_grande(8960, 'Comunidade Esperança', 'Comunidade quilombola! A certificação foi celebrada em 14 de julho de 2024, com Mandacaru, Mocambinho e Cocos. Samba de roda, tambor e sanfona marcam a cultura das comunidades.', nm='PlacaEsperanca', larg=680, alt=400)
+placa(10720, 'Cristais fecham a passagem!', nm='PlacaParede')
+placa_grande(15150, 'Chapada da Limpeza', 'O ponto mais ao sul do Piauí, na nascente do Riacho Serrito.', y=ALTO_Y, nm='PlacaExtremoSul', larg=560, alt=240)
 node('DicaTutorial', 'Placas', 'Label', props={'offset_left': 380.0, 'offset_top': 330.0, 'offset_right': 1180.0, 'offset_bottom': 420.0,
      'theme_override_colors/font_color': 'Color(0.25, 0.13, 0.04, 1)', 'theme_override_colors/font_outline_color': 'Color(1, 0.96, 0.84, 1)',
      'theme_override_constants/outline_size': 8, 'theme_override_font_sizes/font_size': 30, 'text': '""', 'horizontal_alignment': 1, 'autowrap_mode': 3})
@@ -269,7 +267,7 @@ for x, fala, y in [(2820, 'cris_festejo', CHAO_Y), (3250, 'cris_igreja', CHAO_Y)
     node('Voz_' + fala, 'FalasZeca', inst=VZ, props={'position': v(x, y), 'fala': q(fala)})
 
 # ---------------- chegada (no mirante da chapada) ----------------
-node('BandeirolasChegada', 'Decoracao', 'Node2D', props={'position': v(15380, ALTO_Y - 300), 'script': 'ExtResource("%s")' % SC('res://scripts/Bandeirolas.gd'), 'largura': '360', 'barriga': '40',
+node('BandeirolasChegada', 'Decoracao', 'Node2D', props={'position': v(15480, ALTO_Y - 300), 'script': 'ExtResource("%s")' % SC('res://scripts/Bandeirolas.gd'), 'largura': '300', 'barriga': '40',
      'cores': 'PackedColorArray(0.9, 0.25, 0.2, 1, 0.98, 0.8, 0.2, 1, 0.2, 0.55, 0.3, 1, 0.2, 0.45, 0.85, 1)'})
 node('Chegada', '.', inst=S('res://scenes/Chegada.tscn'), props={'position': v(15580, ALTO_Y)})
 

@@ -21,3 +21,16 @@ rio_paraim          | O Rio Paraim, cheio de buritis!              | ao chegar n
 faltam_dez          | Só faltam dez tesouros!                      | quando faltarem exatamente 10 tesouros (1 vez)
 volta_faisca       | Volta aqui, Faísca!                          | logo após o relincho, quando o Faísca foge de um golpe montado
 todos_tesouros     | Todos os tesouros de Corrente! Ô terra rica! | ao juntar os 83 tesouros da fase (1 vez)
+# Fase 2 — Cristalândia
+cris_inicio         | Cristalândia, aqui vou eu!                   | ao fechar o cartão de objetivo da Fase 2
+cris_chapeu_pega    | Chapéu de couro encantado! Agora ele volta pra mim! | ao pegar o chapéu na barraca de artesanato
+cris_festejo        | Chegou o festejo de Sant'Ana!                | ao entrar no centro enfeitado
+cris_igreja         | A Igreja de Sant'Ana, padroeira da cidade!   | em frente à igreja
+cris_rio            | Olha o Rio Palmeira!                         | na margem do Rio Palmeira
+cris_cristal_dica   | Esse cristal eu quebro com o chapéu!         | perto do primeiro cristal
+cris_nascente       | A nascente do rio! O Olho d'Água Caraíbas!   | na nascente
+cris_buriti_doce    | Doce de buriti! Que sabor é esse!            | ao pegar doce de buriti (no máximo 1 vez a cada 40 s)
+cris_esperanca      | Comunidade Esperança! Que alegria essa sanfona e esse tambor! | na Comunidade Esperança
+cris_cristais       | Olha esses cristais! Que riqueza é essa, hein? | ao entrar nos veios de cristal
+cris_extremo_sul    | O extremo sul do Piauí! Que vista, Faísca!   | na Chapada da Limpeza
+cris_todos_tesouros | Todos os tesouros de Cristalândia! Ô terra rica! | ao juntar os 50 tesouros da fase (1 vez)

@@ -203,25 +203,25 @@ flip_h = true
 [node name="CasasEsperanca" type="Sprite2D" parent="Decoracao"]
 texture = ExtResource("16_r")
 centered = false
-position = Vector2(9189, 510)
+position = Vector2(9309, 510)
 scale = Vector2(1.4, 1.4)
 
 [node name="GenteAcenando" type="Sprite2D" parent="Decoracao"]
 texture = ExtResource("17_r")
 centered = false
-position = Vector2(9678, 553)
+position = Vector2(9768, 553)
 scale = Vector2(0.8, 0.8)
 
 [node name="Roca" type="Sprite2D" parent="Decoracao"]
 texture = ExtResource("18_r")
 centered = false
-position = Vector2(9854, 415)
+position = Vector2(9924, 415)
 scale = Vector2(1.05, 1.05)
 
 [node name="MusicosEsperanca" type="Sprite2D" parent="Decoracao"]
 texture = ExtResource("19_r")
 centered = false
-position = Vector2(10150, 553)
+position = Vector2(10180, 553)
 scale = Vector2(0.8, 0.8)
 
 [node name="Aflor1" type="Sprite2D" parent="Decoracao"]
@@ -631,17 +631,17 @@ position = Vector2(7300, 480)
 position = Vector2(7750, 620)
 
 [node name="DoceBuriti1" parent="Tesouros" instance=ExtResource("26_r")]
-position = Vector2(8250, 690)
+position = Vector2(8210, 690)
 textura = ExtResource("27_r")
 nome = "Doce de buriti"
 
 [node name="DoceBuriti2" parent="Tesouros" instance=ExtResource("26_r")]
-position = Vector2(8360, 620)
+position = Vector2(8320, 620)
 textura = ExtResource("27_r")
 nome = "Doce de buriti"
 
 [node name="DoceBuriti3" parent="Tesouros" instance=ExtResource("26_r")]
-position = Vector2(8470, 690)
+position = Vector2(8430, 690)
 textura = ExtResource("27_r")
 nome = "Doce de buriti"
 
@@ -649,12 +649,12 @@ nome = "Doce de buriti"
 position = Vector2(8930, 690)
 
 [node name="Sanfona1" parent="Tesouros" instance=ExtResource("26_r")]
-position = Vector2(9300, 680)
+position = Vector2(9330, 680)
 textura = ExtResource("28_r")
 nome = "Sanfona"
 
 [node name="Tambor1" parent="Tesouros" instance=ExtResource("26_r")]
-position = Vector2(9620, 680)
+position = Vector2(9660, 680)
 textura = ExtResource("29_r")
 nome = "Tambor"
 
@@ -800,13 +800,13 @@ position = Vector2(760, 780)
 [node name="Checkpoints" type="Node2D" parent="."]
 
 [node name="Checkpoint1" parent="Checkpoints" instance=ExtResource("36_r")]
-position = Vector2(2450, 780)
+position = Vector2(2400, 780)
 
 [node name="Checkpoint2" parent="Checkpoints" instance=ExtResource("36_r")]
-position = Vector2(5250, 780)
+position = Vector2(5330, 780)
 
 [node name="Checkpoint3" parent="Checkpoints" instance=ExtResource("36_r")]
-position = Vector2(8600, 780)
+position = Vector2(8500, 780)
 
 [node name="Checkpoint4" parent="Checkpoints" instance=ExtResource("36_r")]
 position = Vector2(11950, 780)
@@ -855,11 +855,11 @@ position = Vector2(270, 780)
 texto = "Bem-vindo a Cristalândia do Piauí"
 
 [node name="Placa2" parent="Placas" instance=ExtResource("42_r")]
-position = Vector2(2860, 780)
-texto = "Festejos de Sant'Ana"
+position = Vector2(2635, 780)
+texto = "Festejos de Sant'Ana — 17 a 26 de julho"
 
 [node name="Placa3" parent="Placas" instance=ExtResource("42_r")]
-position = Vector2(3560, 780)
+position = Vector2(2990, 780)
 texto = "Igreja Matriz de Sant'Ana"
 
 [node name="Placa4" parent="Placas" instance=ExtResource("42_r")]
@@ -867,7 +867,7 @@ position = Vector2(4620, 780)
 texto = "Capelinha de N. Sra. Sant'Ana"
 
 [node name="Placa5" parent="Placas" instance=ExtResource("42_r")]
-position = Vector2(4790, 780)
+position = Vector2(5070, 780)
 texto = "Artesanato de couro e cristal"
 
 [node name="Placa6" parent="Placas" instance=ExtResource("42_r")]
@@ -890,26 +890,18 @@ largura = 600
 altura = 250
 
 [node name="PlacaEsperanca" parent="Placas" instance=ExtResource("43_r")]
-position = Vector2(8930, 780)
+position = Vector2(8960, 780)
 titulo = "Comunidade Esperança"
-texto = "Comunidade quilombola! A certificação foi celebrada em 14 de julho de 2024, junto com Mandacaru, Mocambinho e Cocos."
-largura = 620
-altura = 320
-
-[node name="Placa8" parent="Placas" instance=ExtResource("42_r")]
-position = Vector2(10150, 780)
-texto = "Samba de roda, tambor e sanfona"
-
-[node name="Placa9" parent="Placas" instance=ExtResource("42_r")]
-position = Vector2(10680, 780)
-texto = "Veios de cristal"
+texto = "Comunidade quilombola! A certificação foi celebrada em 14 de julho de 2024, com Mandacaru, Mocambinho e Cocos. Samba de roda, tambor e sanfona marcam a cultura das comunidades."
+largura = 680
+altura = 400
 
 [node name="PlacaParede" parent="Placas" instance=ExtResource("42_r")]
-position = Vector2(10760, 780)
+position = Vector2(10720, 780)
 texto = "Cristais fecham a passagem!"
 
 [node name="PlacaExtremoSul" parent="Placas" instance=ExtResource("43_r")]
-position = Vector2(15330, 480)
+position = Vector2(15150, 480)
 titulo = "Chapada da Limpeza"
 texto = "O ponto mais ao sul do Piauí, na nascente do Riacho Serrito."
 largura = 560
@@ -963,9 +955,9 @@ position = Vector2(15200, 480)
 fala = "cris_extremo_sul"
 
 [node name="BandeirolasChegada" type="Node2D" parent="Decoracao"]
-position = Vector2(15380, 180)
+position = Vector2(15480, 180)
 script = ExtResource("14_r")
-largura = 360
+largura = 300
 barriga = 40
 cores = PackedColorArray(0.9, 0.25, 0.2, 1, 0.98, 0.8, 0.2, 1, 0.2, 0.55, 0.3, 1, 0.2, 0.45, 0.85, 1)
 
