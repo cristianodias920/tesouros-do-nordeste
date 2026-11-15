@@ -1,4 +1,5 @@
 extends CanvasLayer
+const Fases = preload("res://scripts/Fases.gd")
 
 @onready var heart_1: TextureRect = $TopLeft/HeartsContainer/Heart1
 @onready var heart_2: TextureRect = $TopLeft/HeartsContainer/Heart2
@@ -381,14 +382,39 @@ func _on_level_completed() -> void:
 	if faltam > 0:
 		var areas: Dictionary = GameManager.tesouros_restantes_por_area(get_tree())
 		var partes: Array = []
-		for a in ["Começo e Rio Corrente", "Centro de Corrente", "Torre e nuvens", "Vereda de buritis", "Rio Paraim", "Serra Dois Irmãos", "Rio Corrente e ExpoCorrente"]:
+		for a in GameManager.areas_da_fase():
 			if areas.has(a):
 				partes.append("%s (%d)" % [a, areas[a]])
 		vit_areas.text = "Ainda há tesouros em: " + ", ".join(partes) if partes.size() > 0 else ""
 	else:
-		vit_areas.text = "Você achou todos os tesouros de Corrente!"
+		vit_areas.text = "Você achou todos os tesouros de %s!" % String(Fases.info(GameManager.FASE_ID).get("nome", "Corrente"))
 	vit_frase.text = ["Conseguimos, Faísca! Bora achar mais tesouros na próxima!", "Conseguimos, Faísca! Quase todos os tesouros!", "Conseguimos, Faísca! Achamos TODOS os tesouros!"][est - 1]
+	_atualizar_proxima_fase()
 	_animar_vitoria(est)
+
+# Anuncia a próxima fase na vitória e mostra o botão para ir direto para ela
+func _atualizar_proxima_fase() -> void:
+	var prox: Dictionary = Fases.proxima(GameManager.FASE_ID)
+	var aviso: Label = get_node_or_null("VictoryScreen/Panel/VBox/NextPhaseNotice")
+	if prox.is_empty():
+		if aviso:
+			aviso.text = "Mais aventuras pelo Piauí em breve!"
+		vit_btn_proxima.visible = false
+		return
+	var pronta: bool = Fases.pronta(String(prox.id))
+	if aviso:
+		aviso.text = ("Próxima parada: %s! %s." % [prox.nome, prox.frase]) if pronta else ("Próxima parada: %s. %s!" % [prox.nome, prox.frase])
+	vit_btn_proxima.text = "Próxima fase: %s  ▶" % prox.nome
+	vit_btn_proxima.visible = true
+	vit_btn_proxima.grab_focus()
+
+func _on_proxima_fase_pressed() -> void:
+	var prox: Dictionary = Fases.proxima(GameManager.FASE_ID)
+	if prox.is_empty():
+		return
+	VoiceLines.reset()
+	AudioManager.reiniciar_musica()
+	Fases.jogar(get_tree(), String(prox.id))
 
 func _on_game_over() -> void:
 	game_over_screen.visible = true
@@ -407,6 +433,7 @@ var go_btn_ckp: Button
 var vit_tempo: Label
 var vit_areas: Label
 var vit_frase: Label
+var vit_btn_proxima: Button
 var vit_estrelas: Array = []
 var vit_confete: CPUParticles2D
 var vit_zeca: TextureRect
@@ -452,7 +479,7 @@ func _rotulo(txt: String, tam: int, cor: Color) -> Label:
 func _montar_vitoria() -> void:
 	var panel: Panel = $VictoryScreen/Panel
 	panel.offset_left = -560; panel.offset_right = 560
-	panel.offset_top = -420; panel.offset_bottom = 420
+	panel.offset_top = -470; panel.offset_bottom = 470
 	var vb: VBoxContainer = $VictoryScreen/Panel/VBox
 	vb.add_theme_constant_override("separation", 12)
 	var title: Label = $VictoryScreen/Panel/VBox/Title
@@ -482,6 +509,29 @@ func _montar_vitoria() -> void:
 	vit_frase = _rotulo("", 30, Color(1, 0.9, 0.55))
 	vb.add_child(vit_frase)
 	vb.move_child(vit_frase, vit_areas.get_index() + 1)
+	# botão da próxima fase (em destaque, antes de "Jogar novamente")
+	vit_btn_proxima = Button.new()
+	vit_btn_proxima.name = "BtnProxima"
+	vit_btn_proxima.text = "Próxima fase"
+	vit_btn_proxima.custom_minimum_size = Vector2(0, 84)
+	vit_btn_proxima.add_theme_font_size_override("font_size", 34)
+	for st in ["normal", "hover", "pressed", "focus"]:
+		var sbp := StyleBoxFlat.new()
+		sbp.bg_color = Color(0.2, 0.45, 0.22, 0.97) if st != "pressed" else Color(0.15, 0.36, 0.17, 1.0)
+		if st == "hover":
+			sbp.bg_color = Color(0.26, 0.54, 0.28, 0.98)
+		sbp.border_color = Color(1.0, 0.86, 0.42) if st != "focus" else Color(1, 1, 0.8)
+		sbp.set_border_width_all(5)
+		sbp.set_corner_radius_all(18)
+		if st == "focus":
+			sbp.draw_center = false
+		vit_btn_proxima.add_theme_stylebox_override(st, sbp)
+	vit_btn_proxima.add_theme_color_override("font_color", Color(1, 0.97, 0.85))
+	vit_btn_proxima.add_theme_color_override("font_hover_color", Color(1, 1, 0.9))
+	vit_btn_proxima.add_theme_color_override("font_focus_color", Color(1, 1, 0.9))
+	vit_btn_proxima.pressed.connect(_on_proxima_fase_pressed)
+	vb.add_child(vit_btn_proxima)
+	vb.move_child(vit_btn_proxima, $VictoryScreen/Panel/VBox/BtnReplay.get_index())
 	# Zeca e Faísca comemorando dos lados do painel
 	vit_zeca = TextureRect.new()
 	vit_zeca.texture = load("res://sprites/player/zeca_jump.png")

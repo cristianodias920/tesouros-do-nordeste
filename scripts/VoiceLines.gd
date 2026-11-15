@@ -186,12 +186,29 @@ func _place() -> void:
 			h += 12.0   # o chapéu de couro é um pouco mais alto que o de palha
 		head = p.get_global_transform_with_canvas().origin + Vector2(0, -h * p.k)
 	var pos := head - Vector2(balloon.size.x * 0.5, balloon.size.y + 26)
-	if no_rodape or GameManager.is_game_over or get_tree().paused:
+	var ao_lado: bool = false
+	if no_rodape and not GameManager.is_game_over:
+		# vitória: o balão fica em cima do Zeca comemorando, ao lado do painel (sem cobrir os botões)
+		var hud = get_tree().get_first_node_in_group("hud")
+		var vz = hud.get("vit_zeca") if hud else null
+		if vz and vz.visible and vz.is_visible_in_tree():
+			var r: Rect2 = vz.get_global_rect()
+			var lado: float = r.end.x + 10.0
+			if balloon.size.x > lado - 20.0:
+				label.custom_minimum_size.x = max(lado - 70.0, 120.0)
+				balloon.size = Vector2.ZERO
+				balloon.reset_size()
+			head = Vector2(r.position.x + r.size.x * 0.5, r.position.y + 20.0)
+			pos = head - Vector2(balloon.size.x * 0.5, balloon.size.y + 26)
+			pos.x = clamp(pos.x, 10.0, max(lado - balloon.size.x, 10.0))
+			ao_lado = true
+	if not ao_lado and (no_rodape or GameManager.is_game_over or get_tree().paused):
 		pos = Vector2((vp.x - balloon.size.x) * 0.5, vp.y - balloon.size.y - 40.0)
 		head = Vector2(vp.x * 0.5, vp.y)
 	# nunca cobre o HUD do topo nem sai da tela
-	pos.x = clamp(pos.x, 20.0, vp.x - balloon.size.x - 20.0)
-	pos.y = clamp(pos.y, 170.0 * (1.5 if GameManager.celular else 1.0), vp.y - balloon.size.y - 20.0)
+	if not ao_lado:
+		pos.x = clamp(pos.x, 20.0, vp.x - balloon.size.x - 20.0)
+		pos.y = clamp(pos.y, 170.0 * (1.5 if GameManager.celular else 1.0), vp.y - balloon.size.y - 20.0)
 	balloon.position = pos
-	tail.visible = balloon.visible and not (no_rodape or GameManager.is_game_over or get_tree().paused)
+	tail.visible = balloon.visible and (ao_lado or not (no_rodape or GameManager.is_game_over or get_tree().paused))
 	tail.position = Vector2(clamp(head.x, pos.x + 30, pos.x + balloon.size.x - 30), pos.y + balloon.size.y - 2)

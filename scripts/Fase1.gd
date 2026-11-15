@@ -15,6 +15,7 @@ const TXT_TUTORIAL_TOQUE := "Toque nas setas para andar e no botão da direita p
 const TXT_TUTORIAL_TECLADO := "Use as setas (ou A e D) para andar. Pule com Espaço ou W."
 
 func _ready() -> void:
+	GameManager.FASE_ID = "fase1_corrente"
 	GameManager.mundo_mudou.connect(_on_mundo_mudou)
 	_on_mundo_mudou(false)
 	if cavalgada:

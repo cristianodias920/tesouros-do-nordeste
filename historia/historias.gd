@@ -37,4 +37,20 @@ const HISTORIAS: Dictionary = {
 		 "texto": "Então bora! Primeira parada: Corrente!",
 		 "audio": "res://audio/historia/h8.ogg", "balao": Vector2(0.6, 0.15), "alvo": Vector2(0.3, 0.3)},
 	],
+	# Fase 2 — Cristalândia (textos aprovados pelo Cristiano). Voz: res://audio/historia/cris_h1..4.ogg
+	# (gravar com a Puck; enquanto o arquivo não existir, o cartão mostra só o balão).
+	"cristalandia": [
+		{"imagem": "res://historia/cristalandia/card1.jpg", "quem": "zeca",
+		 "texto": "Corrente foi demais, Faísca! Agora é Cristalândia, bem aqui do lado.",
+		 "audio": "res://audio/historia/cris_h1.ogg", "balao": Vector2(0.66, 0.2), "alvo": Vector2(0.3, 0.33)},
+		{"imagem": "res://historia/cristalandia/card2.jpg", "quem": "zeca",
+		 "texto": "Olha esse brilho! Não é à toa que o nome da cidade é Cristalândia.",
+		 "audio": "res://audio/historia/cris_h2.ogg", "balao": Vector2(0.62, 0.15), "alvo": Vector2(0.3, 0.3)},
+		{"imagem": "res://historia/cristalandia/card3.jpg", "quem": "zeca",
+		 "texto": "É tempo dos festejos de Sant'Ana! Forró, festa, e a padroeira da cidade.",
+		 "audio": "res://audio/historia/cris_h3.ogg", "balao": Vector2(0.7, 0.16), "alvo": Vector2(0.27, 0.36)},
+		{"imagem": "res://historia/cristalandia/card4.jpg", "quem": "zeca",
+		 "texto": "Bora juntar os tesouros dessa terra de cristais. Vamos embora, Faísca!",
+		 "audio": "res://audio/historia/cris_h4.ogg", "balao": Vector2(0.42, 0.14), "alvo": Vector2(0.3, 0.4)},
+	],
 }

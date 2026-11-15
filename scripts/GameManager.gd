@@ -26,7 +26,7 @@ var tempo: float = 0.0            # tempo de jogo da fase (s), sem pausa nem car
 var cronometro_ativo: bool = false
 var celular: bool = false         # aparelho de toque (textos maiores)
 var resultado: Dictionary = {}    # preenchido na vitória (estrelas, recordes...)
-const FASE_ID := "fase1_corrente"
+var FASE_ID: String = "fase1_corrente"   # a cena da fase define no _ready (Fase1/Fase2)
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -126,8 +126,18 @@ func continuar_do_checkpoint() -> void:
 	lives_changed.emit(current_lives)
 	continuou_do_checkpoint.emit()
 
-# Trechos da fase (para dizer onde ainda há tesouros)
-static func area_de(pos: Vector2) -> String:
+# Trechos da fase (para dizer onde ainda há tesouros), na ordem do percurso
+func areas_da_fase() -> Array:
+	if FASE_ID == "fase2_cristalandia":
+		return ["Caminho de Corrente", "Centro e festejo de Sant'Ana", "Rio Palmeira e nascente", "Comunidade Esperança", "Veios de cristal", "Chapada da Limpeza"]
+	return ["Começo e Rio Corrente", "Centro de Corrente", "Torre e nuvens", "Vereda de buritis", "Rio Paraim", "Serra Dois Irmãos", "Rio Corrente e ExpoCorrente"]
+
+func area_de(pos: Vector2) -> String:
+	if FASE_ID == "fase2_cristalandia":
+		var cena = get_tree().current_scene
+		if cena and cena.has_method("area_de"):
+			return cena.area_de(pos)
+		return "Cristalândia"
 	if pos.x > 30000:
 		return "Serra Dois Irmãos"
 	if pos.x < 6200:
