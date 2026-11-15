@@ -1,31 +1,35 @@
-[gd_resource type="SpriteFrames" load_steps=21 format=3]
+[gd_resource type="SpriteFrames" load_steps=25 format=3]
 
-[ext_resource type="Texture2D" path="res://sprites/player/zeca_idle.png" id="1_idle"]
-[ext_resource type="Texture2D" path="res://sprites/player/zeca_walk_1.png" id="2_w1"]
-[ext_resource type="Texture2D" path="res://sprites/player/zeca_walk_2.png" id="3_w2"]
-[ext_resource type="Texture2D" path="res://sprites/player/zeca_walk_3.png" id="4_w3"]
-[ext_resource type="Texture2D" path="res://sprites/player/zeca_walk_4.png" id="5_w4"]
-[ext_resource type="Texture2D" path="res://sprites/player/zeca_jump.png" id="6_jump"]
-[ext_resource type="Texture2D" path="res://sprites/player/zeca_fall.png" id="7_fall"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/mounted_idle.png" id="8_midle"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/mounted_walk_1.png" id="9_mtrot1"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/mounted_walk_2.png" id="10_mtrot2"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/mounted_walk_3.png" id="15_mw3"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/mounted_walk_4.png" id="16_mw4"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/mounted_walk_5.png" id="17_mw5"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/mounted_walk_6.png" id="18_mw6"]
-[ext_resource type="Texture2D" path="res://sprites/player/zeca_walk_5.png" id="19_w5"]
-[ext_resource type="Texture2D" path="res://sprites/player/zeca_walk_6.png" id="20_w6"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/mounted_jump.png" id="11_mjump"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/coice_1.png" id="12_c1"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/coice_2.png" id="13_c2"]
-[ext_resource type="Texture2D" path="res://sprites/faisca/coice_3.png" id="14_c3"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/zeca_idle.png" id="1_zeca_idle"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/zeca_walk_1.png" id="2_zeca_walk_1"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/zeca_walk_2.png" id="3_zeca_walk_2"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/zeca_walk_3.png" id="4_zeca_walk_3"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/zeca_walk_4.png" id="5_zeca_walk_4"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/zeca_walk_5.png" id="6_zeca_walk_5"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/zeca_walk_6.png" id="7_zeca_walk_6"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/zeca_jump.png" id="8_zeca_jump"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/zeca_fall.png" id="9_zeca_fall"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/mounted_idle.png" id="10_mounted_idle"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/mounted_walk_1.png" id="11_mounted_walk_1"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/mounted_walk_5.png" id="12_mounted_walk_5"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/mounted_walk_2.png" id="13_mounted_walk_2"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/mounted_walk_3.png" id="14_mounted_walk_3"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/mounted_walk_6.png" id="15_mounted_walk_6"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/mounted_walk_4.png" id="16_mounted_walk_4"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/mounted_jump.png" id="17_mounted_jump"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/coice_1.png" id="18_coice_1"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/coice_2.png" id="19_coice_2"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/coice_3.png" id="20_coice_3"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/arremesso_1.png" id="21_arremesso_1"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/arremesso_2.png" id="22_arremesso_2"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/mounted_arremesso_1.png" id="23_mounted_arremesso_1"]
+[ext_resource type="Texture2D" path="res://sprites/player/semchapeu/mounted_arremesso_2.png" id="24_mounted_arremesso_2"]
 
 [resource]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("1_idle")
+"texture": ExtResource("1_zeca_idle")
 }],
 "loop": true,
 "name": &"idle",
@@ -33,22 +37,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("2_w1")
+"texture": ExtResource("2_zeca_walk_1")
 }, {
 "duration": 1.0,
-"texture": ExtResource("3_w2")
+"texture": ExtResource("3_zeca_walk_2")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_w3")
+"texture": ExtResource("4_zeca_walk_3")
 }, {
 "duration": 1.0,
-"texture": ExtResource("5_w4")
+"texture": ExtResource("5_zeca_walk_4")
 }, {
 "duration": 1.0,
-"texture": ExtResource("19_w5")
+"texture": ExtResource("6_zeca_walk_5")
 }, {
 "duration": 1.0,
-"texture": ExtResource("20_w6")
+"texture": ExtResource("7_zeca_walk_6")
 }],
 "loop": true,
 "name": &"walk",
@@ -56,7 +60,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("6_jump")
+"texture": ExtResource("8_zeca_jump")
 }],
 "loop": false,
 "name": &"jump",
@@ -64,7 +68,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("7_fall")
+"texture": ExtResource("9_zeca_fall")
 }],
 "loop": false,
 "name": &"fall",
@@ -72,7 +76,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("8_midle")
+"texture": ExtResource("10_mounted_idle")
 }],
 "loop": true,
 "name": &"mounted_idle",
@@ -80,22 +84,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("9_mtrot1")
+"texture": ExtResource("11_mounted_walk_1")
 }, {
 "duration": 1.0,
-"texture": ExtResource("17_mw5")
+"texture": ExtResource("12_mounted_walk_5")
 }, {
 "duration": 1.0,
-"texture": ExtResource("10_mtrot2")
+"texture": ExtResource("13_mounted_walk_2")
 }, {
 "duration": 1.0,
-"texture": ExtResource("15_mw3")
+"texture": ExtResource("14_mounted_walk_3")
 }, {
 "duration": 1.0,
-"texture": ExtResource("18_mw6")
+"texture": ExtResource("15_mounted_walk_6")
 }, {
 "duration": 1.0,
-"texture": ExtResource("16_mw4")
+"texture": ExtResource("16_mounted_walk_4")
 }],
 "loop": true,
 "name": &"mounted_walk",
@@ -103,7 +107,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("11_mjump")
+"texture": ExtResource("17_mounted_jump")
 }],
 "loop": false,
 "name": &"mounted_jump",
@@ -111,15 +115,37 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("12_c1")
+"texture": ExtResource("18_coice_1")
 }, {
 "duration": 1.5,
-"texture": ExtResource("13_c2")
+"texture": ExtResource("19_coice_2")
 }, {
 "duration": 1.0,
-"texture": ExtResource("14_c3")
+"texture": ExtResource("20_coice_3")
 }],
 "loop": false,
 "name": &"coice",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("21_arremesso_1")
+}, {
+"duration": 1.3,
+"texture": ExtResource("22_arremesso_2")
+}],
+"loop": false,
+"name": &"arremesso",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("23_mounted_arremesso_1")
+}, {
+"duration": 1.3,
+"texture": ExtResource("24_mounted_arremesso_2")
+}],
+"loop": false,
+"name": &"mounted_arremesso",
 "speed": 10.0
 }]

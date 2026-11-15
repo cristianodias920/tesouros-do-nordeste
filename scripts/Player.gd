@@ -77,8 +77,20 @@ const CHAPEU_REAPARECE: float = 2.0    # se perdeu (buraco/rio/portal), volta à
 var chapeu_voando: Chapeu = null
 var chapeu_recarga: float = 0.0
 var chapeu_perdido_t: float = 0.0
-var chapeu_cabeca: Sprite2D
-var chapeu_cabeca_t: float = 0.0
+# O chapéu é uma camada separada desenhada na cabeça, quadro a quadro (o Zeca em si é desenhado sem chapéu):
+# sem power-up (ou com outro power-up ativo) = chapéu de palha; com o chapéu ativo = chapéu de couro.
+var chapeu_palha_spr: AnimatedSprite2D
+var chapeu_couro_spr: AnimatedSprite2D
+var chapeu_cabeca_t: float = 9.0       # tempo desde que o couro pousou na cabeça (anima o encaixe)
+var palha_sai_t: float = 9.0           # tempo desde que a palha saiu voando (troca palha -> couro)
+var palha_volta_t: float = 9.0         # tempo desde que a palha voltou (couro saiu de ativo)
+var arremesso_t: float = -1.0          # >= 0 durante o gesto de arremesso (mão na cabeça -> arremessa)
+var pega_t: float = -1.0               # >= 0 durante o gesto de pegar o chapéu de volta
+var _ativo_antes: String = ""
+const ARREMESSO_SOLTA: float = 0.09    # quadro 1 (tira o chapéu da cabeça) até soltar
+const ARREMESSO_DUR: float = 0.22      # gesto inteiro
+const PEGA_DUR: float = 0.16           # pega no ar e encaixa na cabeça
+const CAI_DUR: float = 0.32            # couro caindo e encaixando (power-up / reaparecer)
 var chapeu_arremessos: int = 0
 var folha_sprite: Sprite2D
 const PLANAR_QUEDA: float = 230.0      # velocidade máxima de queda planando
@@ -350,6 +362,17 @@ func pegar_poder(id: String) -> void:
 			hud.mostrar_dica_chapeu()
 
 func _tempo_do_chapeu(delta: float) -> void:
+	if arremesso_t >= 0.0:
+		var antes: float = arremesso_t
+		arremesso_t += delta
+		if antes < ARREMESSO_SOLTA and arremesso_t >= ARREMESSO_SOLTA and is_instance_valid(chapeu_voando):
+			chapeu_voando.soltar()
+		if arremesso_t >= ARREMESSO_DUR:
+			arremesso_t = -1.0
+	if pega_t >= 0.0:
+		pega_t += delta
+		if pega_t >= PEGA_DUR:
+			pega_t = -1.0
 	if chapeu_recarga > 0.0:
 		chapeu_recarga -= delta
 	if chapeu_perdido_t > 0.0:
@@ -389,20 +412,29 @@ func lancar_chapeu() -> bool:
 		return false
 	var c := Chapeu.new()
 	c.iniciar(self, facing_direction)
+	# gesto estilo Mario Odyssey: o Zeca leva a mão à cabeça, tira o chapéu e arremessa.
+	# O chapéu já existe (conta como voando), mas só sai da mão no 2º quadro do gesto.
+	c.espera = ARREMESSO_SOLTA
+	c.desvio = ponto_da_mao() - c.origem
 	get_parent().add_child(c)
 	chapeu_voando = c
 	chapeu_arremessos += 1
+	arremesso_t = 0.0
+	pega_t = -1.0
 	AudioManager.play_sfx("chapeu_lanca")
-	# gesto de arremesso: Zeca dá um tranco para a frente
-	var s0: Vector2 = animated_sprite.scale
-	var t := create_tween()
-	t.tween_property(animated_sprite, "scale", s0 * Vector2(1.08, 0.94), 0.06)
-	t.tween_property(animated_sprite, "scale", s0, 0.1)
 	return true
 
 func ponto_do_chapeu() -> Vector2:
-	# onde o chapéu encantado flutua: logo acima do chapéu de palha do Zeca
-	return global_position + Vector2(facing_direction * 6.0, -318.0 if is_mounted else -262.0) * k
+	# onde o chapéu fica na cabeça do Zeca (alvo da volta do chapéu)
+	if is_mounted:
+		return global_position + Vector2(facing_direction * -12.0, -252.0) * k
+	return global_position + Vector2(facing_direction * 6.0, -188.0) * k
+
+func ponto_da_mao() -> Vector2:
+	# mão do Zeca no quadro em que ele solta o chapéu (braço esticado para a frente)
+	if is_mounted:
+		return global_position + Vector2(facing_direction * 51.0, -215.0) * k
+	return global_position + Vector2(facing_direction * 82.0, -154.0) * k
 
 func ponto_de_arremesso() -> Vector2:
 	# sai da mão do Zeca, na altura da cintura (montado: da altura do lombo), na direção em que ele olha
@@ -415,7 +447,8 @@ func chapeu_voltou(c: Node) -> void:
 	if c == chapeu_voando:
 		chapeu_voando = null
 	chapeu_recarga = CHAPEU_RECARGA
-	chapeu_cabeca_t = 0.0
+	pega_t = 0.0          # pega no ar e encaixa na cabeça
+	arremesso_t = -1.0
 	AudioManager.play_sfx("chapeu_volta")
 
 func chapeu_perdido(c: Node) -> void:
@@ -426,38 +459,112 @@ func chapeu_perdido(c: Node) -> void:
 func _chapeu_reaparece() -> void:
 	chapeu_perdido_t = 0.0
 	chapeu_recarga = 0.0
-	chapeu_cabeca_t = 0.0
+	chapeu_cabeca_t = 0.0   # cai do alto e encaixa na cabeça
 	if PowerUps.esta_ativo("chapeu"):
 		AudioManager.play_sfx("chapeu_volta")
 		_poeira_dourada(ponto_do_chapeu())
 
 func _criar_chapeu_cabeca() -> void:
-	chapeu_cabeca = Sprite2D.new()
-	chapeu_cabeca.texture = load("res://sprites/powerups/chapeu.png")
-	chapeu_cabeca.z_index = 2
-	chapeu_cabeca.visible = false
-	add_child(chapeu_cabeca)
+	chapeu_palha_spr = _nova_camada_chapeu("ChapeuPalha", "res://sprites/chapeu_palha_frames.tres")
+	chapeu_couro_spr = _nova_camada_chapeu("ChapeuCouro", "res://sprites/chapeu_couro_frames.tres")
+	_ativo_antes = PowerUps.ativo()
+	PowerUps.mudou.connect(_poder_mudou)
+	animated_sprite.frame_changed.connect(_sincronizar_chapeu)
+	animated_sprite.animation_changed.connect(_sincronizar_chapeu)
+	_sincronizar_chapeu()
+
+func _nova_camada_chapeu(nome: String, caminho: String) -> AnimatedSprite2D:
+	var a := AnimatedSprite2D.new()
+	a.name = nome
+	a.sprite_frames = load(caminho)
+	a.centered = animated_sprite.centered
+	add_child(a)
+	move_child(a, animated_sprite.get_index() + 1)   # logo acima do corpo
+	return a
+
+func _poder_mudou(a: String, _r: String) -> void:
+	if a == "chapeu" and _ativo_antes != "chapeu":
+		chapeu_cabeca_t = 0.0     # o couro cai na cabeça...
+		palha_sai_t = 0.0         # ...e a palha sai voando
+	elif a != "chapeu" and _ativo_antes == "chapeu":
+		palha_volta_t = 0.0
+	_ativo_antes = a
+	_sincronizar_chapeu()
 
 func chapeu_na_cabeca() -> bool:
-	return chapeu_cabeca != null and chapeu_cabeca.visible
+	# o chapéu de couro (power-up) está com o Zeca, pronto (não está voando nem perdido)
+	return PowerUps.esta_ativo("chapeu") and chapeu_voando == null and chapeu_perdido_t <= 0.0 and not afogando and visible
+
+func camada_do_chapeu() -> String:
+	# o que está desenhado na cabeça agora: "couro", "palha", "mao" (gesto de arremesso/pegar) ou "" (cabelo à mostra)
+	if chapeu_couro_spr and chapeu_couro_spr.visible:
+		return "couro"
+	if chapeu_palha_spr and chapeu_palha_spr.visible:
+		return "palha"
+	if String(animated_sprite.animation).ends_with("arremesso") and animated_sprite.frame == 0:
+		return "mao"
+	return ""
 
 func _atualizar_chapeu_cabeca(delta: float) -> void:
-	var mostrar: bool = PowerUps.esta_ativo("chapeu") and chapeu_voando == null and chapeu_perdido_t <= 0.0 and not afogando
-	chapeu_cabeca.visible = mostrar and visible
-	if not mostrar:
-		return
 	chapeu_cabeca_t += delta
-	# pousa com um quique e depois flutua de leve, brilhando
-	var pouso: float = clamp(chapeu_cabeca_t / 0.25, 0.0, 1.0)
-	var quique: float = (1.0 - pouso) * -26.0
-	var flut: float = sin(chapeu_cabeca_t * 3.2) * 4.0
-	chapeu_cabeca.position = (ponto_do_chapeu() - global_position) + Vector2(0, quique + flut) * k + animated_sprite.offset * animated_sprite.scale
-	chapeu_cabeca.flip_h = facing_direction < 0
-	chapeu_cabeca.rotation = sin(chapeu_cabeca_t * 2.1) * 0.05 + animated_sprite.rotation
-	var base: float = 0.3 * k
-	chapeu_cabeca.scale = Vector2.ONE * base * (1.0 + (1.0 - pouso) * 0.25)
-	var b: float = 1.0 + 0.1 * (0.5 + 0.5 * sin(chapeu_cabeca_t * 5.0))
-	chapeu_cabeca.modulate = Color(b, b, b, 0.75 if invincibility_timer > 0.0 and not animated_sprite.visible else 1.0)
+	palha_sai_t += delta
+	palha_volta_t += delta
+	_sincronizar_chapeu()
+
+func _process(_delta: float) -> void:
+	# o corpo troca de quadro no _process: a camada do chapéu acompanha (inclusive afogando/no portal)
+	_sincronizar_chapeu()
+
+func _sincronizar_chapeu() -> void:
+	if chapeu_palha_spr == null or chapeu_couro_spr == null:
+		return
+	var an: StringName = animated_sprite.animation
+	var fr: int = animated_sprite.frame
+	var tem_quadro: bool = chapeu_palha_spr.sprite_frames.has_animation(an)
+	var corpo: bool = animated_sprite.visible
+	var couro_ativo: bool = PowerUps.esta_ativo("chapeu")
+	var pega_mao: bool = pega_t >= 0.0 and pega_t < PEGA_DUR * 0.5
+	var couro_cabeca: bool = couro_ativo and chapeu_voando == null and chapeu_perdido_t <= 0.0 and arremesso_t < 0.0 and not pega_mao
+	var palha_saindo: bool = couro_ativo and palha_sai_t < 0.3
+	var esq: float = -1.0 if animated_sprite.flip_h else 1.0
+	for cam in [chapeu_palha_spr, chapeu_couro_spr]:
+		var c: AnimatedSprite2D = cam
+		c.position = animated_sprite.position
+		c.scale = animated_sprite.scale
+		c.rotation = animated_sprite.rotation
+		c.offset = animated_sprite.offset
+		c.flip_h = animated_sprite.flip_h
+		c.modulate = animated_sprite.modulate
+		if tem_quadro:
+			if c.animation != an:
+				c.animation = an
+			c.frame = fr
+	# chapéu de palha: padrão (sem power-up ou com outro power-up ativo)
+	chapeu_palha_spr.visible = corpo and tem_quadro and (not couro_ativo or palha_saindo)
+	if palha_saindo:
+		var u: float = palha_sai_t / 0.3
+		chapeu_palha_spr.offset += Vector2(-60.0 * u * esq, -300.0 * u + 260.0 * u * u)
+		chapeu_palha_spr.rotation += -0.9 * u * esq
+		chapeu_palha_spr.modulate.a *= 1.0 - u
+	elif palha_volta_t < 0.2:
+		var v: float = palha_volta_t / 0.2
+		chapeu_palha_spr.offset.y += -40.0 * (1.0 - v) * (1.0 - v)
+	# chapéu de couro: com o power-up ativo, certinho na cabeça
+	chapeu_couro_spr.visible = corpo and tem_quadro and couro_cabeca
+	if couro_cabeca:
+		if chapeu_cabeca_t < CAI_DUR:
+			# cai do alto girando de leve e encaixa com um quique
+			var u2: float = chapeu_cabeca_t / CAI_DUR
+			var queda: float = clamp(u2 / 0.6, 0.0, 1.0)
+			var y: float = -230.0 * (1.0 - queda * queda)
+			if u2 > 0.6:
+				y = -18.0 * sin((u2 - 0.6) / 0.4 * PI)
+			chapeu_couro_spr.offset.y += y
+			chapeu_couro_spr.rotation += 0.35 * (1.0 - queda) * esq
+		elif pega_t >= 0.0 and pega_t < PEGA_DUR:
+			# acabou de pegar: encaixa na cabeça com um tapinha
+			var w: float = (pega_t - PEGA_DUR * 0.5) / (PEGA_DUR * 0.5)
+			chapeu_couro_spr.offset.y += -16.0 * (1.0 - clamp(w, 0.0, 1.0))
 
 func _poeira_dourada(pos: Vector2) -> void:
 	var pp: CPUParticles2D = faiscas.duplicate()
@@ -526,6 +633,21 @@ func _on_animation_finished() -> void:
 
 func update_animation() -> void:
 	if is_coice:
+		return
+	# gesto do chapéu: 1º quadro = mão na cabeça segurando o chapéu, 2º = braço esticado (soltou)
+	var gesto_quadro: int = -1
+	if arremesso_t >= 0.0:
+		gesto_quadro = 0 if arremesso_t < ARREMESSO_SOLTA else 1
+	elif pega_t >= 0.0 and pega_t < PEGA_DUR * 0.5:
+		gesto_quadro = 0
+	if gesto_quadro >= 0:
+		var ga: String = "mounted_arremesso" if is_mounted else "arremesso"
+		if animated_sprite.animation != ga:
+			animated_sprite.play(ga)
+		animated_sprite.speed_scale = 0.0
+		if animated_sprite.frame != gesto_quadro:
+			animated_sprite.frame = gesto_quadro
+		_trot_bob(false, 1.0)
 		return
 
 	var target_anim: String = ""

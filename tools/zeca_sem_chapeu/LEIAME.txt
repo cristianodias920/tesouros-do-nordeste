@@ -1,0 +1,12 @@
+Zeca sem chapéu + camadas de chapéu (palha / couro)
+
+1. Cada quadro original do Zeca (sprites/player/zeca_*.png, sprites/faisca/mounted_*/coice_*) foi
+   editado por geração de imagem ("o mesmo quadro, sem o chapéu de palha") sobre fundo magenta.
+2. align.py: recorta o fundo magenta, alinha a imagem gerada ao quadro original (ECC) e troca só a
+   parte de cima (cabeça) — o corpo continua o original. Saída: sprites/player/semchapeu/.
+3. hatmask.py: extrai o chapéu de palha de cada quadro original (diferença entre original e sem chapéu)
+   -> sprites/player/chapeu_palha/ (mesmo tamanho do quadro: fica alinhado de graça).
+4. fitcouro.py: o chapéu de couro (desenhado uma vez na cabeça do quadro parado) é encaixado em cada
+   quadro pela transformação do chapéu de palha daquele quadro -> sprites/player/chapeu_couro/.
+5. Quadros do gesto de arremesso: semchapeu/arremesso_1-2 e mounted_arremesso_1-2 (gerados).
+O Player troca de camada conforme o power-up (scripts/Player.gd, _sincronizar_chapeu).

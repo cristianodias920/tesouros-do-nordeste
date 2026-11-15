@@ -33,6 +33,10 @@ var anim: AnimatedSprite2D
 var brilho: Sprite2D
 var som_giro: AudioStreamPlayer2D
 var acertos: int = 0                # inimigos + cristais acertados neste voo (para testes/estatística)
+var espera: float = 0.0             # gesto do Zeca: o chapéu ainda está na mão dele (invisível, sem acertar);
+                                    # o Zeca chama soltar() no 2º quadro do gesto (espera é só o limite de segurança)
+var desvio: Vector2 = Vector2.ZERO  # o desenho sai da mão do Zeca e converge para a linha de voo
+var voo_t: float = 0.0
 
 func iniciar(p: Player, direcao: float) -> void:
 	dono = p
@@ -64,7 +68,7 @@ func _ready() -> void:
 	g.set_color(1, Color(1.0, 0.7, 0.2, 0.0))
 	gt.gradient = g
 	brilho.texture = gt
-	brilho.scale = Vector2.ONE * 1.9 * k
+	brilho.scale = Vector2.ONE * 1.4 * k
 	var m := CanvasItemMaterial.new()
 	m.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	brilho.material = m
@@ -77,7 +81,7 @@ func _ready() -> void:
 	for i in 6:
 		sf.add_frame("giro", load("res://sprites/powerups/chapeu_giro_%d.png" % i))
 	anim.sprite_frames = sf
-	anim.scale = Vector2.ONE * 0.5 * k
+	anim.scale = Vector2.ONE * 0.34 * k   # do tamanho do chapéu na cabeça (um pouco maior, para ver bem girando)
 	anim.flip_h = dir < 0
 	add_child(anim)
 	anim.play("giro")
@@ -93,9 +97,23 @@ func _ready() -> void:
 	som_giro.volume_db = -6.0
 	som_giro.max_distance = 3000.0
 	add_child(som_giro)
-	if AudioManager.sound_enabled:
+	if AudioManager.sound_enabled and espera <= 0.0:
 		som_giro.play()
+	if espera > 0.0:
+		visible = false
 	body_entered.connect(_acertou)
+
+func soltar() -> void:
+	# o Zeca esticou o braço: o chapéu sai da mão agora
+	if espera > 0.0:
+		espera = 0.0
+		origem = dono.ponto_de_arremesso() if is_instance_valid(dono) else origem
+		global_position = origem
+		if is_instance_valid(dono):
+			desvio = dono.ponto_da_mao() - origem
+		visible = true
+		if AudioManager.sound_enabled and som_giro and not som_giro.playing:
+			som_giro.play()
 
 func perna() -> int:
 	return 0 if estado == IDA else 1
@@ -116,6 +134,20 @@ func _physics_process(delta: float) -> void:
 	if dono.afogando or dono.viajando or (dono.global_position.distance_to(global_position) > DIST_MAX * k) or tempo > TEMPO_MAX:
 		_perder()
 		return
+	if espera > 0.0:
+		# ainda na mão do Zeca (ele está tirando o chapéu da cabeça): acompanha e só depois solta
+		espera -= delta * 0.5
+		origem = dono.ponto_de_arremesso()
+		global_position = origem
+		desvio = dono.ponto_da_mao() - origem
+		if espera <= 0.0:
+			visible = true
+			if AudioManager.sound_enabled and som_giro and not som_giro.playing:
+				som_giro.play()
+		else:
+			return
+	voo_t += delta
+	var dv: Vector2 = desvio * max(0.0, 1.0 - voo_t / 0.14)
 	if estado == IDA:
 		var antes := global_position
 		var passo: float = vel * delta
@@ -123,8 +155,8 @@ func _physics_process(delta: float) -> void:
 		percorrido += passo
 		var f: float = clamp(percorrido / (ALCANCE * k), 0.0, 1.0)
 		var alvo := Vector2(origem.x + dir * percorrido, origem.y)
-		anim.position.y = -sin(f * PI) * ARCO * k   # arco só no desenho; a área de acerto segue reta
-		brilho.position.y = anim.position.y
+		anim.position = Vector2(dv.x, -sin(f * PI) * ARCO * k + dv.y)   # arco só no desenho; a área de acerto segue reta
+		brilho.position = anim.position
 		if _parede_entre(antes, alvo):
 			_voltar()
 			return
@@ -142,8 +174,8 @@ func _physics_process(delta: float) -> void:
 			return
 		global_position += d.normalized() * vel_volta * delta
 		anim.flip_h = d.x < 0
-		anim.position.y = lerp(anim.position.y, 0.0, 0.2)
-		brilho.position.y = anim.position.y
+		anim.position = anim.position.lerp(Vector2.ZERO, 0.2)
+		brilho.position = anim.position
 	# Acerta também o que já está encostado (ex.: o geodo, que leva o 2º golpe na volta)
 	# (consulta de forma: o Area2D não enxerga corpos estáticos como os cristais)
 	if monitoring:
@@ -183,7 +215,7 @@ func _parede_entre(a: Vector2, b: Vector2) -> bool:
 	return abs(n.x) > 0.6   # só parede de verdade (chão/plataforma por baixo não conta)
 
 func _acertou(body: Node) -> void:
-	if estado == PERDIDO or body == null:
+	if estado == PERDIDO or body == null or espera > 0.0:
 		return
 	var id := body.get_instance_id()
 	if acertados.get(id, -1) == perna():

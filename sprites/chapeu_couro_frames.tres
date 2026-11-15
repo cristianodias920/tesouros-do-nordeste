@@ -1,0 +1,125 @@
+[gd_resource type="SpriteFrames" load_steps=21 format=3]
+
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/zeca_idle.png" id="1_zeca_idle"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/zeca_walk_1.png" id="2_zeca_walk_1"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/zeca_walk_2.png" id="3_zeca_walk_2"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/zeca_walk_3.png" id="4_zeca_walk_3"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/zeca_walk_4.png" id="5_zeca_walk_4"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/zeca_walk_5.png" id="6_zeca_walk_5"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/zeca_walk_6.png" id="7_zeca_walk_6"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/zeca_jump.png" id="8_zeca_jump"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/zeca_fall.png" id="9_zeca_fall"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/mounted_idle.png" id="10_mounted_idle"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/mounted_walk_1.png" id="11_mounted_walk_1"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/mounted_walk_5.png" id="12_mounted_walk_5"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/mounted_walk_2.png" id="13_mounted_walk_2"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/mounted_walk_3.png" id="14_mounted_walk_3"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/mounted_walk_6.png" id="15_mounted_walk_6"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/mounted_walk_4.png" id="16_mounted_walk_4"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/mounted_jump.png" id="17_mounted_jump"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/coice_1.png" id="18_coice_1"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/coice_2.png" id="19_coice_2"]
+[ext_resource type="Texture2D" path="res://sprites/player/chapeu_couro/coice_3.png" id="20_coice_3"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_zeca_idle")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_zeca_walk_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_zeca_walk_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_zeca_walk_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_zeca_walk_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_zeca_walk_5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_zeca_walk_6")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 13.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_zeca_jump")
+}],
+"loop": false,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_zeca_fall")
+}],
+"loop": false,
+"name": &"fall",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_mounted_idle")
+}],
+"loop": true,
+"name": &"mounted_idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_mounted_walk_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_mounted_walk_5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_mounted_walk_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_mounted_walk_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_mounted_walk_6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_mounted_walk_4")
+}],
+"loop": true,
+"name": &"mounted_walk",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_mounted_jump")
+}],
+"loop": false,
+"name": &"mounted_jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("18_coice_1")
+}, {
+"duration": 1.5,
+"texture": ExtResource("19_coice_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_coice_3")
+}],
+"loop": false,
+"name": &"coice",
+"speed": 10.0
+}]
