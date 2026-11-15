@@ -618,6 +618,47 @@ func _montar_pausa() -> void:
 	br.custom_minimum_size = Vector2(0, 72)
 	br.pressed.connect(_on_restart_button_pressed)
 	vb.add_child(br); vb.move_child(br, idx)
+	_botao_fechar_pausa(panel)
+
+# Botão X no canto de cima à direita do painel: despausa (igual a "Continuar")
+var btn_fechar_pausa: Button
+func _botao_fechar_pausa(panel: Panel) -> void:
+	var t := 116.0
+	var b := Button.new()
+	b.name = "BtnFechar"
+	b.focus_mode = Control.FOCUS_NONE
+	b.tooltip_text = "Fechar e continuar"
+	b.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	b.offset_left = -t + 34; b.offset_right = 34
+	b.offset_top = -34; b.offset_bottom = t - 34
+	for estado in ["normal", "hover", "pressed", "focus"]:
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.78, 0.2, 0.12) if estado != "pressed" else Color(0.6, 0.14, 0.08)
+		if estado == "hover":
+			sb.bg_color = Color(0.88, 0.28, 0.16)
+		sb.set_corner_radius_all(int(t / 2))
+		sb.border_color = Color(1.0, 0.92, 0.65)
+		sb.set_border_width_all(6)
+		sb.shadow_color = Color(0, 0, 0, 0.35); sb.shadow_size = 6; sb.shadow_offset = Vector2(0, 4)
+		b.add_theme_stylebox_override(estado, sb)
+	var x := XDesenho.new()
+	x.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	x.set_anchors_preset(Control.PRESET_FULL_RECT)
+	b.add_child(x)
+	b.pressed.connect(_on_continue_button_pressed)
+	panel.add_child(b)
+	btn_fechar_pausa = b
+
+class XDesenho extends Control:
+	func _draw() -> void:
+		var c := size * 0.5
+		var r := size.x * 0.22
+		var w := size.x * 0.11
+		var cor := Color(1, 0.97, 0.88)
+		for d in [Vector2(1, 1), Vector2(1, -1)]:
+			draw_line(c - d * r, c + d * r, cor, w, true)
+			draw_circle(c - d * r, w * 0.5, cor)
+			draw_circle(c + d * r, w * 0.5, cor)
 
 func _bolinha(d: int) -> ImageTexture:
 	var img := Image.create(d, d, false, Image.FORMAT_RGBA8)
