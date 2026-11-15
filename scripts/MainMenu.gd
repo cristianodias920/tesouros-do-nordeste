@@ -10,6 +10,8 @@ func _ready() -> void:
 	update_sound_button()
 	btn_start.grab_focus()
 	_mostrar_progresso()
+	# música já na tela de título (no navegador o toque da tela "Toque para começar" liberou o som)
+	AudioManager.start_music()
 
 func _mostrar_progresso() -> void:
 	# Progresso salvo no aparelho: estrelas, melhor nº de tesouros e melhor tempo
