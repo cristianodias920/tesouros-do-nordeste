@@ -1,5 +1,5 @@
 Falas do Zeca — Tesouros do Nordeste: Aventura no Piauí — Fase 1 (Corrente, Piauí)
-Arquivo de cada fala: res://audio/voz/<id>.ogg (ou .wav). Voz: Puck (adolescente). Todas as 15 falas gravadas.
+Arquivo de cada fala: res://audio/voz/<id>.ogg (ou .wav). Voz: Puck (adolescente). Todas as 17 falas gravadas.
 Enquanto o arquivo não existir, o jogo mostra só a legenda (balão sobre o Zeca).
 
 id                  | texto exato                                  | quando toca
@@ -19,3 +19,5 @@ vitoria             | Conseguimos, Faísca!                         | ao conclui
 rapadura            | Rapadura! Agora ninguém me segura!           | ao pegar a rapadura (invencível; no máximo 1 vez a cada 25 s)
 rio_paraim          | O Rio Paraim, cheio de buritis!              | ao chegar na margem do Rio Paraim (antes do portal)
 faltam_dez          | Só faltam dez tesouros!                      | quando faltarem exatamente 10 tesouros (1 vez)
+volta_faisca       | Volta aqui, Faísca!                          | logo após o relincho, quando o Faísca foge de um golpe montado
+todos_tesouros     | Todos os tesouros de Corrente! Ô terra rica! | ao juntar os 83 tesouros da fase (1 vez)

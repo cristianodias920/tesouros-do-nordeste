@@ -30,13 +30,13 @@ Este diretório contém as faixas e efeitos sonoros do jogo (efeitos em WAV PCM 
 
 ## Vozes do Zeca (`voz/<id>.ogg`)
 - Voz: "Puck" (Google AI Studio), com instrução para soar como um menino adolescente nordestino, animado. Escolhida pelo Cristiano; substitui a voz provisória "Algieba".
-- 15 falas, todas gravadas com a Puck: inicio ("Corrente, aqui vou eu!" — trecho final da gravação "Meu nome é Zeca! Corrente, aqui vou eu!"; a apresentação agora fica na historinha), faisca_encontro, faisca_monta, checkpoint_primeiro, rio_corrente, igreja_matriz, nuvens, portal, serra, agua_cai, expo, vitoria, rapadura, rio_paraim, faltam_dez. Nada pendente.
+- 17 falas, todas gravadas com a Puck: inicio ("Corrente, aqui vou eu!" — trecho final da gravação "Meu nome é Zeca! Corrente, aqui vou eu!"; a apresentação agora fica na historinha), faisca_encontro, faisca_monta, checkpoint_primeiro, rio_corrente, igreja_matriz, nuvens, portal, serra, agua_cai, expo, vitoria, rapadura, rio_paraim, faltam_dez, volta_faisca ("Volta aqui, Faísca!" — toca logo após o relincho, quando o Faísca foge de um golpe montado) e todos_tesouros ("Todos os tesouros de Corrente! Ô terra rica!"). Nada pendente.
 - Edição: silêncio do início/fim cortado, volume normalizado (fala acima da música), convertidas de WAV para OGG. Lista de ids e textos em `voz_lista.txt`.
-- O `VoiceLines.gd` toca cada fala uma vez por partida (a `agua_cai` no máximo a cada 30 s e a `rapadura` a cada 25 s), mostra a legenda em balão sobre o Zeca e abaixa a música enquanto ele fala. Se faltar o arquivo, mostra só a legenda.
+- O `VoiceLines.gd` toca cada fala uma vez por partida (a `agua_cai` no máximo a cada 30 s, a `rapadura` a cada 25 s e a `volta_faisca` a cada 15 s), mostra a legenda em balão sobre o Zeca e abaixa a música enquanto ele fala. A `volta_faisca` só começa depois que o relincho do Faísca termina, para os dois sons não se sobreporem. Se faltar o arquivo, mostra só a legenda.
 - Para trocar falas: `python3 tools/preparar_vozes.py <pasta com os .wav>` (mesmos ids), reimportar e exportar a versão Web de novo — nada no código precisa mudar.
 
 ## Historinha da fase (`historia/<id>.ogg`)
-- Corrente: h1, h2, h3, h4, h6, h8 — voz "Puck" (mesma instrução de adolescente), conferidas por transcrição automática. Processadas com `python3 tools/preparar_vozes.py <pasta> audio/historia`.
+- Corrente: h1, h2, h3, h4, h6, h8 — voz "Puck" (mesma instrução de adolescente), conferidas por transcrição automática. O h3 é a versão com "Rios, praias, serras...". Processadas com `python3 tools/preparar_vozes.py <pasta> audio/historia`.
 - Os cartões 5 e 7 (Faísca) não têm voz: usam o zurro (`zurro.wav`) e um balão de onomatopeia.
 - Textos, imagens e posições dos balões ficam em `historia/historias.gd` (uma entrada por fase).
 

@@ -2,17 +2,20 @@ extends CharacterBody2D
 class_name FaiscaFugindo
 # Faísca assustado (estilo Yoshi): quando o Zeca leva um golpe montado, ele cai da sela
 # e o Faísca sai correndo em pânico, longe do Zeca, piscando. Se o Zeca encostar nele
-# (andando ou pulando em cima) monta de novo. Depois de ~5,5 s ele vai embora correndo
+# (andando ou pulando em cima) monta de novo. Depois de ~11 s ele vai embora correndo
 # e some; volta no estábulo/checkpoint como antes.
+# Corre mais rápido e mais longe, com paradas curtas e raras, e às vezes dá um pulinho.
+# Em terreno normal o Zeca precisa de uns 4 a 8 s de perseguição de verdade para alcançar.
 # Respeita o cenário: vira em paredes e beiradas, pula buracos pequenos e inimigos,
 # e nunca fica caindo para sempre (se cair num buraco/rio, some numa nuvem de poeira).
 
-const TEMPO_FUGA: float = 5.5        # depois disso ele vai embora
+const TEMPO_FUGA: float = 11.0       # janela justa: dá para pegar em 4-8 s; depois vai embora
 const TEMPO_SUMIR: float = 1.1       # indo embora: some aos poucos
-const TEMPO_SEM_MONTAR: float = 0.45 # logo depois do golpe não dá para montar
-const VEL_FUGA: float = 360.0        # Zeca a pé anda 450: dá para alcançar
-const VEL_SUSTO: float = 560.0
-const VEL_EMBORA: float = 720.0
+const TEMPO_SEM_MONTAR: float = 0.70 # logo depois do golpe não dá para montar
+const TEMPO_SUSTO: float = 1.50      # arrancada inicial para abrir distância
+const VEL_FUGA: float = 400.0        # Zeca a pé anda 450: fecha ~50 px/s
+const VEL_SUSTO: float = 680.0
+const VEL_EMBORA: float = 740.0
 const GRAVIDADE: float = 3600.0
 const PULO: float = -1150.0
 const ALCANCE_X: float = 120.0
@@ -23,8 +26,12 @@ var k: float = 1.0
 var dir: float = 1.0
 var t: float = 0.0
 var t_virada: float = 0.0     # trava para não ficar virando sem parar
-var t_olhar: float = 1.4      # de vez em quando para e olha para trás (dá chance de pegar)
+var t_olhar: float = 4.2      # parada curta e rara (dá uma chance, sem facilitar demais)
 var parado: float = 0.0
+var t_pulo_fuga: float = 2.2  # de vez em quando dá um pulinho no galope
+var falou_volta: bool = false
+var t_relincho_fim: float = -1.0
+var t_chamou_volta: float = -1.0
 var estado: String = "fugindo"   # fugindo / embora / pego
 var y_chao: float = 0.0
 var t_no_ar: float = 0.0
@@ -146,8 +153,30 @@ func _criar_efeitos() -> void:
 	add_child(zurro)
 
 func _ready() -> void:
+	# Relincho primeiro; a fala do Zeca só entra quando o zurro termina (sem sobrepor).
+	# Se não houver áudio, espera ~0,6 s e mostra o balão.
+	var atraso: float = 0.6
 	if AudioManager.sound_enabled and zurro.stream:
+		atraso = max(0.6, zurro.stream.get_length() / max(zurro.pitch_scale, 0.05))
 		zurro.play()
+		zurro.finished.connect(_no_fim_do_relincho, CONNECT_ONE_SHOT)
+	var tm := Timer.new()
+	tm.one_shot = true
+	tm.wait_time = atraso + 0.05
+	tm.timeout.connect(_no_fim_do_relincho)
+	add_child(tm)
+	tm.start()
+
+func _no_fim_do_relincho() -> void:
+	if not is_instance_valid(self) or not is_inside_tree():
+		return
+	if t_relincho_fim >= 0.0:
+		return
+	t_relincho_fim = t
+	if falou_volta or estado == "pego" or foi_embora:
+		return
+	falou_volta = true
+	t_chamou_volta = t
 	VoiceLines.say("volta_faisca", true)
 
 func _espaco() -> PhysicsDirectSpaceState2D:
@@ -195,13 +224,23 @@ func _physics_process(delta: float) -> void:
 				t_virada = 0.6
 		t_olhar -= delta
 		if t_olhar <= 0.0 and no_chao:
-			parado = 0.4                # para e olha para trás, ofegante
-			t_olhar = 1.5
+			# só para se o Zeca ainda está longe (senão a parada entregaria o Faísca)
+			var longe := true
+			if is_instance_valid(zeca):
+				longe = abs(global_position.x - zeca.global_position.x) > 320.0 * k
+			if longe:
+				parado = 0.16
+			t_olhar = 4.0
 		if parado > 0.0:
 			parado -= delta
 			alvo_vx = 0.0
 		else:
-			alvo_vx = dir * (VEL_SUSTO if t < 0.5 else VEL_FUGA) * k
+			alvo_vx = dir * (VEL_SUSTO if t < TEMPO_SUSTO else VEL_FUGA) * k
+		# pulinho ocasional no galope (só com chão na frente, para não cair em buraco)
+		t_pulo_fuga -= delta
+		if no_chao and alvo_vx != 0.0 and t_pulo_fuga <= 0.0 and t < TEMPO_FUGA - 1.5 and _chao_afrente():
+			velocity.y = PULO * 0.62 * k
+			t_pulo_fuga = 2.5
 	elif estado == "embora":
 		alvo_vx = dir * VEL_EMBORA * k
 		var a: float = clamp(1.0 - (t - TEMPO_FUGA) / TEMPO_SUMIR, 0.0, 1.0)
@@ -253,6 +292,14 @@ func _physics_process(delta: float) -> void:
 		return
 	_animar(delta, no_chao)
 	no_chao_antes = no_chao
+
+func _chao_afrente() -> bool:
+	# tem chão contínuo na frente? usado para pulinhos e para não pular no vazio
+	for passo in [140.0, 220.0, 300.0]:
+		var h := _tem_chao(global_position.x + dir * passo * k)
+		if h.is_empty() or abs(h.position.y - global_position.y) > 140.0 * k:
+			return false
+	return true
 
 func _linha_agua() -> float:
 	if zeca == null or not is_instance_valid(zeca):
@@ -325,7 +372,7 @@ func _animar(delta: float, no_chao: bool) -> void:
 	aviso.rotation = sin(t * 11.0) * 0.12
 	# pisca, cada vez mais rápido perto de ir embora
 	if estado == "fugindo":
-		var freq: float = 6.0 if t < 3.0 else (11.0 if t < 4.5 else 18.0)
+		var freq: float = 6.0 if t < TEMPO_FUGA * 0.5 else (11.0 if t < TEMPO_FUGA * 0.8 else 18.0)
 		sprite.modulate.a = 0.45 if fmod(t * freq, 1.0) < 0.35 else 1.0
 
 func _ser_pego() -> void:

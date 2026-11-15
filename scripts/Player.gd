@@ -489,7 +489,7 @@ func hit_by_enemy(from_pos: Vector2) -> void:
 	velocity = Vector2(knock_dir * 420.0, -600.0) * k
 	if is_mounted:
 		# Faísca foge assustado (estilo Yoshi), para longe do perigo: o Zeca cai da sela
-		# sem perder coração e pode montar de novo se alcançar o Faísca em ~5 s
+		# sem perder coração e pode montar de novo se alcançar o Faísca em uns 4 a 8 s
 		dismount_scared(knock_dir, true)
 	else:
 		GameManager.take_damage() # com 0 corações o GameManager mostra o FIM DA AVENTURA

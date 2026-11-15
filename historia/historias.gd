@@ -19,7 +19,7 @@ const HISTORIAS: Dictionary = {
 		 "texto": "Muita gente acha que aqui só tem seca, chão rachado e desertificação... mas o Piauí é cheio de tesouros!",
 		 "audio": "res://audio/historia/h2.ogg", "balao": Vector2(0.23, 0.56), "alvo": Vector2(0.41, 0.42)},
 		{"imagem": "res://historia/corrente/card3.jpg", "quem": "zeca",
-		 "texto": "Rios, serras, festas, comidas, gente boa... eu vou juntar tudo isso pra mostrar pro mundo o quanto a nossa terra é rica!",
+		 "texto": "Rios, praias, serras, festas, comidas, gente boa... eu vou juntar tudo isso pra mostrar pro mundo o quanto a nossa terra é rica!",
 		 "audio": "res://audio/historia/h3.ogg", "balao": Vector2(0.66, 0.15), "alvo": Vector2(0.34, 0.3)},
 		{"imagem": "res://historia/corrente/card4.jpg", "quem": "zeca",
 		 "texto": "Hã? Quem tá aí?",

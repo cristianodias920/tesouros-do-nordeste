@@ -8,7 +8,7 @@ const LINES: Dictionary = {
 	"faisca_encontro": "Opa! Oi, Faísca!",
 	"faisca_monta": "Vamos lá, Faísca!",
 	"volta_faisca": "Volta aqui, Faísca!",   # áudio: res://audio/voz/volta_faisca.ogg (toca se existir)
-	"todos_tesouros": "Todos os tesouros de Corrente! Ô terra rica, sô!",   # áudio: res://audio/voz/todos_tesouros.ogg
+	"todos_tesouros": "Todos os tesouros de Corrente! Ô terra rica!",   # áudio: res://audio/voz/todos_tesouros.ogg
 	"checkpoint_primeiro": "Ufa, checkpoint!",
 	"rio_corrente": "Olha o Rio Corrente!",
 	"igreja_matriz": "A Igreja Matriz de Corrente, que beleza!",
