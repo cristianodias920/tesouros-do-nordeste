@@ -12,7 +12,7 @@ var t: float = 0.0
 var rios: Array = []   # [x0, x1] dos trechos de água (para o som do rio)
 
 const TXT_TUTORIAL_TOQUE := "Toque nas setas para andar e no botão da direita para pular."
-const TXT_TUTORIAL_TECLADO := "Use as setas (ou A e D) para andar. Pule com Espaço."
+const TXT_TUTORIAL_TECLADO := "Use as setas (ou A e D) para andar. Pule com Espaço ou W."
 
 func _ready() -> void:
 	GameManager.mundo_mudou.connect(_on_mundo_mudou)
@@ -31,7 +31,7 @@ func _ready() -> void:
 			if sp is Sprite2D and sp.texture:
 				var w: float = sp.texture.get_width() * sp.global_scale.x
 				rios.append([sp.global_position.x, sp.global_position.x + w])
-	AudioManager.tocar_musica("forro")
+	AudioManager.tocar_musica("forro", true)
 
 func _ajustar_tutorial() -> void:
 	var dica: Label = get_node_or_null("Placas/DicaTutorial")
@@ -87,15 +87,31 @@ func _process(delta: float) -> void:
 		cavalgada.position.y = -abs(sin(t * 5.0)) * 4.0 + cavalgada.get_meta("base_y", 0.0)
 	_som_do_lugar()
 
+const NUVEM_X0 := 9900.0
+const NUVEM_X1 := 16900.0
+const NUVEM_ENTRA := -150.0  # sobe acima disto (topo da torre) -> música das nuvens
+const NUVEM_SAI := 330.0     # desce abaixo disto -> volta o forró
+var musica_nuvens: bool = false
+
 func _som_do_lugar() -> void:
 	var p = get_tree().get_first_node_in_group("player")
 	if p == null:
 		return
 	var pos: Vector2 = p.global_position
 	# música: faixa das nuvens lá em cima; forró no resto (e na vitória)
-	var nas_nuvens: bool = (not p.no_fundo) and pos.x > 9900 and pos.x < 16900 and pos.y < 150
+	# Com folga (histerese): entra nas nuvens só acima de y=NUVEM_ENTRA e sai só abaixo de
+	# y=NUVEM_SAI (ou fora da faixa x), assim a música não fica trocando na fronteira.
+	var dentro_x: bool = pos.x > NUVEM_X0 and pos.x < NUVEM_X1
+	var dentro_x_folga: bool = pos.x > NUVEM_X0 - 250.0 and pos.x < NUVEM_X1 + 250.0
+	if musica_nuvens:
+		if p.no_fundo or not dentro_x_folga or pos.y > NUVEM_SAI:
+			musica_nuvens = false
+	else:
+		if (not p.no_fundo) and dentro_x and pos.y < NUVEM_ENTRA:
+			musica_nuvens = true
 	if GameManager.is_level_ended:
-		nas_nuvens = false
+		musica_nuvens = false
+	var nas_nuvens: bool = musica_nuvens
 	AudioManager.tocar_musica("nuvens" if nas_nuvens else "forro")
 	# ambiente: passarinhos no chão (mais na Serra), rio perto da água
 	var passaros: float = 0.0 if nas_nuvens else (0.9 if p.no_fundo else 0.6)

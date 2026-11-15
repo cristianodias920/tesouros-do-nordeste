@@ -145,10 +145,8 @@ const MUSIC_DUCK_DB: float = -19.0
 func _process(delta: float) -> void:
 	clock += delta
 	# abaixa a música enquanto o Zeca fala
-	var mp: AudioStreamPlayer = AudioManager.music_player
-	if mp:
-		var alvo: float = (MUSIC_DUCK_DB if player_audio.playing else MUSIC_DB) + AudioManager.fade_in_db
-		mp.volume_db = move_toward(mp.volume_db, alvo, delta * (40.0 if alvo < mp.volume_db else 15.0))
+	var alvo: float = (MUSIC_DUCK_DB - MUSIC_DB) if player_audio.playing else 0.0
+	AudioManager.duck_db = move_toward(AudioManager.duck_db, alvo, delta * (40.0 if alvo < AudioManager.duck_db else 15.0))
 	if current_id == "":
 		return
 	show_time -= delta

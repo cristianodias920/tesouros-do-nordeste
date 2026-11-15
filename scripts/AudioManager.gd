@@ -44,14 +44,18 @@ var sound_paths = {
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_criar_buses()
-	music_player = AudioStreamPlayer.new()
-	music_player.bus = BUS_MUSICA
-	music_player.volume_db = -10.0
-	add_child(music_player)
-	music_fade = AudioStreamPlayer.new()
-	music_fade.bus = BUS_MUSICA
-	add_child(music_fade)
-	music_player.stream = _carregar_musica("forro")
+	for id in MUSICAS:
+		var mp := AudioStreamPlayer.new()
+		mp.name = "Musica_" + id
+		mp.bus = BUS_MUSICA
+		mp.volume_db = -80.0
+		mp.stream = _carregar_musica(id)
+		add_child(mp)
+		faixas[id] = mp
+		ganho[id] = 1.0 if id == faixa_atual else 0.0
+		pos_faixa[id] = 0.0
+	music_player = faixas[faixa_atual]
+	music_fade = null
 
 	for sfx_name in sound_paths:
 		var p = AudioStreamPlayer.new()
@@ -127,41 +131,97 @@ func start_music() -> void:
 	if music_started:
 		return
 	music_started = true
-	if music_player and music_player.stream:
-		music_player.play()
+	_aplicar_volumes_musica()
+	var mp: AudioStreamPlayer = faixas.get(faixa_atual)
+	if mp and mp.stream:
+		mp.play(_pos_valida(faixa_atual))
 
-# Troca de faixa com cruzamento suave (~1,2 s)
-func tocar_musica(id: String) -> void:
+# ---- Música: uma faixa por player, troca com cruzamento de potência igual ----
+# Cada faixa continua de onde parou (a posição fica guardada enquanto ela está calada).
+# Se a troca for desfeita no meio, o cruzamento só volta, sem pular.
+const MUSIC_DB: float = -10.0
+const CROSSFADE_S: float = 3.0
+var faixas: Dictionary = {}       # id -> AudioStreamPlayer
+var ganho: Dictionary = {}        # id -> 0..1 (posição no cruzamento, linear)
+var pos_faixa: Dictionary = {}    # id -> segundos (onde a faixa parou / está)
+var duck_db: float = 0.0          # o VoiceLines abaixa a música enquanto o Zeca fala
+var fade_in_db: float = 0.0       # (compatibilidade) não é mais usado
+var trocas: int = 0               # quantas trocas de faixa já começaram (para testes)
+var cruzando: bool = false
+
+func get_music_extra_db() -> float:
+	return 0.0
+
+func tocar_musica(id: String, imediato: bool = false) -> void:
+	if not faixas.has(id):
+		return
+	if imediato:
+		for k in faixas:
+			ganho[k] = 1.0 if k == id else 0.0
+			if k != id:
+				_calar(k)
+		if id != faixa_atual:
+			trocas += 1
+		faixa_atual = id
+		music_player = faixas[id]
+		if music_started and not music_player.playing and music_player.stream:
+			music_player.play(_pos_valida(id))
+		_aplicar_volumes_musica()
+		return
 	if id == faixa_atual:
 		return
-	var st := _carregar_musica(id)
-	if st == null:
-		return
 	faixa_atual = id
-	var vol: float = music_player.volume_db
-	var pos_antiga: float = music_player.get_playback_position() if music_player.playing else 0.0
-	music_fade.stream = music_player.stream
-	music_fade.volume_db = vol
-	if music_started:
-		music_fade.play(pos_antiga)
-	music_player.stream = st
-	if music_started:
-		music_player.play()
-	var t := create_tween()
-	t.tween_property(music_fade, "volume_db", -60.0, 1.2)
-	t.tween_callback(music_fade.stop)
-	fade_in_db = -30.0
+	music_player = faixas[id]
+	trocas += 1
+	cruzando = true
+	if music_started and not music_player.playing and music_player.stream:
+		music_player.play(_pos_valida(id))
 
-var fade_in_db: float = 0.0   # entra somando ao volume da faixa nova
-func get_music_extra_db() -> float:
-	return fade_in_db
+func _pos_valida(id: String) -> float:
+	var mp: AudioStreamPlayer = faixas[id]
+	var p: float = float(pos_faixa.get(id, 0.0))
+	if mp.stream:
+		var dur: float = mp.stream.get_length()
+		if dur > 0.5:
+			p = fmod(p, dur)
+	return p
+
+func _calar(id: String) -> void:
+	var mp: AudioStreamPlayer = faixas[id]
+	if mp.playing:
+		mp.stop()
+	mp.volume_db = -80.0
+
+func _aplicar_volumes_musica() -> void:
+	for k in faixas:
+		var g: float = clamp(float(ganho[k]), 0.0, 1.0)
+		# potência igual: sin/cos do cruzamento (soma das potências sempre = 1)
+		var lin: float = sin(g * PI * 0.5)
+		var mp: AudioStreamPlayer = faixas[k]
+		mp.volume_db = -80.0 if lin < 0.001 else MUSIC_DB + duck_db + linear_to_db(lin)
+
+func _processar_musica(delta: float) -> void:
+	var passo: float = delta / CROSSFADE_S
+	cruzando = false
+	for k in faixas:
+		var alvo: float = 1.0 if k == faixa_atual else 0.0
+		ganho[k] = move_toward(float(ganho[k]), alvo, passo)
+		if not is_equal_approx(float(ganho[k]), alvo):
+			cruzando = true
+		var mp: AudioStreamPlayer = faixas[k]
+		if mp.playing:
+			pos_faixa[k] = float(pos_faixa[k]) + delta
+		if float(ganho[k]) <= 0.0 and mp.playing:
+			_calar(k)   # guarda a posição (pos_faixa) para continuar depois
+		elif float(ganho[k]) > 0.0 and music_started and not mp.playing and mp.stream:
+			mp.play(_pos_valida(k))
+	_aplicar_volumes_musica()
 
 func set_ambiente(id: String, v: float) -> void:
 	amb_alvo[id] = clamp(v, 0.0, 1.0)
 
 func _process(delta: float) -> void:
-	if fade_in_db < 0.0:
-		fade_in_db = min(0.0, fade_in_db + delta * 25.0)
+	_processar_musica(delta)
 	for id in amb_players:
 		var a: AudioStreamPlayer = amb_players[id]
 		if a.stream == null:
