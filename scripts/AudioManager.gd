@@ -75,11 +75,20 @@ func _ready() -> void:
 		amb_alvo[id] = 0.0
 	# volumes salvos
 	for k in volumes.keys():
-		volumes[k] = float(Progresso.get_opcao("vol_" + k, volumes[k]))
-		set_volume(k, volumes[k], false)
-	sound_enabled = bool(Progresso.get_opcao("som", true))
+		var salvo = Progresso.get_opcao("vol_" + k, volumes[k])
+		var v: float = volumes[k]
+		if typeof(salvo) == TYPE_FLOAT or typeof(salvo) == TYPE_INT:
+			v = float(salvo)
+		if is_nan(v) or is_inf(v):
+			v = volumes[k]
+		set_volume(k, v, false)
+	var som_salvo = Progresso.get_opcao("som", true)
+	sound_enabled = som_salvo if typeof(som_salvo) == TYPE_BOOL else true
 	AudioServer.set_bus_mute(0, not sound_enabled)
 
+# Os buses vêm de res://default_bus_layout.tres (precisa existir desde o início:
+# no navegador o Godot toca os sons pelo Web Audio e um bus criado só por código
+# não chega lá, e aí tudo fica mudo). Isto aqui é só reserva.
 func _criar_buses() -> void:
 	for nome in [BUS_MUSICA, BUS_VOZ, BUS_EFEITOS]:
 		if AudioServer.get_bus_index(nome) == -1:
