@@ -1,5 +1,5 @@
 Falas do Zeca — Tesouros do Nordeste: Aventura no Piauí — Fase 1 (Corrente, Piauí)
-Arquivo de cada fala: res://audio/voz/<id>.ogg (ou .wav). Voz: Puck (adolescente). Gravadas: 10; pendentes: expo, vitoria (só legenda por enquanto).
+Arquivo de cada fala: res://audio/voz/<id>.ogg (ou .wav). Voz: Puck (adolescente). Todas as 12 falas gravadas.
 Enquanto o arquivo não existir, o jogo mostra só a legenda (balão sobre o Zeca).
 
 id                  | texto exato                                  | quando toca
