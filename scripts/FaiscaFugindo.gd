@@ -30,6 +30,16 @@ var y_chao: float = 0.0
 var t_no_ar: float = 0.0
 var no_chao_antes: bool = false
 var sprite: Sprite2D
+# Corrida: 4 quadros de galope pintados (sprites/faisca/corre), olhando para a DIREITA.
+# Os quadros ficam alinhados pela sela; cada um encosta os cascos no chão (pé mais baixo).
+var quadros_corrida: Array = []
+var quadro_parado: Texture2D
+const PES_Y: Array = [284, 280, 296, 286]   # linha do casco mais baixo em cada quadro (px)
+const MEIO_X: float = 163.0                 # sela no meio do quadro
+const ESC_CORRIDA: float = 0.72
+const ESC_PARADO: float = 0.56
+var quadro: int = 0
+var t_quadro: float = 0.0
 var halo: Sprite2D
 var aviso: Label
 var suor: CPUParticles2D
@@ -59,11 +69,14 @@ func iniciar(p: Node2D, dir_fuga: float) -> void:
 	cs.position = Vector2(0, -75) * k
 	add_child(cs)
 	sprite = Sprite2D.new()
-	sprite.texture = load("res://sprites/faisca/faisca_solo.png")
-	sprite.scale = Vector2(0.56, 0.56) * k
-	sprite.offset = Vector2(0, -182)   # pés no chão
+	sprite.centered = false
+	for i in 4:
+		quadros_corrida.append(load("res://sprites/faisca/corre/faisca_corre_%d.png" % (i + 1)))
+	quadro_parado = load("res://sprites/faisca/faisca_solo.png")
+	_por_quadro(0)
 	# halo claro em volta para destacar o Faísca do cenário (bom no celular)
 	halo = Sprite2D.new()
+	halo.centered = false
 	halo.texture = sprite.texture
 	halo.offset = sprite.offset
 	halo.scale = Vector2(1.07, 1.05)
@@ -135,7 +148,7 @@ func _criar_efeitos() -> void:
 func _ready() -> void:
 	if AudioManager.sound_enabled and zurro.stream:
 		zurro.play()
-	VoiceLines.say("faisca_foge", true)
+	VoiceLines.say("volta_faisca", true)
 
 func _espaco() -> PhysicsDirectSpaceState2D:
 	return get_world_2d().direct_space_state
@@ -260,22 +273,49 @@ func _virar() -> void:
 	t_virada = 0.8
 	velocity.x = 0.0
 
-func _animar(delta: float, no_chao: bool) -> void:
-	sprite.flip_h = dir < 0.0
-	var vel: float = abs(velocity.x) / (VEL_FUGA * k)
-	fase_galope += delta * (10.0 + 6.0 * vel)
-	if no_chao and vel > 0.2:
-		sprite.position.y = -abs(sin(fase_galope)) * 14.0 * k
-		sprite.rotation = sin(fase_galope * 2.0) * 0.07 * (1.0 if dir > 0 else -1.0)
-		sprite.scale = Vector2(0.56 * (1.0 + 0.04 * sin(fase_galope * 2.0)), 0.56 * (1.0 - 0.04 * sin(fase_galope * 2.0))) * k
-	elif not no_chao:
-		sprite.position.y = lerp(sprite.position.y, 0.0, 0.2)
-		sprite.rotation = lerp(sprite.rotation, (-0.15 if velocity.y < 0 else 0.1) * (1.0 if dir > 0 else -1.0), 0.2)
+# -1 = parado (de pé), 0..3 = quadros do galope
+func _por_quadro(q: int) -> void:
+	quadro = q
+	if q < 0:
+		sprite.texture = quadro_parado
+		sprite.offset = Vector2(-141.5, -364.0)
+		sprite.scale = Vector2(ESC_PARADO, ESC_PARADO) * k
 	else:
-		# parado olhando para trás, ofegante
-		sprite.position.y = sin(t * 16.0) * 3.0 * k
+		sprite.texture = quadros_corrida[q]
+		sprite.offset = Vector2(-MEIO_X, -float(PES_Y[q]))
+		sprite.scale = Vector2(ESC_CORRIDA, ESC_CORRIDA) * k
+	if halo:
+		halo.texture = sprite.texture
+		halo.offset = sprite.offset
+
+func _animar(delta: float, no_chao: bool) -> void:
+	# sempre olhando para onde corre (os quadros olham para a direita)
+	if abs(velocity.x) > 30.0 * k:
+		sprite.flip_h = velocity.x < 0.0
+	else:
+		sprite.flip_h = dir < 0.0
+	var vel: float = abs(velocity.x) / (VEL_FUGA * k)
+	if not no_chao:
+		# no ar: pernas esticadas (quadro 2), inclinando no pulo
+		if quadro != 1: _por_quadro(1)
+		sprite.rotation = lerp(sprite.rotation, (-0.12 if velocity.y < 0 else 0.08) * (1.0 if not sprite.flip_h else -1.0), 0.2)
+	elif vel > 0.15:
+		# galope: troca de quadro conforme a velocidade (~3 passadas por segundo correndo)
+		var fps: float = clamp(13.0 * vel, 7.0, 20.0)
+		t_quadro += delta * fps
+		if quadro < 0:
+			_por_quadro(0); t_quadro = 0.0
+		while t_quadro >= 1.0:
+			t_quadro -= 1.0
+			_por_quadro((quadro + 1) % 4)
 		sprite.rotation = lerp(sprite.rotation, 0.0, 0.3)
-		sprite.flip_h = dir > 0.0
+	else:
+		# parado ofegante, olhando para a frente (sem virar de costas)
+		if quadro != -1: _por_quadro(-1)
+		sprite.rotation = lerp(sprite.rotation, 0.0, 0.3)
+		var arf: float = 1.0 + 0.025 * sin(t * 18.0)
+		sprite.scale = Vector2(ESC_PARADO * (2.0 - arf), ESC_PARADO * arf) * k
+	halo.flip_h = sprite.flip_h
 	poeira.emitting = no_chao and vel > 0.4
 	poeira.position = Vector2(-dir * 40.0 * k, -6.0 * k)
 	suor.position = Vector2(-dir * 10.0 * k + dir * 40.0 * k, -230.0 * k)

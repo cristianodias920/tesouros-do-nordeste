@@ -324,13 +324,13 @@ func _on_menu_button_pressed() -> void:
 	get_tree().paused = false
 	AudioManager.set_ambiente("passaros", 0.0)
 	AudioManager.set_ambiente("rio", 0.0)
-	AudioManager.tocar_musica("forro", true)
+	AudioManager.reiniciar_musica()   # menu/recomeçar: música volta limpa, do começo
 	GameManager.reset_game()
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 
 func _on_restart_button_pressed() -> void:
 	get_tree().paused = false
-	AudioManager.tocar_musica("forro", true)
+	AudioManager.reiniciar_musica()   # menu/recomeçar: música volta limpa, do começo
 	GameManager.reset_game()
 	get_tree().reload_current_scene()
 

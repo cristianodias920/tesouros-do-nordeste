@@ -7,7 +7,8 @@ const LINES: Dictionary = {
 	"inicio": "Corrente, aqui vou eu!",
 	"faisca_encontro": "Opa! Oi, Faísca!",
 	"faisca_monta": "Vamos lá, Faísca!",
-	"faisca_foge": "Volta aqui, Faísca!",   # (só balão, ainda sem áudio)
+	"volta_faisca": "Volta aqui, Faísca!",   # áudio: res://audio/voz/volta_faisca.ogg (toca se existir)
+	"todos_tesouros": "Todos os tesouros de Corrente! Ô terra rica, sô!",   # áudio: res://audio/voz/todos_tesouros.ogg
 	"checkpoint_primeiro": "Ufa, checkpoint!",
 	"rio_corrente": "Olha o Rio Corrente!",
 	"igreja_matriz": "A Igreja Matriz de Corrente, que beleza!",
@@ -21,7 +22,7 @@ const LINES: Dictionary = {
 	"rio_paraim": "O Rio Paraim, cheio de buritis!",
 	"faltam_dez": "Só faltam dez tesouros!",
 }
-const REPEAT_COOLDOWN: Dictionary = {"agua_cai": 30.0, "rapadura": 25.0, "faisca_foge": 15.0}
+const REPEAT_COOLDOWN: Dictionary = {"agua_cai": 30.0, "rapadura": 25.0, "volta_faisca": 15.0}
 
 var played: Dictionary = {}      # id -> tempo (s) da última vez
 var history: Array = []          # ids na ordem em que tocaram (usado nos testes)
@@ -78,7 +79,10 @@ func _ready() -> void:
 	GameManager.checkpoint_activated.connect(func(_p): say("checkpoint_primeiro"))
 	GameManager.gems_changed.connect(func(c, total):
 		if total > 10 and total - c == 10:
-			say("faltam_dez"))
+			say("faltam_dez")
+		# pegou todos os tesouros da fase: uma vez só (fala na hora)
+		if total > 0 and c >= total:
+			say("todos_tesouros", true))
 	GameManager.level_completed.connect(func():
 		no_rodape = true
 		say("vitoria", true))

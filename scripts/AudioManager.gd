@@ -53,7 +53,6 @@ func _ready() -> void:
 		add_child(mp)
 		faixas[id] = mp
 		ganho[id] = 1.0 if id == faixa_atual else 0.0
-		pos_faixa[id] = 0.0
 	music_player = faixas[faixa_atual]
 	music_fade = null
 
@@ -131,26 +130,48 @@ func start_music() -> void:
 	if music_started:
 		return
 	music_started = true
-	_aplicar_volumes_musica()
-	var mp: AudioStreamPlayer = faixas.get(faixa_atual)
-	if mp and mp.stream:
-		mp.play(_pos_valida(faixa_atual))
+	_tocar_todas_do_inicio()
 
-# ---- Música: uma faixa por player, troca com cruzamento de potência igual ----
-# Cada faixa continua de onde parou (a posição fica guardada enquanto ela está calada).
-# Se a troca for desfeita no meio, o cruzamento só volta, sem pular.
+# ---- Música: as duas faixas tocam juntas o tempo todo, em loop, e a troca é só de volume ----
+# (cruzamento de potência igual, ~3 s). Nunca se pula para o meio da faixa com play(posição):
+# no navegador o Godot reinicia o loop a partir da posição do play(), e a música ficava
+# presa tocando só o finalzinho. Assim cada faixa "continua de onde estava" naturalmente.
 const MUSIC_DB: float = -10.0
 const CROSSFADE_S: float = 3.0
 var faixas: Dictionary = {}       # id -> AudioStreamPlayer
 var ganho: Dictionary = {}        # id -> 0..1 (posição no cruzamento, linear)
-var pos_faixa: Dictionary = {}    # id -> segundos (onde a faixa parou / está)
 var duck_db: float = 0.0          # o VoiceLines abaixa a música enquanto o Zeca fala
 var fade_in_db: float = 0.0       # (compatibilidade) não é mais usado
 var trocas: int = 0               # quantas trocas de faixa já começaram (para testes)
+var plays: int = 0                # quantas vezes alguma faixa recebeu play() (para testes)
 var cruzando: bool = false
+var _vigia: float = 0.0
 
 func get_music_extra_db() -> float:
 	return 0.0
+
+func _tocar_todas_do_inicio() -> void:
+	for k in faixas:
+		var mp: AudioStreamPlayer = faixas[k]
+		if mp.stream:
+			mp.stop()
+			mp.play()      # sempre do começo (0 s)
+			plays += 1
+	_aplicar_volumes_musica()
+
+# Volta a música ao estado inicial (forró do começo). Usado ao ir para o menu
+# ou recomeçar a fase, para nunca levar um estado estranho de uma cena para outra.
+func reiniciar_musica() -> void:
+	for k in faixas:
+		ganho[k] = 1.0 if k == "forro" else 0.0
+	if faixa_atual != "forro":
+		trocas += 1
+	faixa_atual = "forro"
+	music_player = faixas["forro"]
+	duck_db = 0.0
+	cruzando = false
+	if music_started:
+		_tocar_todas_do_inicio()
 
 func tocar_musica(id: String, imediato: bool = false) -> void:
 	if not faixas.has(id):
@@ -158,39 +179,12 @@ func tocar_musica(id: String, imediato: bool = false) -> void:
 	if imediato:
 		for k in faixas:
 			ganho[k] = 1.0 if k == id else 0.0
-			if k != id:
-				_calar(k)
-		if id != faixa_atual:
-			trocas += 1
-		faixa_atual = id
-		music_player = faixas[id]
-		if music_started and not music_player.playing and music_player.stream:
-			music_player.play(_pos_valida(id))
-		_aplicar_volumes_musica()
-		return
-	if id == faixa_atual:
-		return
+	if id != faixa_atual:
+		trocas += 1
+		cruzando = not imediato
 	faixa_atual = id
 	music_player = faixas[id]
-	trocas += 1
-	cruzando = true
-	if music_started and not music_player.playing and music_player.stream:
-		music_player.play(_pos_valida(id))
-
-func _pos_valida(id: String) -> float:
-	var mp: AudioStreamPlayer = faixas[id]
-	var p: float = float(pos_faixa.get(id, 0.0))
-	if mp.stream:
-		var dur: float = mp.stream.get_length()
-		if dur > 0.5:
-			p = fmod(p, dur)
-	return p
-
-func _calar(id: String) -> void:
-	var mp: AudioStreamPlayer = faixas[id]
-	if mp.playing:
-		mp.stop()
-	mp.volume_db = -80.0
+	_aplicar_volumes_musica()
 
 func _aplicar_volumes_musica() -> void:
 	for k in faixas:
@@ -208,14 +202,16 @@ func _processar_musica(delta: float) -> void:
 		ganho[k] = move_toward(float(ganho[k]), alvo, passo)
 		if not is_equal_approx(float(ganho[k]), alvo):
 			cruzando = true
-		var mp: AudioStreamPlayer = faixas[k]
-		if mp.playing:
-			pos_faixa[k] = float(pos_faixa[k]) + delta
-		if float(ganho[k]) <= 0.0 and mp.playing:
-			_calar(k)   # guarda a posição (pos_faixa) para continuar depois
-		elif float(ganho[k]) > 0.0 and music_started and not mp.playing and mp.stream:
-			mp.play(_pos_valida(k))
 	_aplicar_volumes_musica()
+	# vigia: se alguma faixa parou sozinha, volta a tocar DO COMEÇO (no máximo a cada 2 s)
+	_vigia -= delta
+	if music_started and _vigia <= 0.0:
+		_vigia = 2.0
+		for k in faixas:
+			var mp: AudioStreamPlayer = faixas[k]
+			if mp.stream and not mp.playing:
+				mp.play()
+				plays += 1
 
 func set_ambiente(id: String, v: float) -> void:
 	amb_alvo[id] = clamp(v, 0.0, 1.0)

@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/bgm_nuvens.ogg-e2a30c600dcd09855dbc194e003b29
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0
