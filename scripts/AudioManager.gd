@@ -39,6 +39,11 @@ var sound_paths = {
 	"zurro": "res://audio/zurro.wav",
 	"derrota": "res://audio/derrota.wav",
 	"planar": "res://audio/planar.wav",
+	"chapeu_lanca": "res://audio/chapeu_lanca.wav",
+	"chapeu_volta": "res://audio/chapeu_volta.wav",
+	"cristal_trinca": "res://audio/cristal_trinca.wav",
+	"cristal_quebra": "res://audio/cristal_quebra.wav",
+	"poder_troca": "res://audio/poder_troca.wav",
 }
 
 func _ready() -> void:

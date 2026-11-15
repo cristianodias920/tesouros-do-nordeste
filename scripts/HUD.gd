@@ -21,6 +21,7 @@ extends CanvasLayer
 @onready var victory_gems_label: Label = $VictoryScreen/Panel/VBox/GemsCountLabel
 
 var intro: Control
+var voz_inicio: bool = true   # a cena de teste do chapéu desliga ("Corrente, aqui vou eu!")
 var intro_time: float = 0.0
 const INTRO_DUR: float = 3.0
 var gems_panel: Panel
@@ -63,6 +64,7 @@ func _ready() -> void:
 	_montar_fim_de_jogo()
 	_montar_vitoria()
 	_montar_dica_folha()
+	_montar_poderes()
 	if GameManager.celular:
 		_hud_maior()
 		get_viewport().size_changed.connect(_hud_maior)
@@ -83,6 +85,11 @@ func _update_touch_positions() -> void:
 		btn_jump.position = Vector2(vp_size.x - btn_size - margin_side, y_pos)
 	if btn_action:
 		btn_action.position = Vector2(vp_size.x - (btn_size * 2.0) - margin_side - 30.0, y_pos)
+	# Chapéu (usar power-up) logo acima do pulo; troca da reserva acima do coice
+	if btn_poder:
+		btn_poder.position = Vector2(vp_size.x - btn_size - margin_side, y_pos - btn_size - 24.0)
+	if btn_trocar:
+		btn_trocar.position = Vector2(vp_size.x - (btn_size * 2.0) - margin_side - 30.0 + 20.0, y_pos - btn_size - 4.0)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
@@ -110,6 +117,7 @@ func _process(_delta: float) -> void:
 		btn_action.visible = GameManager.is_mounted
 	_update_rapadura_indicator()
 	_update_dica_folha(_delta)
+	_update_poderes(_delta)
 
 func _on_lives_changed(lives: int) -> void:
 	update_lives_display(lives)
@@ -296,7 +304,8 @@ func _close_intro() -> void:
 	get_tree().paused = false
 	GameManager.cronometro_ativo = true
 	touch_controls.visible = DisplayServer.is_touchscreen_available()
-	VoiceLines.say("inicio")
+	if voz_inicio:
+		VoiceLines.say("inicio")
 
 func _on_sound_button_pressed() -> void:
 	AudioManager.toggle_sound()
@@ -749,3 +758,153 @@ func _hud_maior() -> void:
 	var tc: Control = $TopCenter
 	tc.pivot_offset = Vector2(tc.size.x * 0.5, 0)
 	tc.scale = Vector2.ONE * f
+
+# ---- Power-ups com reserva (estilo Super Mario World) ----
+# Painel no canto de cima à direita: caixa grande = power-up ativo (C usa), caixa pequena = reserva (V troca).
+# No celular: botão do chapéu acima do pulo e botão de troca acima do coice.
+var btn_poder: TouchScreenButton
+var btn_trocar: TouchScreenButton
+var poderes_panel: Control
+var caixa_ativo: Panel
+var caixa_reserva: Panel
+var ic_ativo: TextureRect
+var ic_reserva: TextureRect
+var tecla_ativo: Label
+var tecla_reserva: Label
+var dica_chapeu: PanelContainer
+var dica_chapeu_t: float = 0.0
+var dica_reserva: PanelContainer
+var dica_reserva_t: float = 0.0
+var poderes_pulso: float = 0.0
+
+func _caixa_poder(tam: float, borda: Color) -> Panel:
+	var pn := Panel.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.3, 0.17, 0.06, 0.88)
+	sb.border_color = borda
+	sb.set_border_width_all(4)
+	sb.set_corner_radius_all(18)
+	pn.add_theme_stylebox_override("panel", sb)
+	pn.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pn.size = Vector2(tam, tam)
+	return pn
+
+func _icone_poder(pai: Control, tam: float) -> TextureRect:
+	var ic := TextureRect.new()
+	ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	ic.position = Vector2(10, 10)
+	ic.size = Vector2(tam - 20, tam - 20)
+	ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pai.add_child(ic)
+	return ic
+
+func _tecla(pai: Control, txt: String) -> Label:
+	var l := Label.new()
+	l.text = txt
+	l.add_theme_font_size_override("font_size", 24)
+	l.add_theme_color_override("font_color", Color(1, 0.95, 0.7))
+	l.add_theme_color_override("font_outline_color", Color(0.15, 0.07, 0.02))
+	l.add_theme_constant_override("outline_size", 7)
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.position = Vector2(0, pai.size.y - 4)
+	l.size = Vector2(pai.size.x, 30)
+	pai.add_child(l)
+	return l
+
+func _montar_poderes() -> void:
+	poderes_panel = Control.new()
+	poderes_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$TopRight.add_child(poderes_panel)
+	poderes_panel.position = Vector2(410 - 250, 100)
+	poderes_panel.size = Vector2(250, 160)
+	caixa_reserva = _caixa_poder(92, Color(0.8, 0.7, 0.5))
+	caixa_reserva.position = Vector2(0, 14)
+	poderes_panel.add_child(caixa_reserva)
+	ic_reserva = _icone_poder(caixa_reserva, 92)
+	tecla_reserva = _tecla(caixa_reserva, "V troca")
+	caixa_ativo = _caixa_poder(120, Color(1.0, 0.82, 0.32))
+	caixa_ativo.position = Vector2(110, 0)
+	poderes_panel.add_child(caixa_ativo)
+	ic_ativo = _icone_poder(caixa_ativo, 120)
+	tecla_ativo = _tecla(caixa_ativo, "C usa")
+	# Botões de toque
+	btn_poder = TouchScreenButton.new()
+	btn_poder.name = "BtnPoder"
+	btn_poder.texture_normal = load("res://sprites/ui/btn_chapeu.png")
+	btn_poder.action = "poder"
+	btn_poder.visibility_mode = TouchScreenButton.VISIBILITY_TOUCHSCREEN_ONLY
+	touch_controls.add_child(btn_poder)
+	btn_trocar = TouchScreenButton.new()
+	btn_trocar.name = "BtnTrocar"
+	btn_trocar.texture_normal = load("res://sprites/ui/btn_trocar.png")
+	btn_trocar.action = "trocar_poder"
+	btn_trocar.scale = Vector2.ONE * 0.75
+	btn_trocar.visibility_mode = TouchScreenButton.VISIBILITY_TOUCHSCREEN_ONLY
+	touch_controls.add_child(btn_trocar)
+	_update_touch_positions()
+	var cel: bool = GameManager.celular
+	dica_chapeu = _painel_dica(("Chapéu de couro! Toque no botão do chapéu para arremessar." if cel else "Chapéu de couro! Aperte C para arremessar.") + "\nEle gira, derruba bichos, quebra cristais e volta.", 34)
+	dica_reserva = _painel_dica("O outro power-up ficou guardado na reserva.\n" + ("Toque no botão de troca para alternar." if cel else "Aperte V para trocar."), 30)
+	PowerUps.mudou.connect(_on_poderes_mudou)
+	_on_poderes_mudou(PowerUps.ativo(), PowerUps.reserva())
+
+var _reserva_antes: String = "?"
+func _on_poderes_mudou(ativo: String, reserva: String) -> void:
+	poderes_panel.visible = ativo != "" or reserva != ""
+	caixa_ativo.visible = ativo != ""
+	caixa_reserva.visible = reserva != ""
+	ic_ativo.texture = PowerUps.icone(ativo)
+	ic_reserva.texture = PowerUps.icone(reserva)
+	var usa: bool = ativo != "" and bool(PowerUps.DADOS[ativo].usa_botao)
+	tecla_ativo.text = ("C usa" if usa else "ativo") if not GameManager.celular else ""
+	tecla_reserva.text = "V troca" if not GameManager.celular else ""
+	if _reserva_antes == "" and reserva != "":
+		dica_reserva_t = 5.0
+		dica_reserva.visible = true
+	_reserva_antes = reserva
+	poderes_pulso = 0.35
+
+func mostrar_dica_chapeu() -> void:
+	dica_chapeu_t = 6.0
+	dica_chapeu.visible = true
+	dica_chapeu.modulate.a = 1.0
+
+func _mostrar_dica_tempo(d: PanelContainer, t: float, dy: float) -> float:
+	if d == null:
+		return t
+	if t > 0.0:
+		t -= get_process_delta_time()
+		var vp := get_viewport().get_visible_rect().size
+		var esc: float = $TopLeft.scale.x
+		d.reset_size()
+		d.scale = Vector2.ONE * esc
+		d.position = Vector2((vp.x - d.size.x * esc) * 0.5, vp.y - d.size.y * esc - 60.0 - dy * esc)
+		d.modulate.a = clamp(t / 0.5, 0.0, 1.0)
+		if t <= 0.0:
+			d.visible = false
+	return t
+
+func _update_poderes(_delta: float) -> void:
+	if poderes_panel == null:
+		return
+	dica_chapeu_t = _mostrar_dica_tempo(dica_chapeu, dica_chapeu_t, 0.0)
+	var acima: bool = dica_chapeu_t > 0.0 or (dica_folha != null and dica_folha.visible)
+	dica_reserva_t = _mostrar_dica_tempo(dica_reserva, dica_reserva_t, 150.0 if acima else 0.0)
+	var p = get_tree().get_first_node_in_group("player")
+	var ativo := PowerUps.ativo()
+	var usa: bool = ativo != "" and bool(PowerUps.DADOS[ativo].usa_botao)
+	btn_poder.visible = usa
+	btn_trocar.visible = PowerUps.reserva() != ""
+	# caixa do ativo apagada enquanto o chapéu está no ar / recarregando
+	var pronto: bool = true
+	if p and ativo == "chapeu":
+		pronto = p.chapeu_pronto()
+	ic_ativo.modulate = Color(1, 1, 1, 1.0 if pronto else 0.35)
+	btn_poder.modulate = Color(1, 1, 1, 1.0 if pronto else 0.45)
+	if poderes_pulso > 0.0:
+		poderes_pulso -= _delta
+		var f: float = 1.0 + 0.18 * sin(clamp(poderes_pulso / 0.35, 0.0, 1.0) * PI)
+		caixa_ativo.pivot_offset = caixa_ativo.size * 0.5
+		caixa_ativo.scale = Vector2.ONE * f

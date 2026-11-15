@@ -1,0 +1,231 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/HUD.tscn" id="1_hud"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/ChaoTerra.tscn" id="3_chao"]
+[ext_resource type="PackedScene" path="res://scenes/Cristal.tscn" id="4_cristal"]
+[ext_resource type="PackedScene" path="res://scenes/Gema.tscn" id="5_gema"]
+[ext_resource type="PackedScene" path="res://scenes/Faisca.tscn" id="6_faisca"]
+[ext_resource type="PackedScene" path="res://scenes/InimigoTatu.tscn" id="7_tatu"]
+[ext_resource type="PackedScene" path="res://scenes/InimigoVespa.tscn" id="8_vespa"]
+[ext_resource type="PackedScene" path="res://scenes/InimigoSeriema.tscn" id="9_seri"]
+[ext_resource type="PackedScene" path="res://scenes/PlacaInfo.tscn" id="10_placa"]
+[ext_resource type="Script" path="res://scripts/PowerUpItem.gd" id="11_pu"]
+[ext_resource type="Script" path="res://scripts/TesteChapeu.gd" id="12_cena"]
+[ext_resource type="Texture2D" path="res://sprites/scenery_v2/ceu.png" id="13_ceu"]
+[ext_resource type="Texture2D" path="res://sprites/scenery_v2/morros_longe.png" id="14_morros"]
+[ext_resource type="Texture2D" path="res://sprites/scenery_v2/mata_meio.png" id="15_mata"]
+[ext_resource type="PackedScene" path="res://scenes/PlataformaFlutuante.tscn" id="16_plat"]
+[ext_resource type="Texture2D" path="res://sprites/scenery_v2/agua_tile.png" id="17_agua"]
+
+[sub_resource type="RectangleShape2D" id="Rect_parede"]
+size = Vector2(60, 4000)
+
+[sub_resource type="RectangleShape2D" id="Rect_muro"]
+size = Vector2(80, 420)
+
+[node name="TesteChapeu" type="Node2D"]
+script = ExtResource("12_cena")
+
+[node name="ParallaxCeu" type="Parallax2D" parent="."]
+z_index = -30
+scroll_scale = Vector2(0.1, 0)
+repeat_size = Vector2(2560, 0)
+repeat_times = 4
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxCeu"]
+position = Vector2(0, 0)
+scale = Vector2(1, 1)
+texture = ExtResource("13_ceu")
+centered = false
+
+[node name="ParallaxMorros" type="Parallax2D" parent="."]
+z_index = -20
+scroll_scale = Vector2(0.3, 1)
+repeat_size = Vector2(1620, 0)
+repeat_times = 4
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxMorros"]
+position = Vector2(0, 240)
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("14_morros")
+centered = false
+
+[node name="ParallaxMata" type="Parallax2D" parent="."]
+z_index = -10
+scroll_scale = Vector2(0.6, 1)
+repeat_size = Vector2(1353.6, 0)
+repeat_times = 4
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxMata"]
+position = Vector2(0, 140)
+scale = Vector2(0.72, 0.72)
+texture = ExtResource("15_mata")
+centered = false
+
+[node name="HUD" parent="." instance=ExtResource("1_hud")]
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(220, 780)
+cam_limit_left = 0
+cam_limit_right = 6240
+cam_limit_top = -600
+cam_limit_bottom = 1000
+
+[node name="RioVisual" type="Node2D" parent="."]
+z_index = -1
+
+[node name="Agua1" type="Sprite2D" parent="RioVisual"]
+position = Vector2(1900, 808)
+texture = ExtResource("17_agua")
+centered = false
+
+[node name="Terreno" type="Node2D" parent="."]
+
+[node name="Chao0" parent="Terreno" instance=ExtResource("3_chao")]
+position = Vector2(-1080, 780)
+
+[node name="Chao1" parent="Terreno" instance=ExtResource("3_chao")]
+position = Vector2(0, 780)
+
+[node name="Chao2" parent="Terreno" instance=ExtResource("3_chao")]
+position = Vector2(1080, 780)
+
+[node name="Chao3" parent="Terreno" instance=ExtResource("3_chao")]
+position = Vector2(2460, 780)
+
+[node name="Chao4" parent="Terreno" instance=ExtResource("3_chao")]
+position = Vector2(3540, 780)
+
+[node name="Chao5" parent="Terreno" instance=ExtResource("3_chao")]
+position = Vector2(4620, 780)
+
+[node name="Chao6" parent="Terreno" instance=ExtResource("3_chao")]
+position = Vector2(5700, 780)
+
+[node name="ParedeEsq" type="StaticBody2D" parent="Terreno"]
+position = Vector2(-30, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terreno/ParedeEsq"]
+shape = SubResource("Rect_parede")
+
+[node name="ParedeDir" type="StaticBody2D" parent="Terreno"]
+position = Vector2(6270, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terreno/ParedeDir"]
+shape = SubResource("Rect_parede")
+
+[node name="Muro" type="StaticBody2D" parent="Terreno"]
+position = Vector2(6000, 570)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terreno/Muro"]
+shape = SubResource("Rect_muro")
+
+[node name="Visual" type="ColorRect" parent="Terreno/Muro"]
+offset_left = -40.0
+offset_top = -210.0
+offset_right = 40.0
+offset_bottom = 210.0
+color = Color(0.55, 0.42, 0.3, 1)
+
+[node name="Plataforma" parent="Terreno" instance=ExtResource("16_plat")]
+position = Vector2(4880, 380)
+
+[node name="Placa1" parent="." instance=ExtResource("10_placa")]
+position = Vector2(80, 780)
+texto = "Teste do chapéu"
+z_index = -2
+
+[node name="Placa2" parent="." instance=ExtResource("10_placa")]
+position = Vector2(1700, 780)
+texto = "Cristal"
+z_index = -2
+
+[node name="Placa3" parent="." instance=ExtResource("10_placa")]
+position = Vector2(3150, 780)
+texto = "Geodo: 2 golpes"
+z_index = -2
+
+[node name="Placa4" parent="." instance=ExtResource("10_placa")]
+position = Vector2(4300, 780)
+texto = "Passagem"
+z_index = -2
+
+[node name="Placa5" parent="." instance=ExtResource("10_placa")]
+position = Vector2(5350, 780)
+texto = "Folha de buriti"
+z_index = -2
+
+[node name="Chapeu" type="Area2D" parent="."]
+position = Vector2(640, 670)
+script = ExtResource("11_pu")
+poder = "chapeu"
+reaparece = true
+
+[node name="Folha" type="Area2D" parent="."]
+position = Vector2(5560, 670)
+script = ExtResource("11_pu")
+poder = "folha"
+reaparece = true
+
+[node name="Cristais" type="Node2D" parent="."]
+
+[node name="CristalPequeno" parent="Cristais" instance=ExtResource("4_cristal")]
+position = Vector2(1980, 780)
+
+[node name="Gema" parent="Cristais/CristalPequeno" instance=ExtResource("5_gema")]
+position = Vector2(0, -60)
+
+[node name="Geodo" parent="Cristais" instance=ExtResource("4_cristal")]
+position = Vector2(3420, 780)
+tipo = "geodo"
+
+[node name="Gema0" parent="Cristais/Geodo" instance=ExtResource("5_gema")]
+position = Vector2(-40, -100)
+
+[node name="Gema1" parent="Cristais/Geodo" instance=ExtResource("5_gema")]
+position = Vector2(0, -80)
+
+[node name="Gema2" parent="Cristais/Geodo" instance=ExtResource("5_gema")]
+position = Vector2(40, -100)
+
+[node name="Parede0" parent="Cristais" instance=ExtResource("4_cristal")]
+position = Vector2(4520, 780)
+
+[node name="Parede1" parent="Cristais" instance=ExtResource("4_cristal")]
+position = Vector2(4520, 660)
+
+[node name="Parede2" parent="Cristais" instance=ExtResource("4_cristal")]
+position = Vector2(4520, 540)
+
+[node name="GemaAtras0" parent="." instance=ExtResource("5_gema")]
+position = Vector2(4640, 720)
+
+[node name="GemaAtras1" parent="." instance=ExtResource("5_gema")]
+position = Vector2(4720, 720)
+
+[node name="Pendurado" parent="Cristais" instance=ExtResource("4_cristal")]
+position = Vector2(5030, 410)
+tipo = "pendurado"
+escala = 0.8
+
+[node name="Gema" parent="Cristais/Pendurado" instance=ExtResource("5_gema")]
+position = Vector2(0, 70)
+
+[node name="Faisca" parent="." instance=ExtResource("6_faisca")]
+position = Vector2(3780, 780)
+
+[node name="Inimigos" type="Node2D" parent="."]
+
+[node name="Tatu" parent="Inimigos" instance=ExtResource("7_tatu")]
+position = Vector2(1400, 780)
+
+[node name="Vespa" parent="Inimigos" instance=ExtResource("8_vespa")]
+position = Vector2(2900, 480)
+patrol_range = 160.0
+
+[node name="Seriema" parent="Inimigos" instance=ExtResource("9_seri")]
+position = Vector2(4150, 780)
+
+[node name="Tatu2" parent="Inimigos" instance=ExtResource("7_tatu")]
+position = Vector2(5800, 780)

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/Cristal.gd" id="1_script"]
+
+[node name="Cristal" type="StaticBody2D"]
+collision_mask = 0
+script = ExtResource("1_script")

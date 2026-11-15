@@ -61,8 +61,25 @@ var brilho: Sprite2D            # aura dourada da rapadura
 var faiscas: CPUParticles2D     # estrelinhas da rapadura
 var rapadura_t: float = 0.0
 # Folha de buriti: depois de pegar no alto da torre, segurar PULAR caindo plana (só na área das nuvens)
-var tem_folha: bool = false
+# Agora a folha é um power-up do sistema de reserva (PowerUps): tem_folha = folha ativa
+var tem_folha: bool:
+	get:
+		return PowerUps.esta_ativo("folha")
+	set(v):
+		if v:
+			PowerUps.pegar("folha")
+		else:
+			PowerUps.remover("folha")
 var planando: bool = false
+# Chapéu de couro (power-up): arremessa com C / botão do chapéu, volta para a cabeça
+const CHAPEU_RECARGA: float = 0.4      # fôlego depois que ele volta
+const CHAPEU_REAPARECE: float = 2.0    # se perdeu (buraco/rio/portal), volta à cabeça nesse tempo
+var chapeu_voando: Chapeu = null
+var chapeu_recarga: float = 0.0
+var chapeu_perdido_t: float = 0.0
+var chapeu_cabeca: Sprite2D
+var chapeu_cabeca_t: float = 0.0
+var chapeu_arremessos: int = 0
 var folha_sprite: Sprite2D
 const PLANAR_QUEDA: float = 230.0      # velocidade máxima de queda planando
 const NUVENS_X0: float = 9800.0
@@ -93,6 +110,7 @@ func _ready() -> void:
 	fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	cl.add_child(fade_rect)
 	_criar_folha()
+	_criar_chapeu_cabeca()
 	GameManager.continuou_do_checkpoint.connect(_continuar_do_checkpoint)
 
 func _apply_camera_limits() -> void:
@@ -138,6 +156,7 @@ func apply_character_scale() -> void:
 			collision_shape.position = Vector2(0, -90) * k
 
 func _physics_process(delta: float) -> void:
+	_tempo_do_chapeu(delta)   # conta mesmo afogando/no portal: o chapéu perdido volta em ~2 s
 	if viajando or afogando:
 		velocity = Vector2.ZERO
 		return
@@ -155,6 +174,7 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity.y = 0.0
 		update_animation()
+		_atualizar_chapeu_cabeca(delta)
 		move_and_slide()
 		return
 
@@ -215,6 +235,9 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("action") and is_mounted and not is_coice:
 		execute_coice()
 
+	# Power-ups: usar (C) e trocar com a reserva (V)
+	_processar_poderes(delta)
+
 	# Movimento horizontal
 	var input_x: float = Input.get_axis("move_left", "move_right")
 
@@ -249,6 +272,7 @@ func _physics_process(delta: float) -> void:
 	_limitar_olhar_a_frente()
 
 	update_animation()
+	_atualizar_chapeu_cabeca(delta)
 
 	floor_snap_length = 16.0 * k
 	var vy_before: float = velocity.y
@@ -271,6 +295,10 @@ func _limitar_olhar_a_frente() -> void:
 		camera.offset.x = clamp(camera.offset.x, off_min, off_max)
 
 func na_area_das_nuvens() -> bool:
+	# A fase pode dizer onde dá para planar (ex.: cena de teste do chapéu); senão, as nuvens de Corrente
+	var cena := get_tree().current_scene
+	if cena and cena.has_method("pode_planar"):
+		return cena.pode_planar(self)
 	return not no_fundo and global_position.x > NUVENS_X0 and global_position.x < NUVENS_X1
 
 func _planar(_delta: float) -> void:
@@ -305,8 +333,143 @@ func _criar_folha() -> void:
 	add_child(folha_sprite)
 
 func pegar_folha() -> void:
-	tem_folha = true
+	PowerUps.pegar("folha")
 	AudioManager.play_sfx("powerup")
+
+# ---- Power-ups com reserva (estilo Super Mario World) ----
+func pegar_poder(id: String) -> void:
+	PowerUps.pegar(id)
+	AudioManager.play_sfx("powerup")
+	var hud = get_tree().get_first_node_in_group("hud")
+	if id == "folha":
+		if hud and hud.has_method("mostrar_dica_folha"):
+			hud.mostrar_dica_folha()
+	elif id == "chapeu":
+		chapeu_cabeca_t = 0.0
+		if hud and hud.has_method("mostrar_dica_chapeu"):
+			hud.mostrar_dica_chapeu()
+
+func _tempo_do_chapeu(delta: float) -> void:
+	if chapeu_recarga > 0.0:
+		chapeu_recarga -= delta
+	if chapeu_perdido_t > 0.0:
+		chapeu_perdido_t -= delta
+		if chapeu_perdido_t <= 0.0:
+			_chapeu_reaparece()
+
+func _processar_poderes(_delta: float) -> void:
+	if Input.is_action_just_pressed("trocar_poder"):
+		trocar_poder()
+	if Input.is_action_just_pressed("poder"):
+		usar_poder()
+
+func trocar_poder() -> bool:
+	# Com o chapéu no ar não troca (ele precisa voltar para a cabeça primeiro)
+	if chapeu_voando != null or chapeu_perdido_t > 0.0:
+		return false
+	if PowerUps.trocar():
+		AudioManager.play_sfx("poder_troca")
+		_parar_planar()
+		chapeu_cabeca_t = 0.0
+		return true
+	return false
+
+func usar_poder() -> bool:
+	if GameManager.is_level_ended or viajando or afogando:
+		return false
+	if PowerUps.esta_ativo("chapeu"):
+		return lancar_chapeu()
+	return false
+
+func chapeu_pronto() -> bool:
+	return PowerUps.esta_ativo("chapeu") and chapeu_voando == null and chapeu_recarga <= 0.0 and chapeu_perdido_t <= 0.0
+
+func lancar_chapeu() -> bool:
+	if not chapeu_pronto():
+		return false
+	var c := Chapeu.new()
+	c.iniciar(self, facing_direction)
+	get_parent().add_child(c)
+	chapeu_voando = c
+	chapeu_arremessos += 1
+	AudioManager.play_sfx("chapeu_lanca")
+	# gesto de arremesso: Zeca dá um tranco para a frente
+	var s0: Vector2 = animated_sprite.scale
+	var t := create_tween()
+	t.tween_property(animated_sprite, "scale", s0 * Vector2(1.08, 0.94), 0.06)
+	t.tween_property(animated_sprite, "scale", s0, 0.1)
+	return true
+
+func ponto_do_chapeu() -> Vector2:
+	# onde o chapéu encantado flutua: logo acima do chapéu de palha do Zeca
+	return global_position + Vector2(facing_direction * 6.0, -318.0 if is_mounted else -262.0) * k
+
+func ponto_de_arremesso() -> Vector2:
+	# sai da mão do Zeca, na altura da cintura (montado: da altura do lombo), na direção em que ele olha
+	return global_position + Vector2(facing_direction * 50.0, -125.0 if is_mounted else -110.0) * k
+
+func linha_de_queda() -> float:
+	return fundo_queda_y if no_fundo else MAIN_QUEDA_Y
+
+func chapeu_voltou(c: Node) -> void:
+	if c == chapeu_voando:
+		chapeu_voando = null
+	chapeu_recarga = CHAPEU_RECARGA
+	chapeu_cabeca_t = 0.0
+	AudioManager.play_sfx("chapeu_volta")
+
+func chapeu_perdido(c: Node) -> void:
+	if c == chapeu_voando:
+		chapeu_voando = null
+	chapeu_perdido_t = CHAPEU_REAPARECE
+
+func _chapeu_reaparece() -> void:
+	chapeu_perdido_t = 0.0
+	chapeu_recarga = 0.0
+	chapeu_cabeca_t = 0.0
+	if PowerUps.esta_ativo("chapeu"):
+		AudioManager.play_sfx("chapeu_volta")
+		_poeira_dourada(ponto_do_chapeu())
+
+func _criar_chapeu_cabeca() -> void:
+	chapeu_cabeca = Sprite2D.new()
+	chapeu_cabeca.texture = load("res://sprites/powerups/chapeu.png")
+	chapeu_cabeca.z_index = 2
+	chapeu_cabeca.visible = false
+	add_child(chapeu_cabeca)
+
+func chapeu_na_cabeca() -> bool:
+	return chapeu_cabeca != null and chapeu_cabeca.visible
+
+func _atualizar_chapeu_cabeca(delta: float) -> void:
+	var mostrar: bool = PowerUps.esta_ativo("chapeu") and chapeu_voando == null and chapeu_perdido_t <= 0.0 and not afogando
+	chapeu_cabeca.visible = mostrar and visible
+	if not mostrar:
+		return
+	chapeu_cabeca_t += delta
+	# pousa com um quique e depois flutua de leve, brilhando
+	var pouso: float = clamp(chapeu_cabeca_t / 0.25, 0.0, 1.0)
+	var quique: float = (1.0 - pouso) * -26.0
+	var flut: float = sin(chapeu_cabeca_t * 3.2) * 4.0
+	chapeu_cabeca.position = (ponto_do_chapeu() - global_position) + Vector2(0, quique + flut) * k + animated_sprite.offset * animated_sprite.scale
+	chapeu_cabeca.flip_h = facing_direction < 0
+	chapeu_cabeca.rotation = sin(chapeu_cabeca_t * 2.1) * 0.05 + animated_sprite.rotation
+	var base: float = 0.3 * k
+	chapeu_cabeca.scale = Vector2.ONE * base * (1.0 + (1.0 - pouso) * 0.25)
+	var b: float = 1.0 + 0.1 * (0.5 + 0.5 * sin(chapeu_cabeca_t * 5.0))
+	chapeu_cabeca.modulate = Color(b, b, b, 0.75 if invincibility_timer > 0.0 and not animated_sprite.visible else 1.0)
+
+func _poeira_dourada(pos: Vector2) -> void:
+	var pp: CPUParticles2D = faiscas.duplicate()
+	pp.one_shot = true
+	pp.explosiveness = 1.0
+	pp.amount = 24
+	pp.initial_velocity_min = 120.0 * k
+	pp.initial_velocity_max = 260.0 * k
+	get_parent().add_child(pp)
+	pp.global_position = pos
+	pp.emitting = true
+	get_tree().create_timer(1.2).timeout.connect(pp.queue_free)
 
 func _continuar_do_checkpoint() -> void:
 	# depois do FIM DA AVENTURA: volta ao último checkpoint com os corações cheios

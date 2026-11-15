@@ -49,3 +49,9 @@ Todos **sintetizados no próprio projeto** com o script `tools/sintetizar_audio.
 
 ## Volumes
 O menu de pausa tem controles separados de **Música**, **Vozes** e **Efeitos** (efeitos + ambiente). Cada um usa um bus de áudio próprio (`Musica`, `Vozes`, `Efeitos`) criado pelo `AudioManager.gd`, e a escolha fica salva no aparelho (`user://progresso.cfg`, que no navegador fica no IndexedDB), junto com o botão SOM.
+
+## Chapéu de couro e cristais (power-up da Fase 2)
+- `chapeu_lanca.wav` (arremesso), `chapeu_giro.wav` (giro em voo, em loop), `chapeu_volta.wav` (volta à cabeça),
+  `cristal_trinca.wav` (1º golpe no geodo), `cristal_quebra.wav` (cristal se partindo) e `poder_troca.wav` (troca com a reserva).
+- Sintetizados no próprio projeto por `tools/sintetizar_chapeu.py` (ruído filtrado + senoides), 22.050 Hz, mono, 16 bits.
+  Criação original, sem material de terceiros.

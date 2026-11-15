@@ -182,6 +182,8 @@ func _place() -> void:
 	var head := Vector2(vp.x * 0.5, vp.y * 0.35)
 	if p and p.is_inside_tree():
 		var h: float = 230.0 if p.is_mounted else 215.0
+		if p.has_method("chapeu_na_cabeca") and p.chapeu_na_cabeca():
+			h += 75.0   # o chapéu encantado flutua acima da cabeça: o balão sobe para não cobrir
 		head = p.get_global_transform_with_canvas().origin + Vector2(0, -h * p.k)
 	var pos := head - Vector2(balloon.size.x * 0.5, balloon.size.y + 26)
 	if no_rodape or GameManager.is_game_over or get_tree().paused:

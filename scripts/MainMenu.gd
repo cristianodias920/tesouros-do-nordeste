@@ -10,6 +10,7 @@ func _ready() -> void:
 	update_sound_button()
 	btn_start.grab_focus()
 	_mostrar_progresso()
+	_botao_teste_chapeu()
 	# música já na tela de título (no navegador o toque da tela "Toque para começar" liberou o som)
 	AudioManager.start_music()
 
@@ -49,6 +50,30 @@ func _mostrar_progresso() -> void:
 	l2.add_theme_color_override("font_color", Color(1, 0.97, 0.88))
 	hb.add_child(l2)
 	$VBoxContainer.add_child(pc)
+
+# Acesso TEMPORÁRIO à cena de teste do chapéu (Fase 2 em construção). Remover quando Cristalândia estiver pronta.
+var btn_teste: Button
+func _botao_teste_chapeu() -> void:
+	btn_teste = Button.new()
+	btn_teste.name = "BtnTesteChapeu"
+	btn_teste.text = "TESTAR CHAPÉU"
+	btn_teste.focus_mode = Control.FOCUS_ALL
+	btn_teste.custom_minimum_size = Vector2(320, 74)
+	btn_teste.add_theme_font_size_override("font_size", 26)
+	var sb: StyleBox = btn_start.get_theme_stylebox("normal")
+	if sb:
+		btn_teste.add_theme_stylebox_override("normal", sb)
+	btn_teste.anchor_left = 1.0; btn_teste.anchor_right = 1.0
+	btn_teste.anchor_top = 1.0; btn_teste.anchor_bottom = 1.0
+	btn_teste.offset_left = -360.0; btn_teste.offset_right = -40.0
+	btn_teste.offset_top = -114.0; btn_teste.offset_bottom = -40.0
+	add_child(btn_teste)
+	btn_teste.pressed.connect(_on_teste_chapeu)
+
+func _on_teste_chapeu() -> void:
+	AudioManager.start_music()
+	GameManager.reset_game()
+	get_tree().change_scene_to_file("res://scenes/TesteChapeu.tscn")
 
 func _on_start_pressed() -> void:
 	AudioManager.start_music()
