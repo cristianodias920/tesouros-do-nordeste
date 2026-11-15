@@ -18,6 +18,7 @@ boot_splash/bg_color=Color(0.98, 0.94, 0.85, 1)
 
 [autoload]
 
+Progresso="*res://scripts/Progresso.gd"
 AudioManager="*res://scripts/AudioManager.gd"
 GameManager="*res://scripts/GameManager.gd"
 VoiceLines="*res://scripts/VoiceLines.gd"

@@ -36,6 +36,7 @@ static func create(type: String, from_global: Vector2, slide_dir: float, exclude
 	return it
 
 func _ready() -> void:
+	add_to_group("itens_caixote")
 	global_position = start_pos
 	z_index = 6
 	sprite = Sprite2D.new()

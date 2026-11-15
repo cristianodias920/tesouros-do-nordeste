@@ -60,6 +60,14 @@ const RAPADURA_DUR: float = 6.0
 var brilho: Sprite2D            # aura dourada da rapadura
 var faiscas: CPUParticles2D     # estrelinhas da rapadura
 var rapadura_t: float = 0.0
+# Folha de buriti: depois de pegar no alto da torre, segurar PULAR caindo plana (só na área das nuvens)
+var tem_folha: bool = false
+var planando: bool = false
+var folha_sprite: Sprite2D
+const PLANAR_QUEDA: float = 230.0      # velocidade máxima de queda planando
+const NUVENS_X0: float = 9800.0
+const NUVENS_X1: float = 17000.0
+const FUNDO_ZOOM: float = 1.2          # câmera mais perto no caminho do fundo (Zeca maior na tela)
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -84,6 +92,8 @@ func _ready() -> void:
 	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	cl.add_child(fade_rect)
+	_criar_folha()
+	GameManager.continuou_do_checkpoint.connect(_continuar_do_checkpoint)
 
 func _apply_camera_limits() -> void:
 	if no_fundo:
@@ -97,6 +107,7 @@ func _apply_camera_limits() -> void:
 		camera.limit_top = cam_limit_top
 		camera.limit_bottom = cam_limit_bottom
 	camera.position = Vector2(0, -120 * k)
+	camera.zoom = Vector2.ONE * (FUNDO_ZOOM if no_fundo else 1.0)
 
 func set_fundo(valor: bool) -> void:
 	no_fundo = valor
@@ -177,7 +188,9 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		var current_gravity = GRAVITY_UP if velocity.y < 0 else GRAVITY_DOWN
 		velocity.y = move_toward(velocity.y, MAX_FALL_SPEED * k, current_gravity * k * delta)
+		_planar(delta)
 	else:
+		_parar_planar()
 		coyote_timer = COYOTE_TIME_MAX
 		if is_mounted:
 			can_double_jump = true
@@ -233,6 +246,7 @@ func _physics_process(delta: float) -> void:
 	# Câmera com olhar à frente (look-ahead ~180 px)
 	target_cam_offset_x = facing_direction * 180.0 * k if abs(velocity.x) > 20 * k else 0.0
 	camera.offset.x = lerp(camera.offset.x, target_cam_offset_x, 4.0 * delta)
+	_limitar_olhar_a_frente()
 
 	update_animation()
 
@@ -244,6 +258,68 @@ func _physics_process(delta: float) -> void:
 	# Queda no rio ou abismo
 	if global_position.y > (fundo_queda_y if no_fundo else MAIN_QUEDA_Y):
 		respawn_fall()
+
+func _limitar_olhar_a_frente() -> void:
+	# O "olhar à frente" (offset) não respeita os limites da câmera: sem isto, no fim da
+	# fase a tela mostrava um bloco vazio depois do último chão.
+	var meia: float = get_viewport_rect().size.x * 0.5 / camera.zoom.x
+	var cx: float = global_position.x + camera.position.x
+	var centro: float = clamp(cx, camera.limit_left + meia, camera.limit_right - meia)
+	var off_min: float = (camera.limit_left + meia) - centro
+	var off_max: float = (camera.limit_right - meia) - centro
+	if off_min <= off_max:
+		camera.offset.x = clamp(camera.offset.x, off_min, off_max)
+
+func na_area_das_nuvens() -> bool:
+	return not no_fundo and global_position.x > NUVENS_X0 and global_position.x < NUVENS_X1
+
+func _planar(_delta: float) -> void:
+	if tem_folha and velocity.y > 0.0 and Input.is_action_pressed("jump") and na_area_das_nuvens() and not GameManager.is_level_ended:
+		if not planando:
+			planando = true
+			AudioManager.play_sfx("planar")
+			folha_sprite.visible = true
+			folha_sprite.scale = Vector2.ONE * 0.12
+			var t := create_tween()
+			t.tween_property(folha_sprite, "scale", Vector2.ONE * 0.6 * k, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		velocity.y = min(velocity.y, PLANAR_QUEDA * k)
+		folha_sprite.rotation = sin(Time.get_ticks_msec() * 0.006) * 0.08 + velocity.x * 0.0002
+		folha_sprite.position = Vector2(0, (-290.0 if is_mounted else -225.0) * k)
+	else:
+		_parar_planar()
+
+func _parar_planar() -> void:
+	if planando:
+		planando = false
+		var t := create_tween()
+		t.tween_property(folha_sprite, "scale", Vector2.ONE * 0.05, 0.12)
+		t.tween_callback(func(): if not planando: folha_sprite.visible = false)
+
+func _criar_folha() -> void:
+	folha_sprite = Sprite2D.new()
+	if ResourceLoader.exists("res://sprites/items/folha_buriti.png"):
+		folha_sprite.texture = load("res://sprites/items/folha_buriti.png")
+	folha_sprite.offset = Vector2(0, 60)   # segura pelo cabo, acima da cabeça
+	folha_sprite.visible = false
+	folha_sprite.z_index = 1
+	add_child(folha_sprite)
+
+func pegar_folha() -> void:
+	tem_folha = true
+	AudioManager.play_sfx("powerup")
+
+func _continuar_do_checkpoint() -> void:
+	# depois do FIM DA AVENTURA: volta ao último checkpoint com os corações cheios
+	visible = true
+	afogando = false
+	falling_handled = false
+	viajando = false
+	animated_sprite.rotation = 0.0
+	animated_sprite.offset = Vector2.ZERO
+	animated_sprite.modulate = Color(1, 1, 1, 1)
+	fade_rect.color.a = 0.0
+	respawn_at_checkpoint()
+	invincibility_timer = 2.0
 
 func _check_slide_collisions(vy_before: float) -> void:
 	# Cabeçada em caixote (por baixo) e atrito do chão atual

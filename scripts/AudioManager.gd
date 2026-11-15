@@ -1,10 +1,29 @@
 extends Node
 
-# Gerenciador global de áudio (SFX e BGM)
+# Gerenciador global de áudio: música (com troca suave de faixa), efeitos,
+# sons de ambiente e volumes separados (Música / Vozes / Efeitos), salvos no aparelho.
 var sound_enabled: bool = true
-var music_player: AudioStreamPlayer
+var music_player: AudioStreamPlayer   # faixa atual (o VoiceLines abaixa o volume dela)
+var music_fade: AudioStreamPlayer     # faixa que está saindo na troca
 var sfx_players: Dictionary = {}
 var music_started: bool = false
+var faixa_atual: String = "forro"
+var amb_players: Dictionary = {}      # id -> AudioStreamPlayer em loop
+var amb_alvo: Dictionary = {}         # id -> volume alvo (0..1)
+
+const BUS_MUSICA := "Musica"
+const BUS_VOZ := "Vozes"
+const BUS_EFEITOS := "Efeitos"
+var volumes: Dictionary = {"musica": 0.8, "vozes": 1.0, "efeitos": 0.9}
+
+const MUSICAS: Dictionary = {
+	"forro": "res://audio/bgm_forro.ogg",
+	"nuvens": "res://audio/bgm_nuvens.ogg",
+}
+const AMBIENTES: Dictionary = {
+	"passaros": "res://audio/amb_passaros.ogg",
+	"rio": "res://audio/amb_rio.ogg",
+}
 
 var sound_paths = {
 	"jump": "res://audio/jump.wav",
@@ -18,37 +37,77 @@ var sound_paths = {
 	"splash": "res://audio/splash.wav",
 	"victory": "res://audio/victory.wav",
 	"zurro": "res://audio/zurro.wav",
-	"derrota": "res://audio/derrota.wav"
+	"derrota": "res://audio/derrota.wav",
+	"planar": "res://audio/planar.wav",
 }
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_criar_buses()
 	music_player = AudioStreamPlayer.new()
-	music_player.bus = "Master"
+	music_player.bus = BUS_MUSICA
 	music_player.volume_db = -10.0
 	add_child(music_player)
-	
-	var music_stream: AudioStream = null
-	if ResourceLoader.exists("res://audio/bgm_forro.ogg"):
-		music_stream = load("res://audio/bgm_forro.ogg")
-	elif ResourceLoader.exists("res://audio/bgm_forro.wav"):
-		music_stream = load("res://audio/bgm_forro.wav")
-
-	if music_stream:
-		if music_stream is AudioStreamOggVorbis:
-			(music_stream as AudioStreamOggVorbis).loop = true
-		elif music_stream is AudioStreamWAV:
-			(music_stream as AudioStreamWAV).loop_mode = AudioStreamWAV.LOOP_FORWARD
-		music_player.stream = music_stream
+	music_fade = AudioStreamPlayer.new()
+	music_fade.bus = BUS_MUSICA
+	add_child(music_fade)
+	music_player.stream = _carregar_musica("forro")
 
 	for sfx_name in sound_paths:
 		var p = AudioStreamPlayer.new()
-		p.bus = "Master"
+		p.bus = BUS_EFEITOS
 		p.volume_db = -3.0
 		add_child(p)
 		if ResourceLoader.exists(sound_paths[sfx_name]):
 			p.stream = load(sound_paths[sfx_name])
 		sfx_players[sfx_name] = p
+	for id in AMBIENTES:
+		var a := AudioStreamPlayer.new()
+		a.bus = BUS_EFEITOS
+		a.volume_db = -80.0
+		add_child(a)
+		if ResourceLoader.exists(AMBIENTES[id]):
+			var st: AudioStream = load(AMBIENTES[id])
+			if st is AudioStreamOggVorbis:
+				(st as AudioStreamOggVorbis).loop = true
+			a.stream = st
+		amb_players[id] = a
+		amb_alvo[id] = 0.0
+	# volumes salvos
+	for k in volumes.keys():
+		volumes[k] = float(Progresso.get_opcao("vol_" + k, volumes[k]))
+		set_volume(k, volumes[k], false)
+	sound_enabled = bool(Progresso.get_opcao("som", true))
+	AudioServer.set_bus_mute(0, not sound_enabled)
+
+func _criar_buses() -> void:
+	for nome in [BUS_MUSICA, BUS_VOZ, BUS_EFEITOS]:
+		if AudioServer.get_bus_index(nome) == -1:
+			AudioServer.add_bus()
+			var i := AudioServer.bus_count - 1
+			AudioServer.set_bus_name(i, nome)
+			AudioServer.set_bus_send(i, "Master")
+
+func _carregar_musica(id: String) -> AudioStream:
+	var path: String = MUSICAS.get(id, "")
+	if path == "" or not ResourceLoader.exists(path):
+		return null
+	var st: AudioStream = load(path)
+	if st is AudioStreamOggVorbis:
+		(st as AudioStreamOggVorbis).loop = true
+	return st
+
+# 0..1 por canal ("musica", "vozes", "efeitos")
+func set_volume(canal: String, v: float, salvar: bool = true) -> void:
+	v = clamp(v, 0.0, 1.0)
+	volumes[canal] = v
+	var bus_nome: String = {"musica": BUS_MUSICA, "vozes": BUS_VOZ, "efeitos": BUS_EFEITOS}.get(canal, "")
+	var i := AudioServer.get_bus_index(bus_nome)
+	if i >= 0:
+		AudioServer.set_bus_volume_db(i, linear_to_db(max(v, 0.0001)))
+		AudioServer.set_bus_mute(i, v <= 0.001)
+	if salvar:
+		Progresso.set_opcao("vol_" + canal, v)
 
 func _input(event: InputEvent) -> void:
 	if not music_started:
@@ -59,8 +118,52 @@ func start_music() -> void:
 	if music_started:
 		return
 	music_started = true
-	if sound_enabled and music_player and music_player.stream:
+	if music_player and music_player.stream:
 		music_player.play()
+
+# Troca de faixa com cruzamento suave (~1,2 s)
+func tocar_musica(id: String) -> void:
+	if id == faixa_atual:
+		return
+	var st := _carregar_musica(id)
+	if st == null:
+		return
+	faixa_atual = id
+	var vol: float = music_player.volume_db
+	var pos_antiga: float = music_player.get_playback_position() if music_player.playing else 0.0
+	music_fade.stream = music_player.stream
+	music_fade.volume_db = vol
+	if music_started:
+		music_fade.play(pos_antiga)
+	music_player.stream = st
+	if music_started:
+		music_player.play()
+	var t := create_tween()
+	t.tween_property(music_fade, "volume_db", -60.0, 1.2)
+	t.tween_callback(music_fade.stop)
+	fade_in_db = -30.0
+
+var fade_in_db: float = 0.0   # entra somando ao volume da faixa nova
+func get_music_extra_db() -> float:
+	return fade_in_db
+
+func set_ambiente(id: String, v: float) -> void:
+	amb_alvo[id] = clamp(v, 0.0, 1.0)
+
+func _process(delta: float) -> void:
+	if fade_in_db < 0.0:
+		fade_in_db = min(0.0, fade_in_db + delta * 25.0)
+	for id in amb_players:
+		var a: AudioStreamPlayer = amb_players[id]
+		if a.stream == null:
+			continue
+		var alvo: float = float(amb_alvo[id])
+		var db_alvo: float = -80.0 if alvo <= 0.01 else linear_to_db(alvo) - 14.0
+		a.volume_db = move_toward(a.volume_db, db_alvo, delta * 30.0)
+		if alvo > 0.01 and not a.playing and music_started:
+			a.play()
+		elif alvo <= 0.01 and a.playing and a.volume_db <= -79.0:
+			a.stop()
 
 func play_sfx(sfx_name: String) -> void:
 	if not sound_enabled:
@@ -70,12 +173,9 @@ func play_sfx(sfx_name: String) -> void:
 
 func toggle_sound() -> bool:
 	sound_enabled = not sound_enabled
-	if sound_enabled:
-		if music_player and not music_player.playing and music_started:
-			music_player.play()
-	else:
-		if music_player:
-			music_player.stop()
+	AudioServer.set_bus_mute(0, not sound_enabled)
+	if not sound_enabled:
 		for p in sfx_players.values():
 			p.stop()
+	Progresso.set_opcao("som", sound_enabled)
 	return sound_enabled

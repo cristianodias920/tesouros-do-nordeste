@@ -58,6 +58,14 @@ func _ready() -> void:
 	touch_controls.visible = DisplayServer.is_touchscreen_available()
 	_build_intro()
 	get_viewport().size_changed.connect(_center_intro)
+	add_to_group("hud")
+	_montar_pausa()
+	_montar_fim_de_jogo()
+	_montar_vitoria()
+	_montar_dica_folha()
+	if GameManager.celular:
+		_hud_maior()
+		get_viewport().size_changed.connect(_hud_maior)
 
 func _update_touch_positions() -> void:
 	var vp_size = get_viewport().get_visible_rect().size
@@ -101,6 +109,7 @@ func _process(_delta: float) -> void:
 	if btn_action:
 		btn_action.visible = GameManager.is_mounted
 	_update_rapadura_indicator()
+	_update_dica_folha(_delta)
 
 func _on_lives_changed(lives: int) -> void:
 	update_lives_display(lives)
@@ -285,6 +294,7 @@ func _close_intro() -> void:
 		return
 	intro.visible = false
 	get_tree().paused = false
+	GameManager.cronometro_ativo = true
 	touch_controls.visible = DisplayServer.is_touchscreen_available()
 	VoiceLines.say("inicio")
 
@@ -312,23 +322,389 @@ func _on_continue_button_pressed() -> void:
 
 func _on_menu_button_pressed() -> void:
 	get_tree().paused = false
+	AudioManager.set_ambiente("passaros", 0.0)
+	AudioManager.set_ambiente("rio", 0.0)
+	AudioManager.tocar_musica("forro")
 	GameManager.reset_game()
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 
 func _on_restart_button_pressed() -> void:
 	get_tree().paused = false
+	AudioManager.tocar_musica("forro")
 	GameManager.reset_game()
 	get_tree().reload_current_scene()
 
 func _on_level_completed() -> void:
 	victory_screen.visible = true
 	touch_controls.visible = false
+	dica_folha_mini.visible = false
+	var r: Dictionary = GameManager.resultado
+	var c: int = GameManager.collected_gems
+	var total: int = GameManager.TOTAL_GEMS
+	var faltam: int = total - c
+	var est: int = int(r.get("estrelas", GameManager.estrelas_para(c, total)))
+	var rec: Dictionary = r.get("recordes", {})
 	if victory_gems_label:
-		var faltam: int = GameManager.TOTAL_GEMS - GameManager.collected_gems
-		var res: String = "Todos os tesouros! ★" if faltam <= 0 else ("Faltou 1 tesouro" if faltam == 1 else "Faltaram %d tesouros" % faltam)
-		victory_gems_label.text = "Tesouros coletados: " + str(GameManager.collected_gems) + "/" + str(GameManager.TOTAL_GEMS) + "\n" + res
+		var res: String = "Todos os tesouros!" if faltam <= 0 else ("Faltou 1 tesouro" if faltam == 1 else "Faltaram %d tesouros" % faltam)
+		var pct: int = int(round(100.0 * c / max(total, 1)))
+		victory_gems_label.text = "Tesouros coletados: %d/%d (%d%%)\n%s" % [c, total, pct, res]
 		victory_gems_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var tempo_txt: String = "Tempo: " + Progresso.formatar_tempo(float(r.get("tempo", GameManager.tempo)))
+	var novos: Array = []
+	if rec.get("tempo", false) and not rec.get("primeira_vez", false):
+		novos.append("tempo")
+	if rec.get("tesouros", false) and not rec.get("primeira_vez", false):
+		novos.append("tesouros")
+	if rec.get("estrelas", false) and not rec.get("primeira_vez", false):
+		novos.append("estrelas")
+	if novos.size() > 0:
+		var nomes: Dictionary = {"tempo": "melhor tempo", "tesouros": "mais tesouros", "estrelas": "mais estrelas"}
+		var lista: Array = []
+		for n in novos:
+			lista.append(nomes[n])
+		tempo_txt += "   •   Novo recorde: " + " e ".join(lista) + "!"
+	else:
+		var melhor: Dictionary = Progresso.fase(GameManager.FASE_ID)
+		if not rec.get("primeira_vez", false) and melhor.melhor_tempo > 0.0:
+			tempo_txt += "   •   Melhor: " + Progresso.formatar_tempo(melhor.melhor_tempo)
+	vit_tempo.text = tempo_txt
+	# onde ainda há tesouros
+	if faltam > 0:
+		var areas: Dictionary = GameManager.tesouros_restantes_por_area(get_tree())
+		var partes: Array = []
+		for a in ["Começo e Rio Corrente", "Centro de Corrente", "Torre e nuvens", "Vereda de buritis", "Rio Paraim", "Serra Dois Irmãos", "Rio Corrente e ExpoCorrente"]:
+			if areas.has(a):
+				partes.append("%s (%d)" % [a, areas[a]])
+		vit_areas.text = "Ainda há tesouros em: " + ", ".join(partes) if partes.size() > 0 else ""
+	else:
+		vit_areas.text = "Você achou todos os tesouros de Corrente!"
+	vit_frase.text = ["Conseguimos, Faísca! Bora achar mais tesouros na próxima!", "Conseguimos, Faísca! Quase todos os tesouros!", "Conseguimos, Faísca! Achamos TODOS os tesouros!"][est - 1]
+	_animar_vitoria(est)
 
 func _on_game_over() -> void:
 	game_over_screen.visible = true
 	touch_controls.visible = false
+	var tem_ckp: bool = GameManager.has_checkpoint
+	go_btn_ckp.text = "Continuar do checkpoint" if tem_ckp else "Tentar de novo"
+
+func _on_continuar_checkpoint() -> void:
+	game_over_screen.visible = false
+	get_tree().paused = false
+	GameManager.continuar_do_checkpoint()
+	touch_controls.visible = DisplayServer.is_touchscreen_available()
+
+# ---------------- Telas novas (montadas por código) ----------------
+var go_btn_ckp: Button
+var vit_tempo: Label
+var vit_areas: Label
+var vit_frase: Label
+var vit_estrelas: Array = []
+var vit_confete: CPUParticles2D
+var vit_zeca: TextureRect
+var vit_faisca: TextureRect
+var vol_sliders: Dictionary = {}
+
+class Estrela extends Control:
+	var cheia: bool = false
+	var brilho: float = 0.0
+	func _draw() -> void:
+		var c: Vector2 = size * 0.5
+		var r1: float = min(size.x, size.y) * 0.5
+		var r2: float = r1 * 0.45
+		var pts := PackedVector2Array()
+		for i in 10:
+			var ang: float = -PI / 2.0 + i * PI / 5.0
+			var rr: float = r1 if i % 2 == 0 else r2
+			pts.append(c + Vector2(cos(ang), sin(ang)) * rr)
+		var fill: Color = Color(1.0, 0.8, 0.2) if cheia else Color(0.32, 0.2, 0.1, 0.85)
+		draw_colored_polygon(pts, fill)
+		if cheia:
+			# brilho interno
+			var pts2 := PackedVector2Array()
+			for p in pts:
+				pts2.append(c + (p - c) * 0.55 + Vector2(0, -r1 * 0.08))
+			draw_colored_polygon(pts2, Color(1.0, 0.93, 0.55, 0.9))
+		var borda := pts.duplicate()
+		borda.append(pts[0])
+		draw_polyline(borda, Color(0.35, 0.18, 0.04) if cheia else Color(0.75, 0.6, 0.35, 0.8), 5.0, true)
+
+func _rotulo(txt: String, tam: int, cor: Color) -> Label:
+	var l := Label.new()
+	l.text = txt
+	l.add_theme_font_size_override("font_size", tam)
+	l.add_theme_color_override("font_color", cor)
+	l.add_theme_color_override("font_outline_color", Color(0.2, 0.1, 0.03))
+	l.add_theme_constant_override("outline_size", 6)
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return l
+
+func _montar_vitoria() -> void:
+	var panel: Panel = $VictoryScreen/Panel
+	panel.offset_left = -560; panel.offset_right = 560
+	panel.offset_top = -420; panel.offset_bottom = 420
+	var vb: VBoxContainer = $VictoryScreen/Panel/VBox
+	vb.add_theme_constant_override("separation", 12)
+	var title: Label = $VictoryScreen/Panel/VBox/Title
+	# estrelas
+	var hb := HBoxContainer.new()
+	hb.alignment = BoxContainer.ALIGNMENT_CENTER
+	hb.add_theme_constant_override("separation", 26)
+	hb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vb.add_child(hb)
+	vb.move_child(hb, title.get_index() + 1)
+	for i in 3:
+		var e := Estrela.new()
+		e.custom_minimum_size = Vector2(118, 118) if i != 1 else Vector2(140, 140)
+		e.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hb.add_child(e)
+		vit_estrelas.append(e)
+	var dica_est := _rotulo("1 estrela: terminar  •  2: 70% dos tesouros  •  3: todos", 22, Color(0.95, 0.85, 0.65))
+	vb.add_child(dica_est)
+	vb.move_child(dica_est, hb.get_index() + 1)
+	vit_tempo = _rotulo("", 32, Color(1, 0.97, 0.85))
+	vb.add_child(vit_tempo)
+	vb.move_child(vit_tempo, victory_gems_label.get_index() + 1)
+	vit_areas = _rotulo("", 26, Color(0.85, 0.95, 0.8))
+	vit_areas.custom_minimum_size = Vector2(980, 0)
+	vb.add_child(vit_areas)
+	vb.move_child(vit_areas, vit_tempo.get_index() + 1)
+	vit_frase = _rotulo("", 30, Color(1, 0.9, 0.55))
+	vb.add_child(vit_frase)
+	vb.move_child(vit_frase, vit_areas.get_index() + 1)
+	# Zeca e Faísca comemorando dos lados do painel
+	vit_zeca = TextureRect.new()
+	vit_zeca.texture = load("res://sprites/player/zeca_jump.png")
+	vit_faisca = TextureRect.new()
+	vit_faisca.texture = load("res://sprites/faisca/faisca_solo.png")
+	for tr in [vit_zeca, vit_faisca]:
+		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		tr.size = Vector2(300, 380)
+		$VictoryScreen.add_child(tr)
+	vit_faisca.flip_h = true
+	# confete
+	vit_confete = CPUParticles2D.new()
+	vit_confete.amount = 160
+	vit_confete.lifetime = 4.0
+	vit_confete.emitting = false
+	vit_confete.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	vit_confete.direction = Vector2(0, 1)
+	vit_confete.spread = 25.0
+	vit_confete.gravity = Vector2(0, 260)
+	vit_confete.initial_velocity_min = 80.0
+	vit_confete.initial_velocity_max = 260.0
+	vit_confete.angular_velocity_min = -360.0
+	vit_confete.angular_velocity_max = 360.0
+	vit_confete.scale_amount_min = 8.0
+	vit_confete.scale_amount_max = 16.0
+	var cores := Gradient.new()
+	cores.offsets = PackedFloat32Array([0.0, 0.25, 0.5, 0.75, 1.0])
+	cores.colors = PackedColorArray([Color(0.9, 0.25, 0.2), Color(0.98, 0.8, 0.2), Color(0.25, 0.6, 0.3), Color(0.2, 0.45, 0.85), Color(0.95, 0.5, 0.75)])
+	vit_confete.color_initial_ramp = cores
+	$VictoryScreen.add_child(vit_confete)
+	$VictoryScreen.move_child(vit_confete, 1)   # atrás do painel, na frente do fundo escuro
+	_posicionar_vitoria()
+	get_viewport().size_changed.connect(_posicionar_vitoria)
+
+func _posicionar_vitoria() -> void:
+	var vp := get_viewport().get_visible_rect().size
+	if vit_confete:
+		vit_confete.position = Vector2(vp.x * 0.5, -30)
+		vit_confete.emission_rect_extents = Vector2(vp.x * 0.5, 10)
+	var meio: float = vp.x * 0.5
+	# só mostra os personagens se couberem do lado do painel
+	var cabe: bool = meio - 560 > 230
+	vit_zeca.visible = cabe
+	vit_faisca.visible = cabe
+	var w: float = min(300.0, meio - 580.0)
+	vit_zeca.size = Vector2(w, 380); vit_faisca.size = Vector2(w, 380)
+	vit_zeca.position = Vector2(meio - 570 - w, vp.y * 0.5 - 60)
+	vit_faisca.position = Vector2(meio + 570, vp.y * 0.5 - 40)
+
+func _animar_vitoria(est: int) -> void:
+	_posicionar_vitoria()
+	vit_confete.emitting = true
+	for i in 3:
+		var e: Estrela = vit_estrelas[i]
+		e.cheia = false
+		e.queue_redraw()
+		e.pivot_offset = e.custom_minimum_size * 0.5
+		e.scale = Vector2.ONE
+	var t := create_tween()
+	t.tween_interval(0.5)
+	for i in est:
+		var e: Estrela = vit_estrelas[i]
+		t.tween_callback(func():
+			e.cheia = true
+			e.queue_redraw()
+			e.scale = Vector2.ONE * 0.2
+			AudioManager.play_sfx("gem"))
+		t.tween_property(e, "scale", Vector2.ONE * 1.18, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		t.tween_property(e, "scale", Vector2.ONE, 0.12)
+	# Zeca e Faísca pulando de alegria
+	for tr in [vit_zeca, vit_faisca]:
+		var y0: float = tr.position.y
+		var j := create_tween().set_loops()
+		j.tween_property(tr, "position:y", y0 - 46, 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		j.tween_property(tr, "position:y", y0, 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		j.tween_interval(0.25 if tr == vit_zeca else 0.4)
+
+func _montar_fim_de_jogo() -> void:
+	var vb: VBoxContainer = $GameOverScreen/Panel/VBox
+	var panel: Panel = $GameOverScreen/Panel
+	panel.offset_top = -260; panel.offset_bottom = 260
+	go_btn_ckp = $GameOverScreen/Panel/VBox/BtnRetry
+	go_btn_ckp.text = "Continuar do checkpoint"
+	go_btn_ckp.pressed.disconnect(_on_restart_button_pressed)
+	go_btn_ckp.pressed.connect(_on_continuar_checkpoint)
+	var b := Button.new()
+	b.text = "Recomeçar a fase"
+	b.custom_minimum_size = Vector2(0, 72)
+	b.pressed.connect(_on_restart_button_pressed)
+	vb.add_child(b)
+	vb.move_child(b, go_btn_ckp.get_index() + 1)
+
+func _montar_pausa() -> void:
+	var panel: Panel = $PauseMenu/Panel
+	panel.offset_left = -360; panel.offset_right = 360
+	panel.offset_top = -370; panel.offset_bottom = 370
+	var vb: VBoxContainer = $PauseMenu/Panel/VBox
+	vb.add_theme_constant_override("separation", 16)
+	$PauseMenu/Panel/VBox/BtnSound.visible = false
+	var idx: int = $PauseMenu/Panel/VBox/BtnContinue.get_index() + 1
+	var rot := _rotulo("Volume", 34, Color(1, 0.92, 0.65))
+	vb.add_child(rot); vb.move_child(rot, idx); idx += 1
+	for par in [["musica", "Música"], ["vozes", "Vozes"], ["efeitos", "Efeitos"]]:
+		var hb := HBoxContainer.new()
+		hb.add_theme_constant_override("separation", 16)
+		var l := _rotulo(par[1], 30, Color(1, 0.97, 0.88))
+		l.custom_minimum_size = Vector2(150, 0)
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		hb.add_child(l)
+		var sl := HSlider.new()
+		sl.min_value = 0.0; sl.max_value = 1.0; sl.step = 0.05
+		sl.value = float(AudioManager.volumes.get(par[0], 1.0))
+		sl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		sl.custom_minimum_size = Vector2(0, 60)
+		sl.focus_mode = Control.FOCUS_NONE
+		var trilho := StyleBoxFlat.new(); trilho.bg_color = Color(0.2, 0.1, 0.03, 0.9); trilho.set_corner_radius_all(8)
+		trilho.content_margin_top = 7; trilho.content_margin_bottom = 7
+		var cheio := StyleBoxFlat.new(); cheio.bg_color = Color(1.0, 0.8, 0.25); cheio.set_corner_radius_all(8)
+		cheio.content_margin_top = 7; cheio.content_margin_bottom = 7
+		sl.add_theme_stylebox_override("slider", trilho)
+		sl.add_theme_stylebox_override("grabber_area", cheio)
+		sl.add_theme_stylebox_override("grabber_area_highlight", cheio)
+		sl.add_theme_icon_override("grabber", _bolinha(40))
+		sl.add_theme_icon_override("grabber_highlight", _bolinha(44))
+		var pct := _rotulo("%d%%" % int(round(sl.value * 100)), 28, Color(1, 0.97, 0.88))
+		pct.custom_minimum_size = Vector2(90, 0)
+		var canal: String = par[0]
+		sl.value_changed.connect(func(v):
+			AudioManager.set_volume(canal, v)
+			pct.text = "%d%%" % int(round(v * 100))
+			if canal == "vozes" and not VoiceLines.player_audio.playing and VoiceLines.player_audio.stream:
+				VoiceLines.player_audio.play()
+			elif canal == "efeitos":
+				AudioManager.play_sfx("gem"))
+		hb.add_child(sl)
+		hb.add_child(pct)
+		vb.add_child(hb); vb.move_child(hb, idx); idx += 1
+		vol_sliders[canal] = sl
+	var br := Button.new()
+	br.text = "Recomeçar a fase"
+	br.custom_minimum_size = Vector2(0, 72)
+	br.pressed.connect(_on_restart_button_pressed)
+	vb.add_child(br); vb.move_child(br, idx)
+
+func _bolinha(d: int) -> ImageTexture:
+	var img := Image.create(d, d, false, Image.FORMAT_RGBA8)
+	var c := Vector2(d, d) * 0.5
+	for y in d:
+		for x in d:
+			var r: float = Vector2(x + 0.5, y + 0.5).distance_to(c)
+			if r <= d * 0.5 - 1:
+				img.set_pixel(x, y, Color(0.35, 0.18, 0.04) if r > d * 0.5 - 5 else Color(1.0, 0.92, 0.6))
+	return ImageTexture.create_from_image(img)
+
+# ---- dica da folha de buriti (planar) ----
+var dica_folha: PanelContainer
+var dica_folha_t: float = 0.0
+var dica_folha_mini: PanelContainer
+
+func _painel_dica(txt: String, tam: int) -> PanelContainer:
+	var pc := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.22, 0.38, 0.12, 0.92)
+	sb.border_color = Color(0.96, 0.85, 0.45)
+	sb.set_border_width_all(4)
+	sb.set_corner_radius_all(18)
+	sb.content_margin_left = 18; sb.content_margin_right = 22
+	sb.content_margin_top = 8; sb.content_margin_bottom = 8
+	pc.add_theme_stylebox_override("panel", sb)
+	pc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", 12)
+	hb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pc.add_child(hb)
+	var ic := TextureRect.new()
+	ic.texture = load("res://sprites/items/folha_buriti.png")
+	ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	ic.custom_minimum_size = Vector2(tam * 1.9, tam * 1.6)
+	ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hb.add_child(ic)
+	var l := _rotulo(txt, tam, Color(1, 0.97, 0.85))
+	l.autowrap_mode = TextServer.AUTOWRAP_OFF
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	hb.add_child(l)
+	pc.visible = false
+	add_child(pc)
+	return pc
+
+func _montar_dica_folha() -> void:
+	var botao: String = "o botão de pular" if GameManager.celular else "PULAR (Espaço)"
+	dica_folha = _painel_dica("Folha de buriti! Nas nuvens, segure %s\nenquanto cai para planar devagar." % botao, 34)
+	dica_folha_mini = _painel_dica("Segure %s: planar" % ("PULAR" if not GameManager.celular else "pular"), 26)
+
+func mostrar_dica_folha() -> void:
+	dica_folha_t = 6.0
+	dica_folha.visible = true
+	dica_folha.modulate.a = 1.0
+
+func _update_dica_folha(delta: float) -> void:
+	if dica_folha == null:
+		return
+	var vp := get_viewport().get_visible_rect().size
+	var esc: float = $TopLeft.scale.x
+	if dica_folha_t > 0.0:
+		dica_folha_t -= delta
+		dica_folha.reset_size()
+		dica_folha.scale = Vector2.ONE * esc
+		dica_folha.position = Vector2((vp.x - dica_folha.size.x * esc) * 0.5, vp.y - dica_folha.size.y * esc - 60.0)
+		dica_folha.modulate.a = clamp(dica_folha_t / 0.5, 0.0, 1.0)
+		if dica_folha_t <= 0.0:
+			dica_folha.visible = false
+	var p = get_tree().get_first_node_in_group("player")
+	var mostrar: bool = p != null and p.tem_folha and p.na_area_das_nuvens() and not GameManager.is_level_ended and dica_folha_t <= 0.0
+	dica_folha_mini.visible = mostrar
+	if mostrar:
+		dica_folha_mini.reset_size()
+		dica_folha_mini.scale = Vector2.ONE * esc
+		var y0: float = 24.0 + (240.0 if rap_panel and rap_panel.visible else 166.0) * esc
+		dica_folha_mini.position = Vector2(22, y0)
+		dica_folha_mini.modulate.a = 1.0 if p.planando else 0.8
+
+func _hud_maior() -> void:
+	# Celular: HUD ~1,5x maior (1,3x em telas 16:9, para o título não encostar nos botões)
+	var vp := get_viewport().get_visible_rect().size
+	var f: float = 1.5 if vp.x / max(vp.y, 1.0) >= 1.9 else 1.3
+	$TopLeft.scale = Vector2.ONE * f
+	var tr: Control = $TopRight
+	tr.pivot_offset = Vector2(tr.size.x, 0)
+	tr.scale = Vector2.ONE * f
+	var tc: Control = $TopCenter
+	tc.pivot_offset = Vector2(tc.size.x * 0.5, 0)
+	tc.scale = Vector2.ONE * f

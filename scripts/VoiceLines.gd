@@ -26,10 +26,11 @@ var played: Dictionary = {}      # id -> tempo (s) da última vez
 var history: Array = []          # ids na ordem em que tocaram (usado nos testes)
 var queue: Array = []
 var queued_at: Dictionary = {}
-const QUEUE_MAX_AGE: float = 8.0  # fala que esperou demais na fila é descartada
+const QUEUE_MAX_AGE: float = 3.5  # fala que esperou demais na fila é descartada (fora de contexto)
 var current_id: String = ""
 var show_time: float = 0.0
 var clock: float = 0.0
+var fs: int = 34
 var no_rodape: bool = false   # na tela de vitória o balão vai para baixo, sem cobrir o painel
 
 var layer: CanvasLayer
@@ -54,7 +55,8 @@ func _ready() -> void:
 	sb.content_margin_top = 10; sb.content_margin_bottom = 12
 	balloon.add_theme_stylebox_override("panel", sb)
 	label = Label.new()
-	label.add_theme_font_size_override("font_size", 34)
+	fs = 50 if GameManager.celular else 34   # celular: balão ~1,5x maior
+	label.add_theme_font_size_override("font_size", fs)
 	label.add_theme_color_override("font_color", Color(0.22, 0.11, 0.03))
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -70,6 +72,7 @@ func _ready() -> void:
 	tail.visible = false
 	player_audio = AudioStreamPlayer.new()
 	player_audio.volume_db = 2.0
+	player_audio.bus = "Vozes"
 	add_child(player_audio)
 	GameManager.checkpoint_activated.connect(func(_p): say("checkpoint_primeiro"))
 	GameManager.gems_changed.connect(func(c, total):
@@ -144,7 +147,7 @@ func _process(delta: float) -> void:
 	# abaixa a música enquanto o Zeca fala
 	var mp: AudioStreamPlayer = AudioManager.music_player
 	if mp:
-		var alvo: float = MUSIC_DUCK_DB if player_audio.playing else MUSIC_DB
+		var alvo: float = (MUSIC_DUCK_DB if player_audio.playing else MUSIC_DB) + AudioManager.fade_in_db
 		mp.volume_db = move_toward(mp.volume_db, alvo, delta * (40.0 if alvo < mp.volume_db else 15.0))
 	if current_id == "":
 		return
@@ -167,9 +170,9 @@ func _place() -> void:
 	var vp := get_viewport().get_visible_rect().size
 	# largura medida pelo texto (com quebra automática, o Label sem largura
 	# mínima quebraria letra por letra)
-	var max_w: float = min(620.0, vp.x * 0.5)
+	var max_w: float = min(620.0 * fs / 34.0, vp.x * 0.5)
 	var font: Font = label.get_theme_font("font")
-	var tw: float = font.get_string_size(label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, 34).x + 4.0
+	var tw: float = font.get_string_size(label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + 4.0
 	label.custom_minimum_size.x = min(tw, max_w - 44.0)
 	balloon.size = Vector2.ZERO
 	balloon.reset_size()
@@ -178,12 +181,12 @@ func _place() -> void:
 		var h: float = 230.0 if p.is_mounted else 215.0
 		head = p.get_global_transform_with_canvas().origin + Vector2(0, -h * p.k)
 	var pos := head - Vector2(balloon.size.x * 0.5, balloon.size.y + 26)
-	if no_rodape:
+	if no_rodape or GameManager.is_game_over or get_tree().paused:
 		pos = Vector2((vp.x - balloon.size.x) * 0.5, vp.y - balloon.size.y - 40.0)
 		head = Vector2(vp.x * 0.5, vp.y)
 	# nunca cobre o HUD do topo nem sai da tela
 	pos.x = clamp(pos.x, 20.0, vp.x - balloon.size.x - 20.0)
-	pos.y = clamp(pos.y, 170.0, vp.y - balloon.size.y - 20.0)
+	pos.y = clamp(pos.y, 170.0 * (1.5 if GameManager.celular else 1.0), vp.y - balloon.size.y - 20.0)
 	balloon.position = pos
-	tail.visible = balloon.visible and not no_rodape
+	tail.visible = balloon.visible and not (no_rodape or GameManager.is_game_over or get_tree().paused)
 	tail.position = Vector2(clamp(head.x, pos.x + 30, pos.x + balloon.size.x - 30), pos.y + balloon.size.y - 2)
