@@ -100,7 +100,7 @@ centered = false
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector2(120, 780)
 cam_limit_left = 0
-cam_limit_right = 24040
+cam_limit_right = 26080
 fundo_cam_left = 40000
 fundo_cam_right = 47776
 fundo_cam_top = -900
@@ -214,7 +214,7 @@ position = Vector2(-20, -200)
 shape = SubResource("RectangleShape2D_parede")
 
 [node name="ParedeDir" type="CollisionShape2D" parent="Limites"]
-position = Vector2(24020, -200)
+position = Vector2(26060, -200)
 shape = SubResource("RectangleShape2D_parede")
 
 [node name="Caixotes" type="Node2D" parent="."]
@@ -415,34 +415,60 @@ centered = false
 flip_h = true
 
 [node name="Buriti14" type="Sprite2D" parent="Decoracao"]
-position = Vector2(18606.8, 283.2)
+position = Vector2(17466.8, 283.2)
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("31_buriti")
 centered = false
+flip_h = true
 
 [node name="Buriti15" type="Sprite2D" parent="Decoracao"]
-position = Vector2(18515.1, 328.8)
-scale = Vector2(0.6, 0.6)
+position = Vector2(17588.6, 237.6)
+scale = Vector2(0.7, 0.7)
 texture = ExtResource("31_buriti")
 centered = false
-flip_h = true
 
 [node name="Buriti16" type="Sprite2D" parent="Decoracao"]
-position = Vector2(20198.6, 237.6)
+position = Vector2(18905.1, 328.8)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("31_buriti")
+centered = false
+flip_h = true
+
+[node name="Buriti17" type="Sprite2D" parent="Decoracao"]
+position = Vector2(19018.6, 237.6)
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("31_buriti")
 centered = false
 
-[node name="Buriti17" type="Sprite2D" parent="Decoracao"]
-position = Vector2(21056.8, 283.2)
+[node name="Buriti18" type="Sprite2D" parent="Decoracao"]
+position = Vector2(20655.1, 328.8)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("31_buriti")
+centered = false
+
+[node name="Buriti19" type="Sprite2D" parent="Decoracao"]
+position = Vector2(20538.6, 237.6)
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("31_buriti")
 centered = false
 flip_h = true
 
-[node name="Buriti18" type="Sprite2D" parent="Decoracao"]
-position = Vector2(21865.1, 328.8)
+[node name="Buriti20" type="Sprite2D" parent="Decoracao"]
+position = Vector2(22246.8, 283.2)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("31_buriti")
+centered = false
+
+[node name="Buriti21" type="Sprite2D" parent="Decoracao"]
+position = Vector2(23105.1, 328.8)
 scale = Vector2(0.6, 0.6)
+texture = ExtResource("31_buriti")
+centered = false
+flip_h = true
+
+[node name="Buriti22" type="Sprite2D" parent="Decoracao"]
+position = Vector2(23888.6, 237.6)
+scale = Vector2(0.7, 0.7)
 texture = ExtResource("31_buriti")
 centered = false
 
@@ -477,7 +503,7 @@ barriga = 70.0
 
 [node name="Cavalgada" type="Node2D" parent="Decoracao/Expo"]
 z_index = -3
-position = Vector2(22150, 0)
+position = Vector2(24190, 0)
 metadata/base_y = 0.0
 
 [node name="Cavaleiros" type="Sprite2D" parent="Decoracao/Expo/Cavalgada"]
@@ -488,15 +514,15 @@ centered = false
 modulate = Color(0.95, 0.93, 0.9, 1)
 
 [node name="ArcoExpo" type="Sprite2D" parent="Decoracao/Expo"]
-position = Vector2(22599, 359.7)
+position = Vector2(24639, 359.7)
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("32_expo")
 centered = false
 
 [node name="LetreiroExpo" type="Label" parent="Decoracao/Expo"]
-offset_left = 22850
+offset_left = 24890
 offset_top = 404.66
-offset_right = 23250
+offset_right = 25290
 offset_bottom = 474.66
 theme_override_colors/font_color = Color(0.45, 0.2, 0.05, 1)
 theme_override_colors/font_outline_color = Color(1, 0.95, 0.8, 1)
@@ -507,14 +533,14 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="BandeirolasExpo0" type="Node2D" parent="Decoracao/Expo"]
-position = Vector2(22250, 400)
+position = Vector2(24290, 400)
 script = ExtResource("35_band")
 largura = 600.0
 barriga = 60.0
 cores = PackedColorArray(0.9, 0.25, 0.2, 1, 0.98, 0.8, 0.2, 1, 0.25, 0.6, 0.3, 1, 0.2, 0.45, 0.85, 1)
 
 [node name="BandeirolasExpo1" type="Node2D" parent="Decoracao/Expo"]
-position = Vector2(23400, 400)
+position = Vector2(25440, 400)
 script = ExtResource("35_band")
 largura = 600.0
 barriga = 60.0
@@ -524,27 +550,37 @@ cores = PackedColorArray(0.9, 0.25, 0.2, 1, 0.98, 0.8, 0.2, 1, 0.25, 0.6, 0.3, 1
 z_index = -1
 
 [node name="AguaN1" type="Sprite2D" parent="RioNovo"]
-position = Vector2(18800, 808)
+position = Vector2(17700, 808)
 texture = ExtResource("22_agua")
 centered = false
 
 [node name="AguaN2" type="Sprite2D" parent="RioNovo"]
-position = Vector2(19500, 808)
+position = Vector2(17900, 808)
 texture = ExtResource("22_agua")
 centered = false
 
 [node name="AguaN3" type="Sprite2D" parent="RioNovo"]
-position = Vector2(19900, 808)
+position = Vector2(20840, 808)
 texture = ExtResource("22_agua")
 centered = false
 
 [node name="AguaN4" type="Sprite2D" parent="RioNovo"]
-position = Vector2(21180, 808)
+position = Vector2(21540, 808)
 texture = ExtResource("22_agua")
 centered = false
 
 [node name="AguaN5" type="Sprite2D" parent="RioNovo"]
-position = Vector2(21500, 808)
+position = Vector2(21940, 808)
+texture = ExtResource("22_agua")
+centered = false
+
+[node name="AguaN6" type="Sprite2D" parent="RioNovo"]
+position = Vector2(23220, 808)
+texture = ExtResource("22_agua")
+centered = false
+
+[node name="AguaN7" type="Sprite2D" parent="RioNovo"]
+position = Vector2(23540, 808)
 texture = ExtResource("22_agua")
 centered = false
 
@@ -571,23 +607,35 @@ position = Vector2(15620, 780)
 [node name="ChaoN7" parent="TerrenoNovo" instance=ExtResource("3_chao")]
 position = Vector2(16700, 780)
 
+[node name="PedraParaim1" parent="TerrenoNovo" instance=ExtResource("5_pedra")]
+position = Vector2(18020, 830)
+
+[node name="PedraParaim2" parent="TerrenoNovo" instance=ExtResource("5_pedra")]
+position = Vector2(18330, 830)
+
+[node name="PedraParaim3" parent="TerrenoNovo" instance=ExtResource("5_pedra")]
+position = Vector2(18640, 830)
+
 [node name="ChaoN8" parent="TerrenoNovo" instance=ExtResource("3_chao")]
-position = Vector2(17780, 780)
+position = Vector2(18900, 780)
 
 [node name="ChaoN9" parent="TerrenoNovo" instance=ExtResource("3_chao")]
-position = Vector2(20160, 780)
+position = Vector2(19820, 780)
 
 [node name="ChaoN10" parent="TerrenoNovo" instance=ExtResource("3_chao")]
-position = Vector2(21880, 780)
+position = Vector2(22200, 780)
 
 [node name="ChaoN11" parent="TerrenoNovo" instance=ExtResource("3_chao")]
-position = Vector2(22960, 780)
+position = Vector2(23920, 780)
+
+[node name="ChaoN12" parent="TerrenoNovo" instance=ExtResource("3_chao")]
+position = Vector2(25000, 780)
 
 [node name="PedraN1" parent="TerrenoNovo" instance=ExtResource("5_pedra")]
-position = Vector2(21430, 830)
+position = Vector2(23470, 830)
 
 [node name="PedraN2" parent="TerrenoNovo" instance=ExtResource("5_pedra")]
-position = Vector2(21680, 830)
+position = Vector2(23720, 830)
 
 [node name="PlatN1" parent="TerrenoNovo" instance=ExtResource("4_plat")]
 position = Vector2(9900, 630)
@@ -755,30 +803,39 @@ position = Vector2(15000, 710)
 position = Vector2(16800, 710)
 
 [node name="GemaN26" parent="GemasNovas" instance=ExtResource("7_gema")]
-position = Vector2(17900, 710)
+position = Vector2(19940, 710)
 
 [node name="GemaN27" parent="GemasNovas" instance=ExtResource("7_gema")]
-position = Vector2(20700, 710)
+position = Vector2(18020, 640)
 
 [node name="GemaN28" parent="GemasNovas" instance=ExtResource("7_gema")]
-position = Vector2(21430, 740)
+position = Vector2(18330, 640)
 
 [node name="GemaN29" parent="GemasNovas" instance=ExtResource("7_gema")]
-position = Vector2(21680, 740)
+position = Vector2(18640, 640)
 
 [node name="GemaN30" parent="GemasNovas" instance=ExtResource("7_gema")]
-position = Vector2(22200, 710)
+position = Vector2(22740, 710)
 
 [node name="GemaN31" parent="GemasNovas" instance=ExtResource("7_gema")]
-position = Vector2(22500, 710)
+position = Vector2(23470, 740)
+
+[node name="GemaN32" parent="GemasNovas" instance=ExtResource("7_gema")]
+position = Vector2(23720, 740)
+
+[node name="GemaN33" parent="GemasNovas" instance=ExtResource("7_gema")]
+position = Vector2(24240, 710)
+
+[node name="GemaN34" parent="GemasNovas" instance=ExtResource("7_gema")]
+position = Vector2(24540, 710)
 
 [node name="Comida4" parent="GemasNovas" instance=ExtResource("7_gema")]
-position = Vector2(22800, 700)
+position = Vector2(24840, 700)
 textura = ExtResource("39_maria")
 nome = "Maria Isabel"
 
 [node name="Comida5" parent="GemasNovas" instance=ExtResource("7_gema")]
-position = Vector2(23350, 700)
+position = Vector2(25390, 700)
 textura = ExtResource("38_frito")
 nome = "Bolo frito"
 
@@ -793,7 +850,7 @@ position = Vector2(15600, 520)
 content_type = "rapadura"
 
 [node name="CaixoteN3" parent="CaixotesNovos" instance=ExtResource("8_caixote")]
-position = Vector2(20950, 520)
+position = Vector2(22990, 520)
 content_type = "cajuina"
 
 [node name="CheckpointsNovos" type="Node2D" parent="."]
@@ -808,7 +865,11 @@ position = Vector2(17500, 780)
 
 [node name="CheckpointN3" parent="CheckpointsNovos" instance=ExtResource("10_ckp")]
 z_index = 5
-position = Vector2(20850, 780)
+position = Vector2(19050, 780)
+
+[node name="CheckpointN4" parent="CheckpointsNovos" instance=ExtResource("10_ckp")]
+z_index = 5
+position = Vector2(22890, 780)
 
 [node name="InimigosNovos" type="Node2D" parent="."]
 z_index = 5
@@ -829,7 +890,7 @@ position = Vector2(16300, 780)
 position = Vector2(12520, -800)
 
 [node name="Inim6" parent="InimigosNovos" instance=ExtResource("25_teju")]
-position = Vector2(22050, 780)
+position = Vector2(24090, 780)
 
 [node name="PlacasNovas" type="Node2D" parent="."]
 
@@ -854,15 +915,19 @@ position = Vector2(12700, 780)
 texto = "Vereda de buritis"
 
 [node name="PlacaN6" parent="PlacasNovas" instance=ExtResource("12_placa")]
-position = Vector2(18560, 780)
+position = Vector2(17680, 780)
 texto = "Rio Paraim"
 
 [node name="PlacaN7" parent="PlacasNovas" instance=ExtResource("12_placa")]
-position = Vector2(22300, 780)
-texto = "ExpoCorrente"
+position = Vector2(20600, 780)
+texto = "Rio Corrente"
 
 [node name="PlacaN8" parent="PlacasNovas" instance=ExtResource("12_placa")]
-position = Vector2(22700, 780)
+position = Vector2(24340, 780)
+texto = "ExpoCorrente"
+
+[node name="PlacaN9" parent="PlacasNovas" instance=ExtResource("12_placa")]
+position = Vector2(24740, 780)
 texto = "Cavalgada da ExpoCorrente"
 
 [node name="DicaSubida" type="Label" parent="PlacasNovas"]
@@ -878,10 +943,23 @@ text = "Suba pelas plataformas até as nuvens!"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="DicaPortal" type="Label" parent="PlacasNovas"]
-offset_left = 17900
+[node name="DicaParaim" type="Label" parent="PlacasNovas"]
+offset_left = 17600
 offset_top = 300
-offset_right = 18460
+offset_right = 18220
+offset_bottom = 390
+theme_override_colors/font_color = Color(0.25, 0.13, 0.04, 1)
+theme_override_colors/font_outline_color = Color(1, 0.96, 0.84, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "Pule pelas pedras molhadas: elas escorregam!"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="DicaPortal" type="Label" parent="PlacasNovas"]
+offset_left = 19940
+offset_top = 300
+offset_right = 20500
 offset_bottom = 390
 theme_override_colors/font_color = Color(0.25, 0.13, 0.04, 1)
 theme_override_colors/font_outline_color = Color(1, 0.96, 0.84, 1)
@@ -892,19 +970,19 @@ horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="PortalSerra" parent="." instance=ExtResource("24_portal")]
-position = Vector2(18300, 780)
+position = Vector2(20340, 780)
 destino = NodePath("../CaminhoDistante/PortalEntrada")
 saida_dx = -230.0
 rotulo = "Portal: Serra Dois Irmãos"
 
 [node name="PortalVolta" parent="." instance=ExtResource("24_portal")]
-position = Vector2(20400, 780)
+position = Vector2(22440, 780)
 destino = NodePath("../CaminhoDistante/PortalSaida")
 saida_dx = 230.0
 rotulo = ""
 
 [node name="ChegadaNova" parent="." instance=ExtResource("11_chegada")]
-position = Vector2(23700, 780)
+position = Vector2(25740, 780)
 
 [node name="CaminhoDistante" type="Node2D" parent="."]
 position = Vector2(40000, 0)
@@ -1083,19 +1161,19 @@ saida_dx = -330.0
 no_fundo = true
 rotulo = "Saída"
 
-[node name="PlacaN9" parent="CaminhoDistante" instance=ExtResource("12_placa")]
+[node name="PlacaN10" parent="CaminhoDistante" instance=ExtResource("12_placa")]
 position = Vector2(900, 470.5)
 texto = "Serra Dois Irmãos"
 
-[node name="PlacaN10" parent="CaminhoDistante" instance=ExtResource("12_placa")]
+[node name="PlacaN11" parent="CaminhoDistante" instance=ExtResource("12_placa")]
 position = Vector2(2700, 443.2)
 texto = "Também chamada Serra Dourada"
 
-[node name="PlacaN11" parent="CaminhoDistante" instance=ExtResource("12_placa")]
+[node name="PlacaN12" parent="CaminhoDistante" instance=ExtResource("12_placa")]
 position = Vector2(4900, 401.2)
 texto = "Gravuras rupestres da Pedra Furada"
 
-[node name="CheckpointN4" parent="CaminhoDistante" instance=ExtResource("10_ckp")]
+[node name="CheckpointN5" parent="CaminhoDistante" instance=ExtResource("10_ckp")]
 z_index = 5
 position = Vector2(6000, 415.9)
 fundo = true
@@ -1151,28 +1229,28 @@ position = Vector2(11600, 230.8)
 [node name="PlatN28" parent="CaminhoDistante" instance=ExtResource("4_plat")]
 position = Vector2(11950, 100.8)
 
-[node name="GemaN32" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN35" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(1566, 125.3)
 
-[node name="GemaN33" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN36" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(1916, -4.7)
 
-[node name="GemaN34" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN37" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(2266, -134.7)
 
-[node name="GemaN35" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN38" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(3766, 107.1)
 
-[node name="GemaN36" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN39" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(4116, -22.9)
 
-[node name="GemaN37" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN40" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(5366, 180.3)
 
-[node name="GemaN38" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN41" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(5716, 50.3)
 
-[node name="GemaN39" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN42" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(6066, -79.7)
 
 [node name="Comida6" parent="CaminhoDistante" instance=ExtResource("7_gema")]
@@ -1180,19 +1258,19 @@ position = Vector2(7166, 146)
 textura = ExtResource("36_pacoca")
 nome = "Paçoca"
 
-[node name="GemaN40" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN43" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(7516, 16)
 
-[node name="GemaN41" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN44" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(8366, 107)
 
-[node name="GemaN42" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN45" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(8716, -23)
 
-[node name="GemaN43" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN46" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(9066, -153)
 
-[node name="GemaN44" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN47" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(10466, 126.8)
 
 [node name="Comida7" parent="CaminhoDistante" instance=ExtResource("7_gema")]
@@ -1200,28 +1278,28 @@ position = Vector2(10816, -3.2)
 textura = ExtResource("39_maria")
 nome = "Maria Isabel"
 
-[node name="GemaN45" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN48" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(11766, 160.8)
 
-[node name="GemaN46" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN49" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(12116, 30.8)
 
-[node name="GemaN47" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN50" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(2900, 366.3)
 
-[node name="GemaN48" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN51" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(4600, 329.6)
 
-[node name="GemaN49" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN52" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(6600, 375.6)
 
-[node name="GemaN50" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN53" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(9300, 327)
 
-[node name="GemaN51" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN54" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(10900, 378.1)
 
-[node name="GemaN52" parent="CaminhoDistante" instance=ExtResource("7_gema")]
+[node name="GemaN55" parent="CaminhoDistante" instance=ExtResource("7_gema")]
 position = Vector2(12100, 379)
 
 [node name="CaixoteN4" parent="CaminhoDistante" instance=ExtResource("8_caixote")]
@@ -1242,12 +1320,16 @@ fala = "igreja_matriz"
 position = Vector2(10900, -460)
 fala = "nuvens"
 
+[node name="Voz_rio_paraim" parent="FalasZeca" instance=ExtResource("40_voz")]
+position = Vector2(17300, 780)
+fala = "rio_paraim"
+
 [node name="Voz_portal" parent="FalasZeca" instance=ExtResource("40_voz")]
-position = Vector2(17950, 780)
+position = Vector2(19990, 780)
 fala = "portal"
 
 [node name="Voz_expo" parent="FalasZeca" instance=ExtResource("40_voz")]
-position = Vector2(22300, 780)
+position = Vector2(24340, 780)
 fala = "expo"
 
 [node name="Voz_serra" parent="CaminhoDistante" instance=ExtResource("40_voz")]

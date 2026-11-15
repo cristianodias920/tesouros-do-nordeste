@@ -26,7 +26,7 @@ Este diretório contém as faixas e efeitos sonoros do jogo em formato WAV (PCM 
 
 ## Vozes do Zeca (`voz/<id>.ogg`)
 - Voz: "Puck" (Google AI Studio), com instrução para soar como um menino adolescente nordestino, animado. Escolhida pelo Cristiano; substitui a voz provisória "Algieba".
-- Todas as 12 falas gravadas com a Puck: inicio, faisca_encontro, faisca_monta, checkpoint_primeiro, rio_corrente, igreja_matriz, nuvens, portal, serra, agua_cai, expo, vitoria. Nada pendente.
+- 15 falas, todas gravadas com a Puck: inicio ("Meu nome é Zeca! Corrente, aqui vou eu!", regravada), faisca_encontro, faisca_monta, checkpoint_primeiro, rio_corrente, igreja_matriz, nuvens, portal, serra, agua_cai, expo, vitoria, rapadura, rio_paraim, faltam_dez. Nada pendente.
 - Edição: silêncio do início/fim cortado, volume normalizado (fala acima da música), convertidas de WAV para OGG. Lista de ids e textos em `voz_lista.txt`.
-- O `VoiceLines.gd` toca cada fala uma vez por partida (a `agua_cai` no máximo a cada 30 s), mostra a legenda em balão sobre o Zeca e abaixa a música enquanto ele fala. Se faltar o arquivo, mostra só a legenda.
+- O `VoiceLines.gd` toca cada fala uma vez por partida (a `agua_cai` no máximo a cada 30 s e a `rapadura` a cada 25 s), mostra a legenda em balão sobre o Zeca e abaixa a música enquanto ele fala. Se faltar o arquivo, mostra só a legenda.
 - Para trocar falas: `python3 tools/preparar_vozes.py <pasta com os .wav>` (mesmos ids), reimportar e exportar a versão Web de novo — nada no código precisa mudar.

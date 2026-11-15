@@ -100,6 +100,7 @@ func _process(_delta: float) -> void:
 	# O botão de coice no toque só aparece montado no Faísca
 	if btn_action:
 		btn_action.visible = GameManager.is_mounted
+	_update_rapadura_indicator()
 
 func _on_lives_changed(lives: int) -> void:
 	update_lives_display(lives)
@@ -152,6 +153,63 @@ func _build_treasure_counter() -> void:
 		ls.outline_color = Color(0.2, 0.1, 0.03)
 		gems_label.label_settings = ls
 	update_gems_display(GameManager.collected_gems, GameManager.TOTAL_GEMS)
+	_build_rapadura_indicator()
+
+var rap_panel: Panel
+var rap_label: Label
+var rap_bar: ProgressBar
+
+func _build_rapadura_indicator() -> void:
+	# Indicador da rapadura: ícone + "Invencível 5s" + barra que esvazia
+	rap_panel = Panel.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.45, 0.25, 0.04, 0.9)
+	sb.border_color = Color(1.0, 0.85, 0.3)
+	sb.set_border_width_all(4)
+	sb.set_corner_radius_all(16)
+	rap_panel.add_theme_stylebox_override("panel", sb)
+	rap_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rap_panel.position = Vector2(-8, 158)
+	rap_panel.size = Vector2(380, 70)
+	rap_panel.visible = false
+	$TopLeft.add_child(rap_panel)
+	var ic := TextureRect.new()
+	ic.texture = load("res://sprites/items/rapadura.png")
+	ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	ic.position = Vector2(10, 7); ic.size = Vector2(56, 56)
+	ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rap_panel.add_child(ic)
+	rap_label = Label.new()
+	rap_label.position = Vector2(74, 2); rap_label.size = Vector2(296, 40)
+	rap_label.add_theme_font_size_override("font_size", 30)
+	rap_label.add_theme_color_override("font_color", Color(1.0, 0.95, 0.6))
+	rap_label.add_theme_color_override("font_outline_color", Color(0.2, 0.1, 0.02))
+	rap_label.add_theme_constant_override("outline_size", 7)
+	rap_panel.add_child(rap_label)
+	rap_bar = ProgressBar.new()
+	rap_bar.show_percentage = false
+	rap_bar.position = Vector2(76, 44); rap_bar.size = Vector2(286, 14)
+	var bg := StyleBoxFlat.new(); bg.bg_color = Color(0.2, 0.1, 0.02, 0.8); bg.set_corner_radius_all(7)
+	var fg := StyleBoxFlat.new(); fg.bg_color = Color(1.0, 0.8, 0.2); fg.set_corner_radius_all(7)
+	rap_bar.add_theme_stylebox_override("background", bg)
+	rap_bar.add_theme_stylebox_override("fill", fg)
+	rap_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rap_panel.add_child(rap_bar)
+
+func _update_rapadura_indicator() -> void:
+	if rap_panel == null:
+		return
+	var p = get_tree().get_first_node_in_group("player")
+	var t: float = p.rapadura_timer if p else 0.0
+	rap_panel.visible = t > 0.0
+	if t <= 0.0:
+		return
+	rap_label.text = "Invencível %ds" % int(ceil(t))
+	rap_bar.max_value = p.RAPADURA_DUR
+	rap_bar.value = t
+	# pisca rápido nos últimos segundos
+	rap_panel.modulate.a = (0.35 if fmod(t * 6.0, 1.0) < 0.4 else 1.0) if t < 1.8 else 1.0
 
 func _build_intro() -> void:
 	# Cartão de abertura da fase com o objetivo (some sozinho em 3 s ou com um toque)

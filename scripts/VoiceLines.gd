@@ -4,7 +4,7 @@ extends Node
 # legenda em balão sobre o Zeca, sem bloquear o jogo. Cada fala toca uma vez
 # por partida (agua_cai pode repetir, no máximo a cada 30 s).
 const LINES: Dictionary = {
-	"inicio": "Bora, Zeca! Corrente, aqui vou eu!",
+	"inicio": "Meu nome é Zeca! Corrente, aqui vou eu!",
 	"faisca_encontro": "Opa! Oi, Faísca!",
 	"faisca_monta": "Vamos lá, Faísca!",
 	"checkpoint_primeiro": "Ufa, checkpoint!",
@@ -16,12 +16,17 @@ const LINES: Dictionary = {
 	"agua_cai": "Eita, molhei!",
 	"expo": "Chegou a ExpoCorrente!",
 	"vitoria": "Conseguimos, Faísca!",
+	"rapadura": "Rapadura! Agora ninguém me segura!",
+	"rio_paraim": "O Rio Paraim, cheio de buritis!",
+	"faltam_dez": "Só faltam dez tesouros!",
 }
-const REPEAT_COOLDOWN: Dictionary = {"agua_cai": 30.0}
+const REPEAT_COOLDOWN: Dictionary = {"agua_cai": 30.0, "rapadura": 25.0}
 
 var played: Dictionary = {}      # id -> tempo (s) da última vez
 var history: Array = []          # ids na ordem em que tocaram (usado nos testes)
 var queue: Array = []
+var queued_at: Dictionary = {}
+const QUEUE_MAX_AGE: float = 8.0  # fala que esperou demais na fila é descartada
 var current_id: String = ""
 var show_time: float = 0.0
 var clock: float = 0.0
@@ -67,6 +72,9 @@ func _ready() -> void:
 	player_audio.volume_db = 2.0
 	add_child(player_audio)
 	GameManager.checkpoint_activated.connect(func(_p): say("checkpoint_primeiro"))
+	GameManager.gems_changed.connect(func(c, total):
+		if total > 10 and total - c == 10:
+			say("faltam_dez"))
 	GameManager.level_completed.connect(func():
 		no_rodape = true
 		say("vitoria", true))
@@ -97,9 +105,12 @@ func say(id: String, urgente: bool = false) -> void:
 	if urgente or current_id == "":
 		_start(id)
 	elif not queue.has(id) and id != current_id:
-		# fica só a fala mais recente na fila (a do lugar onde o Zeca está agora);
-		# só conta como "falada" quando realmente começa a tocar
-		queue = [id]
+		# fila curta (2): se encher, sai a mais antiga; uma fala só conta como
+		# "falada" quando realmente começa a tocar
+		queue.append(id)
+		queued_at[id] = clock
+		if queue.size() > 2:
+			queue.pop_front()
 
 func _start(id: String) -> void:
 	current_id = id
@@ -146,6 +157,8 @@ func _process(delta: float) -> void:
 		current_id = ""
 		balloon.visible = false
 		tail.visible = false
+		while queue.size() > 0 and clock - float(queued_at.get(queue[0], clock)) > QUEUE_MAX_AGE:
+			queue.pop_front()
 		if queue.size() > 0:
 			_start(queue.pop_front())
 

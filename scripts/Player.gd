@@ -56,6 +56,10 @@ var portal_cooldown: float = 0.0
 var trot_phase: float = 0.0
 var fade_rect: ColorRect
 var afogando: bool = false   # animação de queda na água
+const RAPADURA_DUR: float = 6.0
+var brilho: Sprite2D            # aura dourada da rapadura
+var faiscas: CPUParticles2D     # estrelinhas da rapadura
+var rapadura_t: float = 0.0
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -74,6 +78,7 @@ func _ready() -> void:
 	var cl := CanvasLayer.new()
 	cl.layer = 40
 	add_child(cl)
+	_criar_efeito_rapadura()
 	fade_rect = ColorRect.new()
 	fade_rect.color = Color(1.0, 0.95, 0.82, 0.0)
 	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -158,12 +163,15 @@ func _physics_process(delta: float) -> void:
 	# Power-ups
 	if rapadura_timer > 0:
 		rapadura_timer -= delta
-		animated_sprite.modulate = Color(1.35, 1.2, 0.5)
+		_efeito_rapadura(delta)
 	elif ferradura_timer > 0:
 		ferradura_timer -= delta
 		animated_sprite.modulate = Color(1.1, 1.2, 1.35)
 	else:
 		animated_sprite.modulate = Color(1, 1, 1)
+	if rapadura_timer <= 0 and brilho.visible:
+		brilho.visible = false
+		faiscas.emitting = false
 
 	# Gravidade assimétrica (queda 1.6x mais rápida)
 	if not is_on_floor():
@@ -505,8 +513,79 @@ func apply_cajuina() -> void:
 	GameManager.heal()
 
 func apply_rapadura() -> void:
-	rapadura_timer = 6.0
+	rapadura_timer = RAPADURA_DUR
 	AudioManager.play_sfx("powerup")
+	VoiceLines.say("rapadura", true)
+	brilho.visible = true
+	faiscas.emitting = true
+	# estouro de estrelas ao pegar
+	var pp: CPUParticles2D = faiscas.duplicate()
+	pp.one_shot = true
+	pp.explosiveness = 1.0
+	pp.amount = 40
+	pp.initial_velocity_min = 220.0 * k
+	pp.initial_velocity_max = 420.0 * k
+	get_parent().add_child(pp)
+	pp.global_position = global_position + Vector2(0, -110 * k)
+	pp.emitting = true
+	get_tree().create_timer(1.5).timeout.connect(pp.queue_free)
+
+# ---- Rapadura: aura dourada pulsante + estrelinhas; pisca rápido no fim ----
+func _criar_efeito_rapadura() -> void:
+	var gt := GradientTexture2D.new()
+	gt.width = 256; gt.height = 256
+	gt.fill = GradientTexture2D.FILL_RADIAL
+	gt.fill_from = Vector2(0.5, 0.5); gt.fill_to = Vector2(0.5, 0.0)
+	var g := Gradient.new()
+	g.set_color(0, Color(1.0, 0.86, 0.3, 0.85))
+	g.set_color(1, Color(1.0, 0.7, 0.1, 0.0))
+	gt.gradient = g
+	brilho = Sprite2D.new()
+	brilho.texture = gt
+	var m := CanvasItemMaterial.new()
+	m.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	brilho.material = m
+	brilho.z_index = -1
+	brilho.visible = false
+	add_child(brilho)
+	faiscas = CPUParticles2D.new()
+	faiscas.amount = 26
+	faiscas.lifetime = 0.8
+	faiscas.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	faiscas.emission_rect_extents = Vector2(70, 100)
+	faiscas.direction = Vector2(0, -1)
+	faiscas.spread = 180.0
+	faiscas.initial_velocity_min = 30.0
+	faiscas.initial_velocity_max = 90.0
+	faiscas.gravity = Vector2(0, -40)
+	faiscas.scale_amount_min = 5.0
+	faiscas.scale_amount_max = 11.0
+	var gs := Gradient.new()
+	gs.set_color(0, Color(1.0, 1.0, 0.75, 1.0))
+	gs.add_point(0.4, Color(1.0, 0.85, 0.25, 1.0))
+	gs.set_color(gs.get_point_count() - 1, Color(1.0, 0.6, 0.1, 0.0))
+	faiscas.color_ramp = gs
+	faiscas.z_index = 3
+	faiscas.emitting = false
+	add_child(faiscas)
+
+func _efeito_rapadura(delta: float) -> void:
+	rapadura_t += delta
+	var fim: bool = rapadura_timer < 1.8
+	var pulso: float = 0.5 + 0.5 * sin(rapadura_t * (22.0 if fim else 9.0))
+	var dourado := Color(1.75, 1.45, 0.45).lerp(Color(2.1, 1.8, 0.8), pulso)
+	if fim and fmod(rapadura_timer * 7.0, 1.0) < 0.45:
+		dourado = Color(1, 1, 1)   # piscando normal/dourado perto do fim
+	animated_sprite.modulate = dourado
+	var h: float = (125.0 if is_mounted else 105.0) * k
+	brilho.position = Vector2(0, -h)
+	var tam: float = (1.8 if is_mounted else 1.5) * k
+	brilho.scale = Vector2.ONE * tam * (0.92 + 0.16 * pulso)
+	brilho.modulate.a = (0.55 + 0.45 * pulso) * (0.4 if dourado == Color(1, 1, 1) else 1.0)
+	faiscas.position = Vector2(0, -h)
+	faiscas.emission_rect_extents = Vector2(90 if is_mounted else 60, 100) * k
+	faiscas.scale_amount_min = 5.0 * k
+	faiscas.scale_amount_max = 11.0 * k
 
 func apply_ferradura() -> void:
 	# A Ferradura só protege montado (ver hit_by_spikes); sem gema extra
