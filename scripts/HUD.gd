@@ -91,6 +91,9 @@ func _update_touch_positions() -> void:
 		btn_poder.position = Vector2(vp_size.x - btn_size - margin_side, y_pos - btn_size - 24.0)
 	if btn_trocar:
 		btn_trocar.position = Vector2(vp_size.x - (btn_size * 2.0) - margin_side - 30.0 + 20.0, y_pos - btn_size - 4.0)
+	# Descer do Faísca: à esquerda do coice (só aparece montado)
+	if btn_descer:
+		btn_descer.position = Vector2(vp_size.x - (btn_size * 3.0) - margin_side - 60.0 + 20.0, y_pos + 20.0)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
@@ -814,6 +817,10 @@ func _hud_maior() -> void:
 # No celular: botão do chapéu acima do pulo e botão de troca acima do coice.
 var btn_poder: TouchScreenButton
 var btn_trocar: TouchScreenButton
+var btn_descer: TouchScreenButton
+var dica_descer: PanelContainer
+var dica_descer_t: float = 0.0
+var dica_descer_check: float = 0.0
 var poderes_panel: Control
 var caixa_ativo: Panel
 var caixa_reserva: Panel
@@ -893,8 +900,17 @@ func _montar_poderes() -> void:
 	btn_trocar.scale = Vector2.ONE * 0.75
 	btn_trocar.visibility_mode = TouchScreenButton.VISIBILITY_TOUCHSCREEN_ONLY
 	touch_controls.add_child(btn_trocar)
+	btn_descer = TouchScreenButton.new()
+	btn_descer.name = "BtnDescer"
+	btn_descer.texture_normal = load("res://sprites/ui/btn_descer.png")
+	btn_descer.action = "descer"
+	btn_descer.scale = Vector2.ONE * 0.8
+	btn_descer.visibility_mode = TouchScreenButton.VISIBILITY_TOUCHSCREEN_ONLY
+	touch_controls.add_child(btn_descer)
 	_update_touch_positions()
 	var cel: bool = GameManager.celular
+	dica_descer = _painel_dica("", 32)
+	(dica_descer.find_children("*", "TextureRect", true, false)[0] as TextureRect).texture = load("res://sprites/faisca/faisca_solo.png")
 	dica_chapeu = _painel_dica(("Chapéu de couro! Toque no botão do chapéu para arremessar." if cel else "Chapéu de couro! Aperte C para arremessar.") + "\nEle gira, derruba bichos, quebra cristais e volta.", 34)
 	dica_reserva = _painel_dica("O outro power-up ficou guardado na reserva.\n" + ("Toque no botão de troca para alternar." if cel else "Aperte V para trocar."), 30)
 	PowerUps.mudou.connect(_on_poderes_mudou)
@@ -915,6 +931,37 @@ func _on_poderes_mudou(ativo: String, reserva: String) -> void:
 		dica_reserva.visible = true
 	_reserva_antes = reserva
 	poderes_pulso = 0.35
+
+# Dicas do Faísca: caixa baixa demais para passar montado (uma vez) e, na 1ª descida, como montar de novo
+func _texto_dica(d: PanelContainer, txt: String) -> void:
+	var l: Label = d.find_children("*", "Label", true, false)[0]
+	l.text = txt
+
+func mostrar_dica_descer() -> void:
+	var cel: bool = GameManager.celular
+	_texto_dica(dica_descer, "Caixa baixa! " + ("Toque no botão de descer" if cel else "Aperte S (ou seta para baixo)") + " para descer do Faísca.\nEle fica esperando você!")
+	dica_descer_t = 6.0
+	dica_descer.visible = true
+	Progresso.set_opcao("dica_descer", true)
+
+func mostrar_dica_remontar() -> void:
+	if Progresso.get_opcao("dica_remontar", false):
+		return
+	Progresso.set_opcao("dica_remontar", true)
+	_texto_dica(dica_descer, "O Faísca fica parado esperando.\nEncoste nele (ou pule em cima) para montar de novo!")
+	dica_descer_t = 5.0
+	dica_descer.visible = true
+
+func _caixa_baixa_perto(p) -> bool:
+	for c in get_tree().get_nodes_in_group("caixotes"):
+		if c.is_opened:
+			continue
+		var dx: float = (c.global_position.x - p.global_position.x) * p.facing_direction
+		var fundo: float = c.global_position.y + 35.0 * c.global_scale.y
+		var folga: float = p.global_position.y - fundo
+		if dx > 0.0 and dx < 420.0 * p.k and folga > 60.0 * p.k and folga < 215.0 * p.k:
+			return true
+	return false
 
 func mostrar_dica_chapeu() -> void:
 	dica_chapeu_t = 6.0
@@ -940,6 +987,15 @@ func _update_poderes(_delta: float) -> void:
 	if poderes_panel == null:
 		return
 	dica_chapeu_t = _mostrar_dica_tempo(dica_chapeu, dica_chapeu_t, 0.0)
+	dica_descer_t = _mostrar_dica_tempo(dica_descer, dica_descer_t, 150.0 if dica_chapeu_t > 0.0 else 0.0)
+	var pl = get_tree().get_first_node_in_group("player")
+	if btn_descer:
+		btn_descer.visible = pl != null and pl.is_mounted
+	dica_descer_check -= _delta
+	if pl and pl.is_mounted and dica_descer_check <= 0.0:
+		dica_descer_check = 0.2
+		if not Progresso.get_opcao("dica_descer", false) and pl.is_on_floor() and _caixa_baixa_perto(pl):
+			mostrar_dica_descer()
 	var acima: bool = dica_chapeu_t > 0.0 or (dica_folha != null and dica_folha.visible)
 	dica_reserva_t = _mostrar_dica_tempo(dica_reserva, dica_reserva_t, 150.0 if acima else 0.0)
 	var p = get_tree().get_first_node_in_group("player")

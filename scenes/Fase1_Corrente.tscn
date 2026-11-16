@@ -847,15 +847,15 @@ nome = "Bolo frito"
 [node name="CaixotesNovos" type="Node2D" parent="."]
 
 [node name="CaixoteN1" parent="CaixotesNovos" instance=ExtResource("8_caixote")]
-position = Vector2(12000, 520)
+position = Vector2(12000, 545)
 content_type = "gema"
 
 [node name="CaixoteN2" parent="CaixotesNovos" instance=ExtResource("8_caixote")]
-position = Vector2(15600, 520)
+position = Vector2(15600, 485)
 content_type = "rapadura"
 
 [node name="CaixoteN3" parent="CaixotesNovos" instance=ExtResource("8_caixote")]
-position = Vector2(22990, 520)
+position = Vector2(22990, 485)
 content_type = "cajuina"
 
 [node name="CheckpointsNovos" type="Node2D" parent="."]

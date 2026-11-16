@@ -76,7 +76,11 @@ deco('BuritiA1', 'res://sprites/corrente/buriti.png', 1350, 770, 0.8)
 deco('AflorA', CR + 'afloramento_pequeno.png', 2150, 775, 0.8)
 # B — centro, festejo de Sant'Ana
 deco('IgrejaSantana', CR + 'igreja_santana.png', 3250, 770, 0.62)
-deco('TrioForro', CR + 'trio_forro.png', 3760, 772, 0.95)
+# Banda de forró animada (sanfoneiro, zabumbeiro, menina do triângulo), no ritmo da música
+node('BandaForro', 'Decoracao', 'Node2D', props={'position': v(3760, 772)})
+for nm_m, x_m, esc_m, ciclo_m, desl_m in [('sanfoneiro', -105, 0.98, 4.0, 0.0), ('zabumbeiro', 5, 0.92, 2.0, 0.5), ('triangulo', 110, 0.84, 1.0, 0.125)]:
+    node(nm_m.capitalize(), 'Decoracao/BandaForro', 'Sprite2D', props={'position': v(x_m, 0), 'scale': v(esc_m, esc_m), 'script': 'ExtResource("%s")' % SC('res://scripts/BandaMusico.gd'),
+         'nome': q(nm_m), 'batidas_por_ciclo': ciclo_m, 'deslocamento': desl_m})
 deco('BarracaDoces', CR + 'barraca_doces.png', 4150, 772, 1.0)
 deco('Capelinha', CR + 'capelinha.png', 4470, 772, 0.62)
 deco('BarracaArtesanato', CR + 'barraca_artesanato.png', 4950, 772, 1.0)
@@ -191,7 +195,8 @@ for x, y in [(13850, 520), (14050, 520), (14420, 410), (15120, 410)]:
 # ---------------- caixotes ----------------
 node('Caixotes', '.', 'Node2D')
 CAIX = S('res://scenes/Caixote.tscn')
-for x, y, c in [(1950, 540, 'gema'), (4700, 560, 'gema'), (2500, 520, 'cajuina'), (8560, 540, 'gema'), (11980, 520, 'rapadura'), (14760, 240, 'gema')]:
+# (1950) fica baixa de propósito: montado não passa por baixo -> dica de descer do Faísca; as outras dão para bater montado
+for x, y, c in [(1950, 545, 'gema'), (4700, 485, 'gema'), (2500, 485, 'cajuina'), (8560, 485, 'gema'), (11980, 485, 'rapadura'), (14760, 185, 'gema')]:
     node(nome('Caixote'), 'Caixotes', inst=CAIX, props={'position': v(x, y), 'content_type': q(c)})
 
 # ---------------- cristais (só o chapéu quebra) ----------------

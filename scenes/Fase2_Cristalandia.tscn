@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" path="res://sprites/corrente/buriti.png" id="7_r"]
 [ext_resource type="Texture2D" path="res://sprites/cristalandia/afloramento_pequeno.png" id="8_r"]
 [ext_resource type="Texture2D" path="res://sprites/cristalandia/igreja_santana.png" id="9_r"]
-[ext_resource type="Texture2D" path="res://sprites/cristalandia/trio_forro.png" id="10_r"]
+[ext_resource type="Script" path="res://scripts/BandaMusico.gd" id="10_r"]
 [ext_resource type="Texture2D" path="res://sprites/cristalandia/barraca_doces.png" id="11_r"]
 [ext_resource type="Texture2D" path="res://sprites/cristalandia/capelinha.png" id="12_r"]
 [ext_resource type="Texture2D" path="res://sprites/cristalandia/barraca_artesanato.png" id="13_r"]
@@ -130,11 +130,32 @@ centered = false
 position = Vector2(2992, 77)
 scale = Vector2(0.62, 0.62)
 
-[node name="TrioForro" type="Sprite2D" parent="Decoracao"]
-texture = ExtResource("10_r")
-centered = false
-position = Vector2(3604, 486)
-scale = Vector2(0.95, 0.95)
+[node name="BandaForro" type="Node2D" parent="Decoracao"]
+position = Vector2(3760, 772)
+
+[node name="Sanfoneiro" type="Sprite2D" parent="Decoracao/BandaForro"]
+position = Vector2(-105, 0)
+scale = Vector2(0.98, 0.98)
+script = ExtResource("10_r")
+nome = "sanfoneiro"
+batidas_por_ciclo = 4.0
+deslocamento = 0.0
+
+[node name="Zabumbeiro" type="Sprite2D" parent="Decoracao/BandaForro"]
+position = Vector2(5, 0)
+scale = Vector2(0.92, 0.92)
+script = ExtResource("10_r")
+nome = "zabumbeiro"
+batidas_por_ciclo = 2.0
+deslocamento = 0.5
+
+[node name="Triangulo" type="Sprite2D" parent="Decoracao/BandaForro"]
+position = Vector2(110, 0)
+scale = Vector2(0.84, 0.84)
+script = ExtResource("10_r")
+nome = "triangulo"
+batidas_por_ciclo = 1.0
+deslocamento = 0.125
 
 [node name="BarracaDoces" type="Sprite2D" parent="Decoracao"]
 texture = ExtResource("11_r")
@@ -710,27 +731,27 @@ position = Vector2(15120, 410)
 [node name="Caixotes" type="Node2D" parent="."]
 
 [node name="Caixote1" parent="Caixotes" instance=ExtResource("32_r")]
-position = Vector2(1950, 540)
+position = Vector2(1950, 545)
 content_type = "gema"
 
 [node name="Caixote2" parent="Caixotes" instance=ExtResource("32_r")]
-position = Vector2(4700, 560)
+position = Vector2(4700, 485)
 content_type = "gema"
 
 [node name="Caixote3" parent="Caixotes" instance=ExtResource("32_r")]
-position = Vector2(2500, 520)
+position = Vector2(2500, 485)
 content_type = "cajuina"
 
 [node name="Caixote4" parent="Caixotes" instance=ExtResource("32_r")]
-position = Vector2(8560, 540)
+position = Vector2(8560, 485)
 content_type = "gema"
 
 [node name="Caixote5" parent="Caixotes" instance=ExtResource("32_r")]
-position = Vector2(11980, 520)
+position = Vector2(11980, 485)
 content_type = "rapadura"
 
 [node name="Caixote6" parent="Caixotes" instance=ExtResource("32_r")]
-position = Vector2(14760, 240)
+position = Vector2(14760, 185)
 content_type = "gema"
 
 [node name="Cristais" type="Node2D" parent="."]

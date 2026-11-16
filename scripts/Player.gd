@@ -227,6 +227,10 @@ func _physics_process(delta: float) -> void:
 		if is_mounted:
 			can_double_jump = true
 
+	# Descer do Faísca de propósito (S / seta para baixo; no celular o botão de descer)
+	if Input.is_action_just_pressed("descer") and is_mounted and is_on_floor() and not is_coice:
+		descer_do_faisca()
+
 	# Buffer de pulo
 	if Input.is_action_just_pressed("jump"):
 		jump_buffer_timer = JUMP_BUFFER_MAX
@@ -692,7 +696,25 @@ func _trot_bob(ativo: bool, vel: float) -> void:
 		animated_sprite.offset = animated_sprite.offset.lerp(Vector2.ZERO, 0.3)
 		animated_sprite.rotation = lerp(animated_sprite.rotation, 0.0, 0.3)
 
+# Desce do Faísca de propósito: ele fica parado esperando ali (FaiscaEsperando) e o Zeca dá um passinho à frente
+var desceu_vezes: int = 0
+func descer_do_faisca() -> void:
+	if not is_mounted:
+		return
+	dismount_scared(0.0, false)
+	var f := FaiscaEsperando.new()
+	f.iniciar(self)
+	velocity = Vector2(facing_direction * 260.0, -420.0) * k
+	lock_facing_timer = 0.2
+	_poeira(global_position, 0.6)
+	desceu_vezes += 1
+	var hud = get_tree().current_scene.get_node_or_null("HUD")
+	if hud and hud.has_method("mostrar_dica_remontar"):
+		hud.mostrar_dica_remontar()
+
 func mount_faisca() -> void:
+	for f in get_tree().get_nodes_in_group("faisca_esperando"):
+		f.queue_free()
 	is_mounted = true
 	GameManager.is_mounted = true
 	apply_character_scale()

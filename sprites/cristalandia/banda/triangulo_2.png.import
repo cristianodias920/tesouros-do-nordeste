@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://smycctwe4600"
-path="res://.godot/imported/trio_forro.png-3b8003e70aac2661d3a945c2cf624061.ctex"
+uid="uid://c45gggkgg1u73"
+path="res://.godot/imported/triangulo_2.png-e4218bca1d0880ae72959f1ec5404725.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/cristalandia/trio_forro.png"
-dest_files=["res://.godot/imported/trio_forro.png-3b8003e70aac2661d3a945c2cf624061.ctex"]
+source_file="res://sprites/cristalandia/banda/triangulo_2.png"
+dest_files=["res://.godot/imported/triangulo_2.png-e4218bca1d0880ae72959f1ec5404725.ctex"]
 
 [params]
 
