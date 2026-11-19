@@ -10,10 +10,10 @@ const LISTA: Array = [
 	 "cena": "res://scenes/Fase2_Cristalandia.tscn", "historia": "cristalandia",
 	 "frase": "A terra dos cristais, bem aqui do lado de Corrente",
 	 "imagem": "res://historia/cristalandia/card2.jpg"},
-	{"id": "fase3_riacho_frio", "num": 3, "nome": "Riacho Frio e Parnaguá",
-	 "cena": "res://scenes/Fase3_RiachoFrioParnagua.tscn", "historia": "riacho_parnagua",
-	 "frase": "Do riacho à lagoa, uma viagem pelo extremo sul do Piauí",
-	 "imagem": "res://sprites/fase3/riacho_frio_bg.png"},
+	{"id": "fase3_riacho_frio", "num": 3, "nome": "Riacho Frio",
+	 "cena": "", "historia": "",
+	 "frase": "Mais uma aventura pelo extremo sul do Piauí",
+	 "imagem": "res://historia/cristalandia/card4.jpg"},
 ]
 
 static func info(id: String) -> Dictionary:

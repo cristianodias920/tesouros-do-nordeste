@@ -990,9 +990,7 @@ func _update_poderes(_delta: float) -> void:
 	dica_descer_t = _mostrar_dica_tempo(dica_descer, dica_descer_t, 150.0 if dica_chapeu_t > 0.0 else 0.0)
 	var pl = get_tree().get_first_node_in_group("player")
 	if btn_descer:
-		var cena_atual := get_tree().current_scene
-		var estrada_ativa := cena_atual != null and cena_atual.has_method("area_de") and bool(cena_atual.get("road_active"))
-		btn_descer.visible = pl != null and pl.is_mounted and not estrada_ativa
+		btn_descer.visible = pl != null and pl.is_mounted
 	dica_descer_check -= _delta
 	if pl and pl.is_mounted and dica_descer_check <= 0.0:
 		dica_descer_check = 0.2

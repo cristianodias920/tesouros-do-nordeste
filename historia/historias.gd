@@ -53,19 +53,4 @@ const HISTORIAS: Dictionary = {
 		 "texto": "Bora juntar os tesouros dessa terra de cristais. Vamos embora, Faísca!",
 		 "audio": "res://audio/historia/cris_h4.ogg", "balao": Vector2(0.42, 0.14), "alvo": Vector2(0.3, 0.4)},
 	],
-	# Fase 3 — Riacho Frio e Parnaguá; textos educativos em legenda.
-	"riacho_parnagua": [
-		{"imagem": "res://sprites/fase3/riacho_frio_bg.png", "quem": "zeca",
-		 "texto": "Depois de Cristalândia, seguimos para Riacho Frio, no extremo sul do Piauí.",
-		 "audio": "", "balao": Vector2(0.66, 0.17), "alvo": Vector2(0.35, 0.35)},
-		{"imagem": "res://sprites/fase3/riacho_frio_bg.png", "quem": "zeca",
-		 "texto": "Riacho Frio aparece entre os destinos de cachoeiras divulgados pelo turismo do estado.",
-		 "audio": "", "balao": Vector2(0.66, 0.17), "alvo": Vector2(0.35, 0.35)},
-		{"imagem": "res://sprites/fase3/parnagua_lagoa_bg.png", "quem": "zeca",
-		 "texto": "Agora vamos pela PI-411 até Parnaguá. A estrada liga os dois municípios.",
-		 "audio": "", "balao": Vector2(0.28, 0.18), "alvo": Vector2(0.63, 0.4)},
-		 {"imagem": "res://sprites/fase3/parnagua_lagoa_bg.png", "quem": "zeca",
-		 "texto": "O município de Parnaguá foi instalado em 1762, junto à Lagoa de Parnaguá.",
-		 "audio": "", "balao": Vector2(0.28, 0.18), "alvo": Vector2(0.63, 0.4)},
-	],
 }

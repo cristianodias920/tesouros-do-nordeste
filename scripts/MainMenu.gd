@@ -86,9 +86,7 @@ func _cartao_fase(f: Dictionary) -> Button:
 	b.add_child(vb)
 	var l0 := _rot("FASE %d" % int(f.num), 26, Color(0.98, 0.84, 0.45))
 	vb.add_child(l0)
-	var fonte_nome := 34 if String(f.nome).length() > 18 else 46
-	var l1 := _rot(String(f.nome), fonte_nome, Color(1, 0.97, 0.86))
-	l1.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var l1 := _rot(String(f.nome), 46, Color(1, 0.97, 0.86))
 	vb.add_child(l1)
 	var info := Progresso.fase(id)
 	if not livre:

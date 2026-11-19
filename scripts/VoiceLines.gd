@@ -34,15 +34,10 @@ const LINES: Dictionary = {
 	"cris_cristais": "Olha esses cristais! Que riqueza é essa, hein?",
 	"cris_extremo_sul": "O extremo sul do Piauí! Que vista, Faísca!",
 	"cris_todos_tesouros": "Todos os tesouros de Cristalândia! Ô terra rica!",
-	"fase3_inicio": "Riacho Frio, aqui vamos nós! Depois seguimos pela PI-411 até Parnaguá.",
-	"fase3_riacho": "Riacho Frio está entre os destinos de cachoeiras apresentados pelo turismo do Piauí.",
-	"fase3_parnagua": "O município de Parnaguá foi instalado em 1762, junto à lagoa.",
-	"fase3_todos": "Todos os tesouros do caminho entre Riacho Frio e Parnaguá!",
 }
 # Falas genéricas que mudam de texto conforme a fase (o resto é igual em todas)
 const ALIAS_FASE: Dictionary = {
 	"fase2_cristalandia": {"inicio": "cris_inicio", "todos_tesouros": "cris_todos_tesouros"},
-	"fase3_riacho_frio": {"inicio": "fase3_inicio", "todos_tesouros": "fase3_todos"},
 }
 const REPEAT_COOLDOWN: Dictionary = {"agua_cai": 30.0, "rapadura": 25.0, "volta_faisca": 15.0, "cris_buriti_doce": 40.0}
 
