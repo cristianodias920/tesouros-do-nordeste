@@ -128,15 +128,18 @@ func continuar_do_checkpoint() -> void:
 
 # Trechos da fase (para dizer onde ainda há tesouros), na ordem do percurso
 func areas_da_fase() -> Array:
+	var cena_atual := get_tree().current_scene
+	if cena_atual and cena_atual.has_method("areas_da_fase"):
+		return cena_atual.areas_da_fase()
 	if FASE_ID == "fase2_cristalandia":
 		return ["Caminho de Corrente", "Centro e festejo de Sant'Ana", "Rio Palmeira e nascente", "Comunidade Esperança", "Veios de cristal", "Chapada da Limpeza"]
 	return ["Começo e Rio Corrente", "Centro de Corrente", "Torre e nuvens", "Vereda de buritis", "Rio Paraim", "Serra Dois Irmãos", "Rio Corrente e ExpoCorrente"]
 
 func area_de(pos: Vector2) -> String:
+	var cena_atual := get_tree().current_scene
+	if cena_atual and cena_atual.has_method("area_de"):
+		return cena_atual.area_de(pos)
 	if FASE_ID == "fase2_cristalandia":
-		var cena = get_tree().current_scene
-		if cena and cena.has_method("area_de"):
-			return cena.area_de(pos)
 		return "Cristalândia"
 	if pos.x > 30000:
 		return "Serra Dois Irmãos"
